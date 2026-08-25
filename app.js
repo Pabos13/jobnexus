@@ -9,6 +9,7 @@ import { JobService } from './services/jobService.js';
 import { CSVParser } from './services/csvParser.js';
 import { StorageService } from './services/storageService.js';
 import { FavoritesService } from './services/favoritesService.js';
+import { AuthService } from './services/authService.js';
 
 // ============================================
 // STATE
@@ -56,7 +57,9 @@ const els = {
     cvFileInput: $('#cvFileInput'),
     cvMatches: $('#cvMatches'),
     cvMatchesGrid: $('#cvMatchesGrid'),
-    statNumbers: $$('.stat-number')
+    statNumbers: $$('.stat-number'),
+    authTrigger: $('#authTrigger'), authModal: $('#authModal'), authClose: $('#authClose'), authTitle: $('#authTitle'), authForm: $('#authForm'), authSwitch: $('#authSwitch'), authNameGroup: $('#authNameGroup'), authName: $('#authName'), authEmail: $('#authEmail'), authPassword: $('#authPassword'), authError: $('#authError'), authSubmit: $('#authSubmit'),
+    infoModal: $('#infoModal'), infoClose: $('#infoClose'), infoTitle: $('#infoTitle'), infoContent: $('#infoContent')
 };
 
 // ============================================
@@ -64,6 +67,8 @@ const els = {
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
     initNavbar();
+    initAuth();
+    initInfoPages();
     initSearch();
     initFilters();
     initModal();
@@ -73,6 +78,23 @@ document.addEventListener('DOMContentLoaded', () => {
     initScrollEffects();
     initDemoAnnouncements();
 });
+
+// ============================================
+// AUTHENTICATION
+// ============================================
+function initAuth() {
+    let registerMode = false;
+    const open = () => { els.authModal.classList.remove('hidden'); els.authEmail.focus(); };
+    const close = () => els.authModal.classList.add('hidden');
+    els.authTrigger.addEventListener('click', open); els.authClose.addEventListener('click', close);
+    els.authSwitch.addEventListener('click', () => { registerMode = !registerMode; els.authNameGroup.classList.toggle('hidden', !registerMode); els.authName.required = registerMode; els.authTitle.textContent = registerMode ? 'Utwórz konto' : 'Witaj w JobNexus'; els.authSubmit.textContent = registerMode ? 'Zarejestruj się' : 'Zaloguj się'; els.authSwitch.textContent = registerMode ? 'Masz już konto? Zaloguj się' : 'Nie masz konta? Zarejestruj się'; });
+    els.authForm.addEventListener('submit', async (event) => { event.preventDefault(); els.authError.classList.add('hidden'); els.authSubmit.disabled = true; try { const user = registerMode ? await AuthService.register(els.authEmail.value, els.authPassword.value, els.authName.value) : await AuthService.login(els.authEmail.value, els.authPassword.value); if (user) { els.authTrigger.textContent = `Wyloguj (${user.name || user.email})`; close(); showToast(registerMode ? 'Konto utworzone' : 'Zalogowano pomyślnie', 'success'); els.authTrigger.onclick = async () => { await AuthService.logout(); els.authTrigger.textContent = 'Zaloguj się'; }; } else if (registerMode) { els.authError.textContent = 'Sprawdź skrzynkę e-mail i potwierdź konto.'; els.authError.classList.remove('hidden'); } } catch (error) { els.authError.textContent = error.message || 'Nie udało się wykonać operacji.'; els.authError.classList.remove('hidden'); } finally { els.authSubmit.disabled = false; } });
+}
+
+function initInfoPages() {
+    const pages = { 'O nas': ['O nas', 'JobNexus łączy kandydatów i pracodawców z wykorzystaniem nowoczesnych narzędzi oraz inteligentnego dopasowania ofert.'], Kontakt: ['Kontakt', 'Napisz do nas: kontakt@jobnexus.pl'], Regulamin: ['Regulamin', 'Korzystając z serwisu, akceptujesz zasady publikowania ofert i ogłoszeń.'], Cennik: ['Cennik', 'Publikacja ogłoszenia standardowego: 9,99 zł. Wyróżnienie: 29,99 zł.'] };
+    els.infoClose.addEventListener('click', () => els.infoModal.classList.add('hidden')); document.querySelectorAll('.footer-links a').forEach(link => { const title = link.textContent.trim(); if (pages[title]) link.addEventListener('click', event => { event.preventDefault(); els.infoTitle.textContent = pages[title][0]; els.infoContent.textContent = pages[title][1]; els.infoModal.classList.remove('hidden'); }); });
+}
 
 // ============================================
 // NAVBAR

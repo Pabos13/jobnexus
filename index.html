@@ -39,6 +39,7 @@
                 <a href="#zlecenia" class="nav-link">Zlecenia</a>
                 <a href="#cv" class="nav-link">Moje CV</a>
                 <a href="#dodaj" class="nav-link nav-cta">Dodaj Ogłoszenie</a>
+                <button class="nav-link auth-trigger" id="authTrigger" type="button">Zaloguj się</button>
             </div>
         </div>
     </nav>
@@ -304,6 +305,26 @@
             </div>
         </div>
     </section>
+
+    <!-- Authentication Modal -->
+    <div class="modal-overlay hidden" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+        <div class="modal auth-modal">
+            <button class="modal-close" id="authClose" type="button" aria-label="Zamknij">&times;</button>
+            <h2 class="modal-title" id="authTitle">Witaj w JobNexus</h2>
+            <p class="auth-subtitle" id="authSubtitle">Zaloguj się, aby zapisywać oferty i zarządzać kontem.</p>
+            <form class="modal-form" id="authForm">
+                <div class="form-group hidden" id="authNameGroup"><label for="authName">Imię i nazwisko</label><input id="authName" type="text" autocomplete="name"></div>
+                <div class="form-group"><label for="authEmail">E-mail</label><input id="authEmail" type="email" autocomplete="email" required></div>
+                <div class="form-group"><label for="authPassword">Hasło</label><input id="authPassword" type="password" minlength="8" autocomplete="current-password" required></div>
+                <p class="auth-error hidden" id="authError" role="alert"></p>
+                <button class="modal-submit" type="submit" id="authSubmit">Zaloguj się</button>
+            </form>
+            <button class="auth-switch" id="authSwitch" type="button">Nie masz konta? Zarejestruj się</button>
+        </div>
+    </div>
+
+    <!-- Information pages modal -->
+    <div class="modal-overlay hidden" id="infoModal" role="dialog" aria-modal="true"><div class="modal"><button class="modal-close" id="infoClose" type="button" aria-label="Zamknij">&times;</button><h2 class="modal-title" id="infoTitle"></h2><div class="info-content" id="infoContent"></div></div></div>
 
     <!-- Add Announcement Modal -->
     <div class="modal-overlay hidden" id="addModal">

@@ -5,6 +5,7 @@
 
 import { StorageService } from './storageService.js';
 import { CONFIG } from '../config.js';
+import { supabase } from './supabaseClient.js';
 
 export class AuthService {
     static STORAGE_KEYS = {
@@ -34,7 +35,18 @@ export class AuthService {
                 throw new Error('Name must be at least 2 characters');
             }
 
-            // Call backend API
+            if (supabase) {
+                const { data, error } = await supabase.auth.signUp({
+                    email: email.toLowerCase().trim(), password,
+                    options: { data: { name: name.trim() }, emailRedirectTo: `${window.location.origin}/` }
+                });
+                if (error) throw new Error(error.message.includes('already') ? 'Nie można utworzyć konta' : error.message);
+                const user = data.user ? { id: data.user.id, email: data.user.email, name: name.trim() } : null;
+                if (user && data.session) this.setUser(user, data.session.access_token, data.session.refresh_token, data.session.expires_in);
+                return user;
+            }
+
+            // Fallback backend API
             const response = await fetch(`${CONFIG.API_BASE_URL}/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -76,6 +88,14 @@ export class AuthService {
                 throw new Error('Password is required');
             }
 
+            if (supabase) {
+                const { data, error } = await supabase.auth.signInWithPassword({ email: email.toLowerCase().trim(), password });
+                if (error) throw new Error(error.message.includes('Invalid login') ? 'Nieprawidłowy e-mail lub hasło' : error.message);
+                const user = data.user ? { id: data.user.id, email: data.user.email, name: data.user.user_metadata?.name || data.user.email } : null;
+                if (user && data.session) this.setUser(user, data.session.access_token, data.session.refresh_token, data.session.expires_in);
+                return user;
+            }
+
             const response = await fetch(`${CONFIG.API_BASE_URL}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -104,8 +124,9 @@ export class AuthService {
     /**
      * Logout user
      */
-    static logout() {
+    static async logout() {
         try {
+            if (supabase) await supabase.auth.signOut();
             localStorage.removeItem(this.STORAGE_KEYS.USER);
             localStorage.removeItem(this.STORAGE_KEYS.TOKEN);
             localStorage.removeItem(this.STORAGE_KEYS.REFRESH_TOKEN);

@@ -701,6 +701,13 @@ img {
 
 .job-save:hover { background: rgba(0, 245, 255, 0.12); }
 
+.auth-trigger { color: var(--neon-cyan); }
+.auth-subtitle { color: var(--text-secondary); margin-bottom: var(--space-lg); }
+.auth-switch { width: 100%; min-height: 44px; margin-top: var(--space-md); color: var(--neon-cyan); font-size: .9rem; }
+.auth-error { color: var(--neon-pink); margin-top: var(--space-sm); font-size: .9rem; }
+.info-content { color: var(--text-secondary); line-height: 1.7; }
+.modal-submit:disabled { opacity: .6; cursor: wait; }
+
 .job-card {
     background: var(--bg-card);
     border: 1px solid rgba(255, 255, 255, 0.06);
