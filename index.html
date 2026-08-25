@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JobNexus — Przyszłość Pracy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-mesh" id="bgMesh"></div>
+    <div class="bg-particles" id="bgParticles"></div>
+    
+    <!-- Navigation -->
+    <nav class="nav" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <span class="logo-icon">
+                    <svg viewBox="0 0 40 40" fill="none">
+                        <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 20C12 15.58 15.58 12 20 12C24.42 12 28 15.58 28 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="20" cy="20" r="4" fill="currentColor"/>
+                        <path d="M20 24V32" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span class="logo-text">Job<span class="logo-accent">Nexus</span></span>
+            </a>
+            
+            <button class="nav-toggle" id="navToggle" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="#oferty" class="nav-link">Oferty Pracy</a>
+                <a href="#ogloszenia" class="nav-link">Ogłoszenia</a>
+                <a href="#zlecenia" class="nav-link">Zlecenia</a>
+                <a href="#cv" class="nav-link">Moje CV</a>
+                <a href="#dodaj" class="nav-link nav-cta">Dodaj Ogłoszenie</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-pulse"></span>
+                <span>AI-Powered Job Matching</span>
+            </div>
+            <h1 class="hero-title">
+                Znajdź <span class="gradient-text">pracę przyszłości</span><br>
+                w jednym miejscu
+            </h1>
+            <p class="hero-subtitle">
+                Tysiące ofert z całego świata. Inteligentne dopasowanie AI. 
+                Ogłoszenia, zlecenia i kariera w Twoich rękach.
+            </p>
+            
+            <div class="search-box" id="searchBox">
+                <div class="search-field">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Stanowisko, słowa kluczowe..." autocomplete="off">
+                </div>
+                <div class="search-divider"></div>
+                <div class="search-field">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <input type="text" id="locationInput" placeholder="Lokalizacja..." autocomplete="off">
+                </div>
+                <button class="search-btn" id="searchBtn">
+                    <span>Szukaj</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number" data-target="12483">0</span>
+                    <span class="stat-label">Aktywnych ofert</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" data-target="892">0</span>
+                    <span class="stat-label">Pracodawców</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" data-target="156">0</span>
+                    <span class="stat-label">Nowych dziennie</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-visual">
+            <div class="orbit-container">
+                <div class="orbit orbit-1">
+                    <div class="orbit-dot" style="--delay:0s"></div>
+                </div>
+                <div class="orbit orbit-2">
+                    <div class="orbit-dot" style="--delay:1s"></div>
+                </div>
+                <div class="orbit orbit-3">
+                    <div class="orbit-dot" style="--delay:2s"></div>
+                </div>
+                <div class="orbit-center">
+                    <svg viewBox="0 0 60 60" fill="none">
+                        <rect x="10" y="10" width="40" height="40" rx="10" stroke="url(#grad1)" stroke-width="2"/>
+                        <path d="M20 25h20M20 32h14M20 39h8" stroke="url(#grad1)" stroke-width="2" stroke-linecap="round"/>
+                        <defs>
+                            <linearGradient id="grad1" x1="0" y1="0" x2="60" y2="60">
+                                <stop offset="0%" stop-color="#00f5ff"/>
+                                <stop offset="100%" stop-color="#7c3aed"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters Bar -->
+    <div class="filters-bar" id="filtersBar">
+        <div class="filters-container">
+            <button class="filter-chip active" data-filter="all">Wszystkie</button>
+            <button class="filter-chip" data-filter="fulltime">Pełny etat</button>
+            <button class="filter-chip" data-filter="parttime">Część etatu</button>
+            <button class="filter-chip" data-filter="remote">Zdalna</button>
+            <button class="filter-chip" data-filter="contract">Kontrakt</button>
+            <button class="filter-chip" data-filter="internship">Staż</button>
+        </div>
+    </div>
+
+    <!-- Job Offers Section -->
+    <section class="section" id="oferty">
+        <div class="section-header">
+            <h2 class="section-title">Oferty <span class="gradient-text">Pracy</span></h2>
+            <p class="section-desc">Najnowsze oferty z Jooble i naszej bazy</p>
+        </div>
+        
+        <div class="jobs-grid" id="jobsGrid">
+            <!-- Jobs injected by JS -->
+        </div>
+        
+        <div class="loading-state" id="jobsLoading">
+            <div class="spinner"></div>
+            <p>Ładowanie ofert...</p>
+        </div>
+        
+        <div class="empty-state hidden" id="jobsEmpty">
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="8" y="12" width="48" height="40" rx="4"/>
+                <path d="M8 20h48M20 12V8M44 12V8"/>
+                <path d="M24 32h16M24 38h10"/>
+            </svg>
+            <h3>Nie znaleziono ofert</h3>
+            <p>Spróbuj zmienić kryteria wyszukiwania</p>
+        </div>
+        
+        <button class="load-more" id="loadMoreBtn">Załaduj więcej</button>
+    </section>
+
+    <!-- Announcements / Zlecenia Section -->
+    <section class="section section-alt" id="ogloszenia">
+        <div class="section-header">
+            <h2 class="section-title">Ogłoszenia & <span class="gradient-text">Zlecenia</span></h2>
+            <p class="section-desc">Praca dorywcza, projekty, zlecenia freelance</p>
+        </div>
+        
+        <div class="announcements-grid" id="announcementsGrid">
+            <!-- Demo announcements -->
+        </div>
+        
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <div class="pricing-badge">Standard</div>
+                <h3>Standardowe Ogłoszenie</h3>
+                <div class="pricing-price">9,99 <span>zł</span></div>
+                <ul class="pricing-features">
+                    <li>30 dni widoczności</li>
+                    <li>Podstawowa pozycja</li>
+                    <li>Bez wyróżnienia</li>
+                </ul>
+                <button class="pricing-btn" onclick="openAddModal('standard')">Wybieram</button>
+            </div>
+            
+            <div class="pricing-card pricing-featured">
+                <div class="pricing-badge pricing-badge-hot">HOT</div>
+                <h3>Ogłoszenie Wyróżnione</h3>
+                <div class="pricing-price">29,99 <span>zł</span></div>
+                <ul class="pricing-features">
+                    <li>30 dni widoczności</li>
+                    <li>Pozycja premium</li>
+                    <li>Graficzne wyróżnienie</li>
+                    <li>Więcej wyświetleń</li>
+                </ul>
+                <button class="pricing-btn" onclick="openAddModal('featured')">Wybieram</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CV / AI Section -->
+    <section class="section" id="cv">
+        <div class="section-header">
+            <h2 class="section-title">AI <span class="gradient-text">CV Matcher</span></h2>
+            <p class="section-desc">Wrzuć CV, a AI znajdzie idealne oferty dla Ciebie</p>
+        </div>
+        
+        <div class="cv-upload-zone" id="cvUploadZone">
+            <input type="file" id="cvFileInput" accept=".pdf,.doc,.docx" hidden>
+            <div class="cv-upload-content">
+                <div class="cv-upload-icon">
+                    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M32 8v48M16 32l16-16 16 16"/>
+                        <rect x="8" y="48" width="48" height="8" rx="2"/>
+                    </svg>
+                </div>
+                <h3>Upuść CV lub kliknij, aby wybrać</h3>
+                <p>PDF, DOC, DOCX — maks. 10 MB</p>
+                <span class="cv-formats">AI automatycznie rozpozna Twoje umiejętności</span>
+            </div>
+        </div>
+        
+        <div class="cv-matches hidden" id="cvMatches">
+            <h3>Dopasowane oferty dla Ciebie</h3>
+            <div class="jobs-grid" id="cvMatchesGrid"></div>
+        </div>
+    </section>
+
+    <!-- HR Database Section -->
+    <section class="section section-alt" id="hr">
+        <div class="section-header">
+            <h2 class="section-title">Baza <span class="gradient-text">CV dla HR</span></h2>
+            <p class="section-desc">Przeszukuj bazę kandydatów i znajdź idealnego pracownika</p>
+        </div>
+        
+        <div class="hr-card">
+            <div class="hr-visual">
+                <div class="hr-icon">
+                    <svg viewBox="0 0 80 80" fill="none">
+                        <rect x="10" y="10" width="60" height="60" rx="12" stroke="url(#hrGrad)" stroke-width="2"/>
+                        <circle cx="40" cy="32" r="10" stroke="url(#hrGrad)" stroke-width="2"/>
+                        <path d="M24 56c0-8.8 7.2-16 16-16s16 7.2 16 16" stroke="url(#hrGrad)" stroke-width="2"/>
+                        <defs>
+                            <linearGradient id="hrGrad" x1="0" y1="0" x2="80" y2="80">
+                                <stop offset="0%" stop-color="#00f5ff"/>
+                                <stop offset="100%" stop-color="#7c3aed"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+            <div class="hr-content">
+                <h3>Dostęp do bazy CV kandydatów</h3>
+                <p>Przeszukuj tysiące profili, filtruj według umiejętności, doświadczenia i lokalizacji. Automatyczne powiadomienia o nowych kandydatach.</p>
+                <div class="hr-price">
+                    <span class="hr-price-value">99,99 zł</span>
+                    <span class="hr-price-period">/ miesiąc</span>
+                </div>
+                <button class="hr-btn" onclick="alert('Funkcja wkrótce dostępna!')">Aktywuj dostęp</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CV Builder Section -->
+    <section class="section" id="cv-builder">
+        <div class="section-header">
+            <h2 class="section-title">Kreator <span class="gradient-text">CV</span></h2>
+            <p class="section-desc">Stwórz profesjonalne CV w 5 minut</p>
+        </div>
+        
+        <div class="cv-builder-card">
+            <div class="cv-builder-preview">
+                <div class="cv-preview-mock">
+                    <div class="cv-mock-header"></div>
+                    <div class="cv-mock-line cv-mock-line-short"></div>
+                    <div class="cv-mock-line"></div>
+                    <div class="cv-mock-line"></div>
+                    <div class="cv-mock-line cv-mock-line-medium"></div>
+                </div>
+            </div>
+            <div class="cv-builder-content">
+                <h3>Profesjonalne CV w kilka kliknięć</h3>
+                <ul class="cv-builder-features">
+                    <li>Nowoczesne szablony</li>
+                    <li>AI optymalizacja treści</li>
+                    <li>Eksport PDF</li>
+                    <li>Przechowywanie w chmurze</li>
+                </ul>
+                <div class="cv-builder-pricing">
+                    <div class="cv-builder-price">
+                        <span class="price-main">9,99 zł</span>
+                        <span class="price-sep">+</span>
+                        <span class="price-sub">9,99 zł/msc</span>
+                    </div>
+                    <span class="price-note">za przechowywanie w bazie</span>
+                </div>
+                <button class="cv-builder-btn" onclick="alert('Kreator CV wkrótce dostępny!')">Stwórz CV</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add Announcement Modal -->
+    <div class="modal-overlay hidden" id="addModal">
+        <div class="modal">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <h2 class="modal-title">Dodaj Ogłoszenie</h2>
+            <form class="modal-form" id="addForm">
+                <div class="form-group">
+                    <label>Tytuł ogłoszenia</label>
+                    <input type="text" id="annTitle" placeholder="np. Szukam hydraulika" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Kategoria</label>
+                        <select id="annCategory">
+                            <option>Budowlanka</option>
+                            <option>IT / Programowanie</option>
+                            <option>Transport</option>
+                            <option>Marketing</option>
+                            <option>Administracja</option>
+                            <option>Inne</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Lokalizacja</label>
+                        <input type="text" id="annLocation" placeholder="Miasto">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Opis</label>
+                    <textarea id="annDesc" rows="4" placeholder="Opisz czego potrzebujesz..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Budżet (zł)</label>
+                        <input type="number" id="annBudget" placeholder="np. 500">
+                    </div>
+                    <div class="form-group">
+                        <label>Typ</label>
+                        <select id="annType">
+                            <option>Zlecenie</option>
+                            <option>Projekt</option>
+                            <option>Praca dorywcza</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="annFeatured">
+                        <span class="checkmark"></span>
+                        <span class="checkbox-text">
+                            Ogłoszenie wyróżnione (+20 zł)
+                            <span class="checkbox-badge">Polecane</span>
+                        </span>
+                    </label>
+                </div>
+                <button type="submit" class="modal-submit">Opublikuj — <span id="submitPrice">9,99 zł</span></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <span class="logo-icon">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 20C12 15.58 15.58 12 20 12C24.42 12 28 15.58 28 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="20" cy="20" r="4" fill="currentColor"/>
+                        </svg>
+                    </span>
+                    <span class="logo-text">Job<span class="logo-accent">Nexus</span></span>
+                </a>
+                <p>Przyszłość pracy zaczyna się tutaj. AI, ogłoszenia i kariera w jednym miejscu.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Dla Pracowników</h4>
+                <a href="#oferty">Oferty pracy</a>
+                <a href="#cv">AI CV Matcher</a>
+                <a href="#cv-builder">Kreator CV</a>
+            </div>
+            <div class="footer-links">
+                <h4>Dla Pracodawców</h4>
+                <a href="#ogloszenia">Dodaj ogłoszenie</a>
+                <a href="#hr">Baza CV</a>
+                <a href="#">Cennik</a>
+            </div>
+            <div class="footer-links">
+                <h4>Firma</h4>
+                <a href="#">O nas</a>
+                <a href="#">Kontakt</a>
+                <a href="#">Regulamin</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>JobNexus 2026. Wszystkie prawa zastrzeżone.</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
