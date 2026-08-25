@@ -84,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================
 function initAuth() {
     let registerMode = false;
+    if (!els.authTrigger || !els.authModal || !els.authForm) return;
     const open = () => { els.authModal.classList.remove('hidden'); els.authEmail.focus(); };
     const close = () => els.authModal.classList.add('hidden');
     els.authTrigger.addEventListener('click', open); els.authClose.addEventListener('click', close);
@@ -101,6 +102,18 @@ function initInfoPages() {
 // ============================================
 function initNavbar() {
     let lastScroll = 0;
+
+    const announcementLinks = document.querySelectorAll('a[href="#dodaj"]');
+    announcementLinks.forEach(link => link.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (!AuthService.isAuthenticated() && !AuthService.getUser()) {
+            els.authModal.classList.remove('hidden');
+            els.authError.textContent = 'Zaloguj się lub zarejestruj, aby dodać ogłoszenie.';
+            els.authError.classList.remove('hidden');
+            return;
+        }
+        openAddModal('standard');
+    }));
     
     window.addEventListener('scroll', () => {
         const currentScroll = window.scrollY;

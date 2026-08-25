@@ -2,8 +2,6 @@
  * Jest Setup File
  */
 
-import { jest } from '@jest/globals';
-
 // Mock localStorage
 const localStorageMock = {
     getItem: jest.fn(),
