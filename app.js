@@ -134,11 +134,17 @@ function initNavbar() {
         lastScroll = currentScroll;
     }, { passive: true });
     
-    els.navToggle.addEventListener('click', () => {
-        els.navToggle.classList.toggle('active');
-        els.navMenu.classList.toggle('open');
-        document.body.style.overflow = els.navMenu.classList.contains('open') ? 'hidden' : '';
-    });
+    const toggleMenu = (event) => {
+        event?.preventDefault();
+        event?.stopPropagation();
+        const isOpen = !els.navMenu.classList.contains('open');
+        els.navToggle.classList.toggle('active', isOpen);
+        els.navMenu.classList.toggle('open', isOpen);
+        els.navToggle.setAttribute('aria-expanded', String(isOpen));
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+    };
+    els.navToggle.addEventListener('click', toggleMenu);
+    els.navToggle.addEventListener('touchend', toggleMenu, { passive: false });
     
     // Close mobile menu on link click
     els.navMenu.querySelectorAll('.nav-link').forEach(link => {
