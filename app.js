@@ -1,18 +1,13 @@
 /**
- * JobNexus — Futuristic Job Portal
- * Integrates Jooble API, CSV import, AI CV matching, announcements
+ * JobNexus — Refactored Application
+ * Integrates Jooble API (via backend proxy), CSV import, AI CV matching, announcements
+ * SECURITY: API keys are handled server-side only
  */
 
-// ============================================
-// CONFIGURATION
-// ============================================
-const CONFIG = {
-    JOOBLE_API_KEY: '5be594f9-f5e0-41f5-a41a-9c1ea12566be',
-    JOOBLE_API_URL: 'https://pl.jooble.org/api/',
-    CSV_PATH: 'data/offers.csv',
-    ITEMS_PER_PAGE: 12,
-    ANIMATION_DURATION: 800
-};
+import CONFIG from './config.js';
+import { JobService } from './services/jobService.js';
+import { CSVParser } from './services/csvParser.js';
+import { StorageService } from './services/storageService.js';
 
 // ============================================
 // STATE
@@ -114,13 +109,20 @@ async function loadData() {
     
     try {
         // Load CSV first
-        await loadCSV();
+        const csvJobs = await JobService.loadCSVJobs();
+        state.csvJobs = csvJobs;
+        console.log(`Loaded ${csvJobs.length} jobs from CSV`);
         
-        // Then load Jooble API
-        await loadJoobleJobs();
+        // Then load from Jooble API via backend
+        const apiJobs = await JobService.loadJoobleJobs(
+            state.searchQuery || 'praca',
+            state.locationQuery || 'Polska'
+        );
         
-        // Combine and display
-        combineJobs();
+        // Combine jobs (deduplicates)
+        state.jobs = JobService.combineJobs(state.csvJobs, apiJobs);
+        console.log(`Combined to ${state.jobs.length} total jobs`);
+        
         filterAndDisplay();
         
     } catch (err) {
@@ -134,190 +136,6 @@ async function loadData() {
 }
 
 // ============================================
-// CSV PARSER
-// ============================================
-async function loadCSV() {
-    try {
-        const response = await fetch(CONFIG.CSV_PATH);
-        if (!response.ok) throw new Error('CSV not found');
-        
-        const text = await response.text();
-        const lines = text.trim().split('\n');
-        
-        // Parse header
-        const headers = lines[0].split(';').map(h => h.trim().replace(/^"|"$/g, ''));
-        
-        // Parse rows
-        const jobs = [];
-        for (let i = 1; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (!line) continue;
-            
-            const values = line.split(';').map(v => v.trim().replace(/^"|"$/g, ''));
-            const job = {};
-            headers.forEach((h, idx) => {
-                job[h.toLowerCase().replace(/\s+/g, '_')] = values[idx] || '';
-            });
-            
-            // Normalize to common format
-            jobs.push(normalizeCSVJob(job));
-        }
-        
-        state.csvJobs = jobs;
-        console.log(`Loaded ${jobs.length} jobs from CSV`);
-        
-    } catch (err) {
-        console.warn('CSV load failed:', err);
-        state.csvJobs = [];
-    }
-}
-
-function normalizeCSVJob(raw) {
-    const title = raw.stanowisko || raw.title || 'Oferta pracy';
-    const company = raw.pracodawca || raw.company || 'Pracodawca';
-    const location = raw.miejsce_pracy || raw.location || 'Polska';
-    const type = raw.rodzaj_umowy || raw.type || 'Umowa o pracę';
-    const date = raw.dostępna_od || raw.date || new Date().toISOString().split('T')[0];
-    
-    return {
-        id: `csv-${Math.random().toString(36).substr(2, 9)}`,
-        title,
-        company,
-        location,
-        type,
-        salary: 'Do negocjacji',
-        date,
-        description: `${title} w ${company}. ${type}.`,
-        source: 'csv',
-        featured: false,
-        url: '#'
-    };
-}
-
-// ============================================
-// JOOBLE API
-// ============================================
-async function loadJoobleJobs() {
-    try {
-        const keywords = state.searchQuery || 'praca';
-        const location = state.locationQuery || 'Polska';
-        
-        const body = JSON.stringify({
-            keywords,
-            location,
-            page: '1',
-            searchMode: '1'
-        });
-        
-        const response = await fetch(`${CONFIG.JOOBLE_API_URL}${CONFIG.JOOBLE_API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body
-        });
-        
-        if (!response.ok) throw new Error(`Jooble API error: ${response.status}`);
-        
-        const data = await response.json();
-        
-        if (data && data.jobs) {
-            state.jobs = data.jobs.map(job => normalizeJoobleJob(job));
-            console.log(`Loaded ${state.jobs.length} jobs from Jooble`);
-        } else {
-            state.jobs = [];
-        }
-        
-    } catch (err) {
-        console.warn('Jooble API failed:', err);
-        // Use fallback demo data
-        state.jobs = getDemoJobs();
-    }
-}
-
-function normalizeJoobleJob(raw) {
-    return {
-        id: raw.id || `jooble-${Math.random().toString(36).substr(2, 9)}`,
-        title: raw.title || 'Oferta pracy',
-        company: raw.company || 'Pracodawca',
-        location: raw.location || 'Polska',
-        type: detectJobType(raw.title, raw.snippet),
-        salary: raw.salary || 'Do negocjacji',
-        date: raw.updated || raw.date || new Date().toISOString().split('T')[0],
-        description: raw.snippet || raw.description || '',
-        source: 'jooble',
-        featured: false,
-        url: raw.link || raw.url || '#'
-    };
-}
-
-function detectJobType(title, desc) {
-    const text = `${title} ${desc}`.toLowerCase();
-    if (text.includes('zdaln') || text.includes('remote')) return 'Zdalna';
-    if (text.includes('staż') || text.includes('praktyk') || text.includes('intern')) return 'Staż';
-    if (text.includes('kontrakt') || text.includes('b2b') || text.includes('contract')) return 'Kontrakt';
-    if (text.includes('część') || text.includes('part') || text.includes('half')) return 'Część etatu';
-    return 'Pełny etat';
-}
-
-function getDemoJobs() {
-    const demoTitles = [
-        'Frontend Developer React', 'Backend Developer Node.js', 'Fullstack Developer',
-        'DevOps Engineer', 'Data Scientist', 'Product Manager',
-        'UX/UI Designer', 'QA Engineer', 'Scrum Master',
-        'Java Developer', 'Python Developer', 'Mobile Developer',
-        'Cloud Architect', 'Security Engineer', 'ML Engineer',
-        'Project Manager', 'Business Analyst', 'HR Specialist',
-        'Marketing Manager', 'Sales Representative', 'Accountant',
-        'Customer Support', 'Content Writer', 'Graphic Designer'
-    ];
-    
-    const companies = [
-        'TechCorp Poland', 'InnovateSoft', 'Digital Ventures',
-        'CloudNative Sp. z o.o.', 'DataDriven', 'FutureWorks',
-        'CodeCraft', 'AppMasters', 'WebSolutions',
-        'SmartSystems', 'NextGen IT', 'CyberShield'
-    ];
-    
-    const locations = [
-        'Warszawa, mazowieckie', 'Kraków, małopolskie', 'Wrocław, dolnośląskie',
-        'Gdańsk, pomorskie', 'Poznań, wielkopolskie', 'Łódź, łódzkie',
-        'Katowice, śląskie', 'Lublin, lubelskie', 'Szczecin, zachodniopomorskie',
-        'Bydgoszcz, kujawsko-pomorskie', 'Białystok, podlaskie', 'Toruń, kujawsko-pomorskie'
-    ];
-    
-    const types = ['Pełny etat', 'Zdalna', 'Kontrakt', 'Staż', 'Część etatu'];
-    
-    return demoTitles.map((title, i) => ({
-        id: `demo-${i}`,
-        title,
-        company: companies[i % companies.length],
-        location: locations[i % locations.length],
-        type: types[i % types.length],
-        salary: `${8000 + (i * 500)} - ${12000 + (i * 800)} zł`,
-        date: new Date(Date.now() - i * 86400000).toISOString().split('T')[0],
-        description: `Szukamy ${title} do naszego zespołu. Atrakcyjne warunki, możliwość rozwoju.`,
-        source: 'demo',
-        featured: i < 3,
-        url: '#'
-    }));
-}
-
-function combineJobs() {
-    // Combine CSV + API/demo jobs, deduplicate by title+company
-    const seen = new Set();
-    const all = [];
-    
-    [...state.csvJobs, ...state.jobs].forEach(job => {
-        const key = `${job.title}|${job.company}`.toLowerCase();
-        if (!seen.has(key)) {
-            seen.add(key);
-            all.push(job);
-        }
-    });
-    
-    state.jobs = all;
-}
-
-// ============================================
 // SEARCH & FILTERS
 // ============================================
 function initSearch() {
@@ -327,17 +145,23 @@ function initSearch() {
         state.searchQuery = els.searchInput.value.trim();
         state.locationQuery = els.locationInput.value.trim();
         state.currentPage = 1;
+        
+        // Save to search history
+        if (state.searchQuery) {
+            StorageService.addSearchHistory(state.searchQuery);
+        }
+        
         filterAndDisplay();
     };
     
     els.searchInput.addEventListener('input', () => {
         clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(doSearch, 400);
+        debounceTimer = setTimeout(doSearch, CONFIG.DEBOUNCE_DELAY);
     });
     
     els.locationInput.addEventListener('input', () => {
         clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(doSearch, 400);
+        debounceTimer = setTimeout(doSearch, CONFIG.DEBOUNCE_DELAY);
     });
     
     els.searchBtn.addEventListener('click', doSearch);
@@ -367,55 +191,14 @@ function initFilters() {
     });
 }
 
-function filterJobs() {
-    let filtered = [...state.jobs];
-    
-    // Text search
-    if (state.searchQuery) {
-        const q = state.searchQuery.toLowerCase();
-        filtered = filtered.filter(j => 
-            j.title.toLowerCase().includes(q) ||
-            j.company.toLowerCase().includes(q) ||
-            j.description.toLowerCase().includes(q)
-        );
-    }
-    
-    // Location filter
-    if (state.locationQuery) {
-        const loc = state.locationQuery.toLowerCase();
-        filtered = filtered.filter(j => 
-            j.location.toLowerCase().includes(loc)
-        );
-    }
-    
-    // Type filter
-    const filterMap = {
-        'fulltime': 'pełny etat',
-        'parttime': 'część etatu',
-        'remote': 'zdalna',
-        'contract': 'kontrakt',
-        'internship': 'staż'
+function filterAndDisplay() {
+    const filters = {
+        searchQuery: state.searchQuery,
+        locationQuery: state.locationQuery,
+        currentFilter: state.currentFilter
     };
     
-    if (state.currentFilter !== 'all' && filterMap[state.currentFilter]) {
-        const typeQ = filterMap[state.currentFilter];
-        filtered = filtered.filter(j => 
-            j.type.toLowerCase().includes(typeQ)
-        );
-    }
-    
-    // Sort: featured first, then by date
-    filtered.sort((a, b) => {
-        if (a.featured && !b.featured) return -1;
-        if (!a.featured && b.featured) return 1;
-        return new Date(b.date) - new Date(a.date);
-    });
-    
-    state.filteredJobs = filtered;
-}
-
-function filterAndDisplay() {
-    filterJobs();
+    state.filteredJobs = JobService.filterJobs(state.jobs, filters);
     displayJobs(false);
 }
 
@@ -503,7 +286,7 @@ function getTypeIcon(type) {
     const icons = {
         'Zdalna': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>',
         'Staż': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>',
-        'Kontrakt': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>'
+        'Kontrakt': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>'
     };
     return icons[type] || '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>';
 }
@@ -546,70 +329,80 @@ function showLoading(show) {
 // ANNOUNCEMENTS / ZLECENIA
 // ============================================
 function initDemoAnnouncements() {
-    const demos = [
-        {
-            id: 'ann-1',
-            title: 'Potrzebny elektryk — instalacja w nowym domu',
-            category: 'Budowlanka',
-            location: 'Warszawa, mazowieckie',
-            desc: 'Szukam elektryka do kompleksowej instalacji elektrycznej w nowym domu jednorodzinnym. Powierzchnia 180m2. Termin: wrzesień 2026.',
-            budget: '5000',
-            type: 'Zlecenie',
-            featured: true
-        },
-        {
-            id: 'ann-2',
-            title: 'Strona internetowa dla restauracji',
-            category: 'IT / Programowanie',
-            location: 'Kraków, małopolskie',
-            desc: 'Potrzebuję nowoczesnej strony www z systemem rezerwacji stolików i menu online. Responsywna, SEO-friendly.',
-            budget: '3500',
-            type: 'Projekt',
-            featured: false
-        },
-        {
-            id: 'ann-3',
-            title: 'Kierowca kat. C+E — trasy międzynarodowe',
-            category: 'Transport',
-            location: 'Wrocław, dolnośląskie',
-            desc: 'Firma transportowa szuka kierowców z kat. C+E na trasy DE/NL/BE. Stała współpraca, atrakcyjne stawki.',
-            budget: '8500',
-            type: 'Praca dorywcza',
-            featured: true
-        },
-        {
-            id: 'ann-4',
-            title: 'Montaż mebli IKEA — 3 pokoje',
-            category: 'Inne',
-            location: 'Gdańsk, pomorskie',
-            desc: 'Szukam osoby do montażu mebli z IKEA: sypialnia, salon, biuro. Wszystkie meble już dostarczone.',
-            budget: '800',
-            type: 'Zlecenie',
-            featured: false
-        },
-        {
-            id: 'ann-5',
-            title: 'Copywriter — blog branżowy B2B',
-            category: 'Marketing',
-            location: 'Zdalna',
-            desc: 'Potrzebuję copywritera do prowadzenia bloga branżowego. 4 artykuły miesięcznie, tematyka IT/Cloud.',
-            budget: '2000',
-            type: 'Projekt',
-            featured: true
-        },
-        {
-            id: 'ann-6',
-            title: 'Hydraulik — wymiana instalacji w bloku',
-            category: 'Budowlanka',
-            location: 'Poznań, wielkopolskie',
-            desc: 'Kompleksowa wymiana instalacji hydraulicznej w mieszkaniu 65m2. Wymagane doświadczenie i faktura VAT.',
-            budget: '4500',
-            type: 'Zlecenie',
-            featured: false
-        }
-    ];
+    // Load announcements from localStorage first
+    const savedAnnouncements = StorageService.loadAnnouncements();
     
-    state.announcements = demos;
+    if (savedAnnouncements.length > 0) {
+        state.announcements = savedAnnouncements;
+    } else {
+        // Use demo data as initial announcements
+        const demos = [
+            {
+                id: 'ann-1',
+                title: 'Potrzebny elektryk — instalacja w nowym domu',
+                category: 'Budowlanka',
+                location: 'Warszawa, mazowieckie',
+                desc: 'Szukam elektryka do kompleksowej instalacji elektrycznej w nowym domu jednorodzinnym. Powierzchnia 180m2. Termin: wrzesień 2026.',
+                budget: '5000',
+                type: 'Zlecenie',
+                featured: true
+            },
+            {
+                id: 'ann-2',
+                title: 'Strona internetowa dla restauracji',
+                category: 'IT / Programowanie',
+                location: 'Kraków, małopolskie',
+                desc: 'Potrzebuję nowoczesnej strony www z systemem rezerwacji stolików i menu online. Responsywna, SEO-friendly.',
+                budget: '3500',
+                type: 'Projekt',
+                featured: false
+            },
+            {
+                id: 'ann-3',
+                title: 'Kierowca kat. C+E — trasy międzynarodowe',
+                category: 'Transport',
+                location: 'Wrocław, dolnośląskie',
+                desc: 'Firma transportowa szuka kierowców z kat. C+E na trasy DE/NL/BE. Stała współpraca, atrakcyjne stawki.',
+                budget: '8500',
+                type: 'Praca dorywcza',
+                featured: true
+            },
+            {
+                id: 'ann-4',
+                title: 'Montaż mebli IKEA — 3 pokoje',
+                category: 'Inne',
+                location: 'Gdańsk, pomorskie',
+                desc: 'Szukam osoby do montażu mebli z IKEA: sypialnia, salon, biuro. Wszystkie meble już dostarczone.',
+                budget: '800',
+                type: 'Zlecenie',
+                featured: false
+            },
+            {
+                id: 'ann-5',
+                title: 'Copywriter — blog branżowy B2B',
+                category: 'Marketing',
+                location: 'Zdalna',
+                desc: 'Potrzebuję copywritera do prowadzenia bloga branżowego. 4 artykuły miesięcznie, tematyka IT/Cloud.',
+                budget: '2000',
+                type: 'Projekt',
+                featured: true
+            },
+            {
+                id: 'ann-6',
+                title: 'Hydraulik — wymiana instalacji w bloku',
+                category: 'Budowlanka',
+                location: 'Poznań, wielkopolskie',
+                desc: 'Kompleksowa wymiana instalacji hydraulicznej w mieszkaniu 65m2. Wymagane doświadczenie i faktura VAT.',
+                budget: '4500',
+                type: 'Zlecenie',
+                featured: false
+            }
+        ];
+        
+        state.announcements = demos;
+        StorageService.saveAnnouncements(demos);
+    }
+    
     renderAnnouncements();
 }
 
@@ -703,6 +496,8 @@ function submitAnnouncement() {
     };
     
     state.announcements.unshift(newAnn);
+    // PERSIST TO STORAGE
+    StorageService.saveAnnouncements(state.announcements);
     renderAnnouncements();
     closeModal();
     
@@ -741,15 +536,13 @@ function initCVUpload() {
 }
 
 function handleCVFile(file) {
-    const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    
-    if (!validTypes.includes(file.type)) {
+    if (!CONFIG.ACCEPTED_CV_TYPES.includes(file.type)) {
         showToast('Wybierz plik PDF, DOC lub DOCX', 'error');
         return;
     }
     
-    if (file.size > 10 * 1024 * 1024) {
-        showToast('Plik jest za duży (max 10 MB)', 'error');
+    if (file.size > CONFIG.MAX_CV_FILE_SIZE) {
+        showToast(`Plik jest za duży (max ${CONFIG.MAX_CV_FILE_SIZE / 1024 / 1024} MB)`, 'error');
         return;
     }
     
@@ -768,6 +561,7 @@ function handleCVFile(file) {
         const matches = findMatchingJobs(extractedKeywords);
         
         state.cvMatches = matches;
+        StorageService.saveCVMatches(matches);
         displayCVMatches(matches);
         
         // Restore upload zone
@@ -993,4 +787,4 @@ window.searchByKeyword = function(keyword) {
 // Expose modal function globally
 window.openAddModal = openAddModal;
 
-console.log('JobNexus initialized');
+console.log('JobNexus initialized (refactored with security improvements)');
