@@ -35,12 +35,15 @@ export class JobService {
     static async loadJoobleJobs(keywords = 'praca', location = 'Polska') {
         try {
             // Call backend proxy instead of Jooble directly
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), CONFIG.API_TIMEOUT);
             const response = await fetch(`${CONFIG.API_BASE_URL}/jobs/search`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ keywords, location }),
-                timeout: CONFIG.API_TIMEOUT
+                signal: controller.signal
             });
+            clearTimeout(timeoutId);
             
             if (!response.ok) {
                 throw new Error(`API error: ${response.status}`);

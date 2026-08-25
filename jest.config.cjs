@@ -12,7 +12,7 @@ module.exports = {
         'app.js',
         '!**/*.test.js'
     ],
-    setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+    setupFilesAfterEnv: ['<rootDir>/jest.setup.cjs'],
     moduleNameMapper: {
         '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
     }

@@ -2,7 +2,8 @@
  * Storage Service Tests
  */
 
-import { StorageService } from '../../services/storageService';
+import { jest } from '@jest/globals';
+import { StorageService } from '../services/storageService.js';
 
 describe('StorageService', () => {
     beforeEach(() => {

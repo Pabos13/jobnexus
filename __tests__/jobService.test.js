@@ -2,7 +2,7 @@
  * Job Service Tests
  */
 
-import { JobService } from '../../services/jobService';
+import { JobService } from '../services/jobService.js';
 
 describe('JobService', () => {
     describe('combineJobs', () => {

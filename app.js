@@ -8,6 +8,8 @@ import CONFIG from './config.js';
 import { JobService } from './services/jobService.js';
 import { CSVParser } from './services/csvParser.js';
 import { StorageService } from './services/storageService.js';
+import { FavoritesService } from './services/favoritesService.js';
+import { AuthService } from './services/authService.js';
 
 // ============================================
 // STATE
@@ -55,7 +57,9 @@ const els = {
     cvFileInput: $('#cvFileInput'),
     cvMatches: $('#cvMatches'),
     cvMatchesGrid: $('#cvMatchesGrid'),
-    statNumbers: $$('.stat-number')
+    statNumbers: $$('.stat-number'),
+    authTrigger: $('#authTrigger'), authModal: $('#authModal'), authClose: $('#authClose'), authTitle: $('#authTitle'), authForm: $('#authForm'), authSwitch: $('#authSwitch'), authNameGroup: $('#authNameGroup'), authName: $('#authName'), authEmail: $('#authEmail'), authPassword: $('#authPassword'), authError: $('#authError'), authSubmit: $('#authSubmit'),
+    infoModal: $('#infoModal'), infoClose: $('#infoClose'), infoTitle: $('#infoTitle'), infoContent: $('#infoContent')
 };
 
 // ============================================
@@ -63,6 +67,8 @@ const els = {
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
     initNavbar();
+    initAuth();
+    initInfoPages();
     initSearch();
     initFilters();
     initModal();
@@ -74,10 +80,66 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================
+// AUTHENTICATION
+// ============================================
+function initAuth() {
+    let registerMode = false;
+    if (!els.authTrigger || !els.authModal || !els.authForm) return;
+    const setMode = (register) => {
+        registerMode = register;
+        els.authNameGroup.classList.toggle('hidden', !register);
+        els.authName.required = register;
+        els.authTitle.textContent = register ? 'Utwórz konto' : 'Zaloguj się';
+        els.authSubtitle.textContent = register ? 'Załóż konto, aby zapisywać oferty i dodawać ogłoszenia.' : 'Zaloguj się, aby zapisywać oferty i zarządzać kontem.';
+        els.authSubmit.textContent = register ? 'Zarejestruj się' : 'Zaloguj się';
+        els.authSwitch.textContent = register ? 'Masz już konto? Zaloguj się' : 'Nie masz konta? Zarejestruj się';
+    };
+    const open = (register = false, message = '') => {
+        setMode(register);
+        els.authForm.reset();
+        els.authError.textContent = message;
+        els.authError.classList.toggle('hidden', !message);
+        els.authModal.classList.remove('hidden');
+        els.authEmail.focus();
+    };
+    const close = () => els.authModal.classList.add('hidden');
+    const handleAuthTrigger = async (event) => {
+        event.preventDefault();
+        if (AuthService.isAuthenticated() || AuthService.getUser()) {
+            await AuthService.logout();
+            els.authTrigger.textContent = 'Zaloguj się';
+            showToast('Wylogowano pomyślnie', 'success');
+            return;
+        }
+        open(false);
+    };
+    els.authTrigger.addEventListener('click', handleAuthTrigger);
+    els.authClose.addEventListener('click', close);
+    els.authSwitch.addEventListener('click', () => setMode(!registerMode));
+    els.authForm.addEventListener('submit', async (event) => { event.preventDefault(); els.authError.classList.add('hidden'); els.authSubmit.disabled = true; try { const user = registerMode ? await AuthService.register(els.authEmail.value, els.authPassword.value, els.authName.value) : await AuthService.login(els.authEmail.value, els.authPassword.value); if (user) { els.authTrigger.textContent = `Wyloguj (${user.name || user.email})`; close(); showToast(registerMode ? 'Konto utworzone' : 'Zalogowano pomyślnie', 'success'); } else if (registerMode) { els.authError.textContent = 'Sprawdź skrzynkę e-mail i potwierdź konto.'; els.authError.classList.remove('hidden'); } } catch (error) { els.authError.textContent = error.message || 'Nie udało się wykonać operacji.'; els.authError.classList.remove('hidden'); } finally { els.authSubmit.disabled = false; } });
+    window.openAuth = open;
+}
+
+function initInfoPages() {
+    const pages = { 'O nas': ['O nas', 'JobNexus łączy kandydatów i pracodawców z wykorzystaniem nowoczesnych narzędzi oraz inteligentnego dopasowania ofert.'], Kontakt: ['Kontakt', 'Napisz do nas: kontakt@jobnexus.pl'], Regulamin: ['Regulamin', 'Korzystając z serwisu, akceptujesz zasady publikowania ofert i ogłoszeń.'], Cennik: ['Cennik', 'Publikacja ogłoszenia standardowego: 9,99 zł. Wyróżnienie: 29,99 zł.'] };
+    els.infoClose.addEventListener('click', () => els.infoModal.classList.add('hidden')); document.querySelectorAll('.footer-links a').forEach(link => { const title = link.textContent.trim(); if (pages[title]) link.addEventListener('click', event => { event.preventDefault(); els.infoTitle.textContent = pages[title][0]; els.infoContent.textContent = pages[title][1]; els.infoModal.classList.remove('hidden'); }); });
+}
+
+// ============================================
 // NAVBAR
 // ============================================
 function initNavbar() {
     let lastScroll = 0;
+
+    const announcementLinks = document.querySelectorAll('a[href="#dodaj"]');
+    announcementLinks.forEach(link => link.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (!AuthService.isAuthenticated() && !AuthService.getUser()) {
+            window.openAuth(false, 'Zaloguj się lub zarejestruj, aby dodać ogłoszenie.');
+            return;
+        }
+        openAddModal('standard');
+    }));
     
     window.addEventListener('scroll', () => {
         const currentScroll = window.scrollY;
@@ -85,11 +147,17 @@ function initNavbar() {
         lastScroll = currentScroll;
     }, { passive: true });
     
-    els.navToggle.addEventListener('click', () => {
-        els.navToggle.classList.toggle('active');
-        els.navMenu.classList.toggle('open');
-        document.body.style.overflow = els.navMenu.classList.contains('open') ? 'hidden' : '';
-    });
+    const toggleMenu = (event) => {
+        event?.preventDefault();
+        event?.stopPropagation();
+        const isOpen = !els.navMenu.classList.contains('open');
+        els.navToggle.classList.toggle('active', isOpen);
+        els.navMenu.classList.toggle('open', isOpen);
+        els.navToggle.setAttribute('aria-expanded', String(isOpen));
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+    };
+    els.navToggle.addEventListener('click', toggleMenu);
+    els.navToggle.addEventListener('touchend', toggleMenu, { passive: false });
     
     // Close mobile menu on link click
     els.navMenu.querySelectorAll('.nav-link').forEach(link => {
@@ -261,6 +329,7 @@ function createJobCard(job) {
     const timeAgo = getTimeAgo(job.date);
     
     card.innerHTML = `
+        <button class="job-save" type="button" aria-label="${FavoritesService.isFavorite(job.id) ? 'Usuń z zakładek' : 'Zapisz ofertę'}">${FavoritesService.isFavorite(job.id) ? '★' : '☆'}</button>
         <div class="job-header">
             <div class="job-logo">${initials}</div>
             <div class="job-meta">
@@ -279,6 +348,21 @@ function createJobCard(job) {
         </div>
     `;
     
+    card.querySelector('.job-save').addEventListener('click', async (event) => {
+        event.stopPropagation();
+        try {
+            if (FavoritesService.isFavorite(job.id)) {
+                await FavoritesService.removeFavorite(job.id);
+            } else {
+                await FavoritesService.addFavorite(job);
+            }
+            displayJobs(false);
+            showToast(FavoritesService.isFavorite(job.id) ? 'Oferta dodana do zakładek' : 'Oferta usunięta z zakładek', 'success');
+        } catch (error) {
+            showToast(error.message || 'Nie udało się zapisać oferty', 'error');
+        }
+    });
+
     return card;
 }
 
@@ -457,12 +541,14 @@ function initModal() {
     });
 }
 
-function openAddModal(plan) {
+function openAddModal(plan = 'standard') {
     els.annFeatured.checked = plan === 'featured';
     els.submitPrice.textContent = plan === 'featured' ? '29,99 zł' : '9,99 zł';
     els.addModal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
+
+window.openAddModal = openAddModal;
 
 function closeModal() {
     els.addModal.classList.add('hidden');
