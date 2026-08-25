@@ -2,7 +2,7 @@
  * CSV Parser Tests
  */
 
-import { CSVParser } from '../../services/csvParser';
+import { CSVParser } from '../services/csvParser.js';
 
 describe('CSVParser', () => {
     describe('parse', () => {

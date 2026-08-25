@@ -8,6 +8,7 @@ import CONFIG from './config.js';
 import { JobService } from './services/jobService.js';
 import { CSVParser } from './services/csvParser.js';
 import { StorageService } from './services/storageService.js';
+import { FavoritesService } from './services/favoritesService.js';
 
 // ============================================
 // STATE
@@ -261,6 +262,7 @@ function createJobCard(job) {
     const timeAgo = getTimeAgo(job.date);
     
     card.innerHTML = `
+        <button class="job-save" type="button" aria-label="${FavoritesService.isFavorite(job.id) ? 'Usuń z zakładek' : 'Zapisz ofertę'}">${FavoritesService.isFavorite(job.id) ? '★' : '☆'}</button>
         <div class="job-header">
             <div class="job-logo">${initials}</div>
             <div class="job-meta">
@@ -279,6 +281,21 @@ function createJobCard(job) {
         </div>
     `;
     
+    card.querySelector('.job-save').addEventListener('click', async (event) => {
+        event.stopPropagation();
+        try {
+            if (FavoritesService.isFavorite(job.id)) {
+                await FavoritesService.removeFavorite(job.id);
+            } else {
+                await FavoritesService.addFavorite(job);
+            }
+            displayJobs(false);
+            showToast(FavoritesService.isFavorite(job.id) ? 'Oferta dodana do zakładek' : 'Oferta usunięta z zakładek', 'success');
+        } catch (error) {
+            showToast(error.message || 'Nie udało się zapisać oferty', 'error');
+        }
+    });
+
     return card;
 }
 

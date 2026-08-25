@@ -5,10 +5,10 @@
 
 export const CONFIG = {
     // Frontend API endpoint (proxies to backend)
-    API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
+    API_BASE_URL: import.meta.env?.VITE_API_BASE_URL || '/api',
     
     // Jooble endpoint (called through backend only)
-    JOOBLE_API_URL: import.meta.env.VITE_JOOBLE_API_URL || 'https://pl.jooble.org/api/',
+    JOOBLE_API_URL: import.meta.env?.VITE_JOOBLE_API_URL || 'https://pl.jooble.org/api/',
     
     // CSV path
     CSV_PATH: 'data/offers.csv',

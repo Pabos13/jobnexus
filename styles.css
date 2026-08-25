@@ -684,6 +684,23 @@ img {
     gap: var(--space-lg);
 }
 
+.job-save {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    z-index: 2;
+    min-width: 44px;
+    min-height: 44px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-sm);
+    background: var(--bg-glass);
+    color: var(--neon-cyan);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.job-save:hover { background: rgba(0, 245, 255, 0.12); }
+
 .job-card {
     background: var(--bg-card);
     border: 1px solid rgba(255, 255, 255, 0.06);
