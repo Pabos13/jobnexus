@@ -105,6 +105,7 @@ function initAuth() {
     els.authTrigger.addEventListener('click', open); els.authClose.addEventListener('click', close);
     els.authSwitch.addEventListener('click', () => setMode(!registerMode));
     els.authForm.addEventListener('submit', async (event) => { event.preventDefault(); els.authError.classList.add('hidden'); els.authSubmit.disabled = true; try { const user = registerMode ? await AuthService.register(els.authEmail.value, els.authPassword.value, els.authName.value) : await AuthService.login(els.authEmail.value, els.authPassword.value); if (user) { els.authTrigger.textContent = `Wyloguj (${user.name || user.email})`; close(); showToast(registerMode ? 'Konto utworzone' : 'Zalogowano pomyślnie', 'success'); els.authTrigger.onclick = async () => { await AuthService.logout(); els.authTrigger.textContent = 'Zaloguj się'; }; } else if (registerMode) { els.authError.textContent = 'Sprawdź skrzynkę e-mail i potwierdź konto.'; els.authError.classList.remove('hidden'); } } catch (error) { els.authError.textContent = error.message || 'Nie udało się wykonać operacji.'; els.authError.classList.remove('hidden'); } finally { els.authSubmit.disabled = false; } });
+    window.openAuth = open;
 }
 
 function initInfoPages() {
@@ -122,7 +123,7 @@ function initNavbar() {
     announcementLinks.forEach(link => link.addEventListener('click', (event) => {
         event.preventDefault();
         if (!AuthService.isAuthenticated() && !AuthService.getUser()) {
-            open(false, 'Zaloguj się lub zarejestruj, aby dodać ogłoszenie.');
+            window.openAuth(false, 'Zaloguj się lub zarejestruj, aby dodać ogłoszenie.');
             return;
         }
         openAddModal('standard');
@@ -528,12 +529,14 @@ function initModal() {
     });
 }
 
-function openAddModal(plan) {
+function openAddModal(plan = 'standard') {
     els.annFeatured.checked = plan === 'featured';
     els.submitPrice.textContent = plan === 'featured' ? '29,99 zł' : '9,99 zł';
     els.addModal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
+
+window.openAddModal = openAddModal;
 
 function closeModal() {
     els.addModal.classList.add('hidden');
