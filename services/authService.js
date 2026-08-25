@@ -46,10 +46,6 @@ export class AuthService {
                 return user;
             }
 
-            if (!supabase) {
-                throw new Error('Logowanie jest chwilowo niedostępne. Skonfiguruj połączenie Supabase.');
-            }
-
             // Fallback backend API
             const response = await fetch(`${CONFIG.API_BASE_URL}/auth/register`, {
                 method: 'POST',
@@ -98,10 +94,6 @@ export class AuthService {
                 const user = data.user ? { id: data.user.id, email: data.user.email, name: data.user.user_metadata?.name || data.user.email } : null;
                 if (user && data.session) this.setUser(user, data.session.access_token, data.session.refresh_token, data.session.expires_in);
                 return user;
-            }
-
-            if (!supabase) {
-                throw new Error('Logowanie jest chwilowo niedostępne. Skonfiguruj połączenie Supabase.');
             }
 
             const response = await fetch(`${CONFIG.API_BASE_URL}/auth/login`, {
