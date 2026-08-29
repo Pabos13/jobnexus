@@ -40,9 +40,17 @@ export class AuthService {
                     email: email.toLowerCase().trim(), password,
                     options: { data: { name: name.trim() }, emailRedirectTo: `${window.location.origin}/` }
                 });
-                if (error) throw new Error(error.message.includes('already') ? 'Nie można utworzyć konta' : error.message);
+                if (error) {
+                    const message = error.message?.toLowerCase() || '';
+                    if (message.includes('already') || message.includes('registered')) {
+                        throw new Error('Nie można utworzyć konta');
+                    }
+                    throw new Error(message.includes('password') ? 'Hasło nie spełnia wymagań.' : 'Nie udało się utworzyć konta. Spróbuj ponownie.');
+                }
                 const user = data.user ? { id: data.user.id, email: data.user.email, name: name.trim() } : null;
-                if (user && data.session) this.setUser(user, data.session.access_token, data.session.refresh_token, data.session.expires_in);
+                if (user && data.session) {
+                    this.setUser(user, data.session.access_token, data.session.refresh_token, data.session.expires_in);
+                }
                 return user;
             }
 
@@ -90,9 +98,21 @@ export class AuthService {
 
             if (supabase) {
                 const { data, error } = await supabase.auth.signInWithPassword({ email: email.toLowerCase().trim(), password });
-                if (error) throw new Error(error.message.includes('Invalid login') ? 'Nieprawidłowy e-mail lub hasło' : error.message);
-                const user = data.user ? { id: data.user.id, email: data.user.email, name: data.user.user_metadata?.name || data.user.email } : null;
-                if (user && data.session) this.setUser(user, data.session.access_token, data.session.refresh_token, data.session.expires_in);
+                if (error) {
+                    const message = error.message?.toLowerCase() || '';
+                    if (message.includes('invalid login') || message.includes('invalid credentials') || message.includes('email or password')) {
+                        throw new Error('Nieprawidłowy e-mail lub hasło');
+                    }
+                    if (message.includes('email not confirmed')) {
+                        throw new Error('Potwierdź adres e-mail przed zalogowaniem.');
+                    }
+                    throw new Error('Logowanie nie powiodło się. Spróbuj ponownie.');
+                }
+                if (!data.session || !data.user) {
+                    throw new Error('Nie udało się utworzyć sesji. Spróbuj ponownie.');
+                }
+                const user = { id: data.user.id, email: data.user.email, name: data.user.user_metadata?.name || data.user.email };
+                this.setUser(user, data.session.access_token, data.session.refresh_token, data.session.expires_in);
                 return user;
             }
 
@@ -119,6 +139,33 @@ export class AuthService {
             console.error('Login error:', error.message);
             throw error;
         }
+    }
+
+    /**
+     * Synchronize local UI state with the current Supabase session.
+     * @returns {Promise<Object|null>} Current user or null
+     */
+    static async syncSession() {
+        if (!supabase) return this.getUser();
+
+        const { data, error } = await supabase.auth.getSession();
+        if (error || !data.session?.user) {
+            this.clearStoredSession();
+            return null;
+        }
+
+        const authUser = data.session.user;
+        const user = {
+            id: authUser.id,
+            email: authUser.email,
+            name: authUser.user_metadata?.name || authUser.email
+        };
+        this.setUser(user, data.session.access_token, data.session.refresh_token, data.session.expires_in);
+        return user;
+    }
+
+    static clearStoredSession() {
+        Object.values(this.STORAGE_KEYS).forEach((key) => localStorage.removeItem(key));
     }
 
     /**
