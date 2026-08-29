@@ -127,8 +127,14 @@ export class AuthService {
             });
 
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Login failed');
+                let message = 'Login failed';
+                try {
+                    const body = typeof response.text === 'function' ? await response.text() : JSON.stringify(await response.json());
+                    message = JSON.parse(body).message || body.trim() || message;
+                } catch {
+                    // Keep a stable generic error when the backend returns an empty or invalid body.
+                }
+                throw new Error(message);
             }
 
             const data = await response.json();
