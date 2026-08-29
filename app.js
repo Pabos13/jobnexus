@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================
 // AUTHENTICATION
 // ============================================
-function initAuth() {
+async function initAuth() {
     let registerMode = false;
     if (!els.authTrigger || !els.authModal || !els.authForm) return;
     const setMode = (register) => {
@@ -117,6 +117,11 @@ function initAuth() {
     els.authClose.addEventListener('click', close);
     els.authSwitch.addEventListener('click', () => setMode(!registerMode));
     els.authForm.addEventListener('submit', async (event) => { event.preventDefault(); els.authError.classList.add('hidden'); els.authSubmit.disabled = true; try { const user = registerMode ? await AuthService.register(els.authEmail.value, els.authPassword.value, els.authName.value) : await AuthService.login(els.authEmail.value, els.authPassword.value); if (user) { els.authTrigger.textContent = `Wyloguj (${user.name || user.email})`; close(); showToast(registerMode ? 'Konto utworzone' : 'Zalogowano pomyślnie', 'success'); } else if (registerMode) { els.authError.textContent = 'Sprawdź skrzynkę e-mail i potwierdź konto.'; els.authError.classList.remove('hidden'); } } catch (error) { els.authError.textContent = error.message || 'Nie udało się wykonać operacji.'; els.authError.classList.remove('hidden'); } finally { els.authSubmit.disabled = false; } });
+    const syncAuthTrigger = (user) => {
+        els.authTrigger.textContent = user ? `Wyloguj (${user.name || user.email})` : 'Zaloguj się';
+    };
+    const currentUser = await AuthService.syncSession();
+    syncAuthTrigger(currentUser);
     window.openAuth = open;
 }
 
@@ -344,7 +349,7 @@ function createJobCard(job) {
         </div>
         <div class="job-footer">
             <span class="job-salary">${escapeHtml(job.salary)}</span>
-            <button class="job-apply" onclick="applyJob('${job.id}')">Aplikuj</button>
+            <button class="job-apply" type="button" data-job-id="${escapeHtml(String(job.id))}">Aplikuj</button>
         </div>
     `;
     
@@ -362,6 +367,8 @@ function createJobCard(job) {
             showToast(error.message || 'Nie udało się zapisać oferty', 'error');
         }
     });
+
+    card.querySelector('.job-apply').addEventListener('click', () => applyJob(job.id));
 
     return card;
 }
