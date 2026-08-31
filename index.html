@@ -427,5 +427,58 @@
     </footer>
 
     <script type="module" src="/app.js"></script>
+
+
+    <!-- DASHBOARD MODAL (PANEL KANDYDATA / REKRUTERA) -->
+    <div id="dashboardModal" class="modal-overlay hidden">
+        <div class="modal-card max-w-4xl w-full max-h-[90vh] flex flex-col p-0 overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl rounded-2xl" style="max-width: 850px; width: 100%; max-height: 85vh;">
+            <!-- Header Pulpitu -->
+            <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid #1e293b; background: rgba(15, 23, 42, 0.8); display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div id="dashUserAvatar" style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #2563eb, #6366f1); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);">
+                        U
+                    </div>
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <h2 id="dashUserName" style="font-size: 1.15rem; font-weight: 700; color: white; margin: 0;">Użytkownik</h2>
+                            <span id="dashUserRoleBadge" style="padding: 2px 8px; font-size: 11px; font-weight: 600; border-radius: 9999px; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);">
+                                Kandydat
+                            </span>
+                        </div>
+                        <p id="dashUserEmail" style="font-size: 12px; color: #94a3b8; margin: 2px 0 0 0;">twoj.email@example.com</p>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button id="dashSwitchRoleBtn" style="padding: 6px 12px; font-size: 12px; font-weight: 500; color: #cbd5e1; background: #1e293b; border: 1px solid #334155; border-radius: 8px; cursor: pointer; transition: all 0.2s;" title="Zmień widok roli">
+                        Przełącz na Rekrutera
+                    </button>
+                    <button id="dashboardClose" style="padding: 6px; color: #94a3b8; background: transparent; border: none; cursor: pointer; border-radius: 8px;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Zakładki Pulpitu -->
+            <div id="dashTabsContainer" style="display: flex; gap: 8px; padding: 0.75rem 1.5rem 0 1.5rem; border-bottom: 1px solid #1e293b; background: rgba(15, 23, 42, 0.4); overflow-x: auto;">
+                <!-- Generowane dynamicznie -->
+            </div>
+
+            <!-- Zawartość Pulpitu -->
+            <div id="dashContentArea" style="padding: 1.5rem; overflow-y: auto; flex: 1;">
+                <!-- Dynamiczny widok -->
+            </div>
+
+            <!-- Footer Pulpitu -->
+            <div style="padding: 0.75rem 1.5rem; border-top: 1px solid #1e293b; background: rgba(15, 23, 42, 0.9); display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #64748b;">
+                <span>JobNexus • Panel Zarządzania</span>
+                <button id="dashLogoutBtn" style="color: #f87171; background: transparent; border: none; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    Wyloguj się
+                </button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

@@ -1,7 +1,7 @@
 /**
  * Authentication Service
- * Handles user login, registration, and JWT token management
- * Supports Supabase Auth, Backend API, and Client-side LocalStorage fallback for static deployments.
+ * Handles user login, registration, roles, and JWT token management
+ * Supports Supabase Auth, Backend API, and Client-side LocalStorage fallback.
  */
 
 import { StorageService } from './storageService.js';
@@ -14,13 +14,12 @@ export class AuthService {
         TOKEN: 'jobnexus_token',
         REFRESH_TOKEN: 'jobnexus_refresh_token',
         TOKEN_EXPIRY: 'jobnexus_token_expiry',
-        LOCAL_USERS: 'jobnexus_local_registered_users'
+        LOCAL_USERS: 'jobnexus_local_registered_users',
+        SAVED_JOBS: 'jobnexus_saved_jobs',
+        APPLICATIONS: 'jobnexus_applications',
+        RECRUITER_JOBS: 'jobnexus_recruiter_jobs'
     };
 
-    /**
-     * Get locally registered users (for offline / static frontend mode)
-     * @private
-     */
     static _getLocalUsers() {
         try {
             return JSON.parse(localStorage.getItem(this.STORAGE_KEYS.LOCAL_USERS) || '[]');
@@ -29,10 +28,6 @@ export class AuthService {
         }
     }
 
-    /**
-     * Save locally registered users
-     * @private
-     */
     static _saveLocalUsers(users) {
         try {
             localStorage.setItem(this.STORAGE_KEYS.LOCAL_USERS, JSON.stringify(users));
@@ -41,16 +36,8 @@ export class AuthService {
         }
     }
 
-    /**
-     * Register new user
-     * @param {string} email - User email
-     * @param {string} password - User password
-     * @param {string} name - User full name
-     * @returns {Promise<Object>} User object with token
-     */
-    static async register(email, password, name) {
+    static async register(email, password, name, role = 'candidate') {
         try {
-            // Validate input
             if (!this.validateEmail(email)) {
                 throw new Error('Invalid email format');
             }
@@ -63,29 +50,31 @@ export class AuthService {
 
             const cleanEmail = email.toLowerCase().trim();
             const cleanName = name.trim();
+            const userRole = (role === 'recruiter') ? 'recruiter' : 'candidate';
 
-            // 1. Try Supabase if configured
             if (supabase) {
                 const { data, error } = await supabase.auth.signUp({
                     email: cleanEmail,
                     password,
-                    options: { data: { name: cleanName }, emailRedirectTo: `${window.location.origin}/` }
+                    options: { 
+                        data: { name: cleanName, role: userRole }, 
+                        emailRedirectTo: `${window.location.origin}/` 
+                    }
                 });
                 if (error) {
                     const message = error.message?.toLowerCase() || '';
                     if (message.includes('already') || message.includes('registered')) {
                         throw new Error('Użytkownik z tym adresem e-mail już istnieje.');
                     }
-                    throw new Error(message.includes('password') ? 'Hasło nie spełnia wymagań.' : 'Nie udało się utworzyć konta. Spróbuj ponownie.');
+                    throw new Error('Nie udało się utworzyć konta. Spróbuj ponownie.');
                 }
-                const user = data.user ? { id: data.user.id, email: data.user.email, name: cleanName } : null;
+                const user = data.user ? { id: data.user.id, email: data.user.email, name: cleanName, role: userRole } : null;
                 if (user && data.session) {
                     this.setUser(user, data.session.access_token, data.session.refresh_token, data.session.expires_in * 1000);
                 }
                 return user;
             }
 
-            // 2. Try Backend API
             let backendSuccess = false;
             let backendData = null;
             try {
@@ -95,7 +84,8 @@ export class AuthService {
                     body: JSON.stringify({
                         email: cleanEmail,
                         password,
-                        name: cleanName
+                        name: cleanName,
+                        role: userRole
                     }),
                     timeout: CONFIG.API_TIMEOUT
                 });
@@ -115,11 +105,11 @@ export class AuthService {
             }
 
             if (backendSuccess && backendData) {
-                this.setUser(backendData.user, backendData.token, backendData.refreshToken, backendData.expiresIn || (7 * 24 * 60 * 60 * 1000));
-                return backendData.user;
+                const u = { ...backendData.user, role: backendData.user.role || userRole };
+                this.setUser(u, backendData.token, backendData.refreshToken, backendData.expiresIn || (7 * 24 * 60 * 60 * 1000));
+                return u;
             }
 
-            // 3. Fallback: Local Client Authentication (Offline / Static Vercel Hosting)
             const localUsers = this._getLocalUsers();
             if (localUsers.some(u => u.email === cleanEmail)) {
                 throw new Error('Użytkownik z tym adresem e-mail już istnieje. Zaloguj się.');
@@ -129,14 +119,15 @@ export class AuthService {
                 id: 'usr_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
                 email: cleanEmail,
                 name: cleanName,
-                password: password, // Stored locally for mock auth
+                role: userRole,
+                password: password,
                 createdAt: new Date().toISOString()
             };
 
             localUsers.push(newUser);
             this._saveLocalUsers(localUsers);
 
-            const safeUser = { id: newUser.id, email: newUser.email, name: newUser.name };
+            const safeUser = { id: newUser.id, email: newUser.email, name: newUser.name, role: newUser.role };
             const token = 'jwt_local_' + Math.random().toString(36).substring(2);
             const refreshToken = 'rt_local_' + Math.random().toString(36).substring(2);
             this.setUser(safeUser, token, refreshToken, 7 * 24 * 60 * 60 * 1000);
@@ -148,12 +139,6 @@ export class AuthService {
         }
     }
 
-    /**
-     * Login user
-     * @param {string} email - User email
-     * @param {string} password - User password
-     * @returns {Promise<Object>} User object with token
-     */
     static async login(email, password) {
         try {
             if (!this.validateEmail(email)) {
@@ -165,7 +150,6 @@ export class AuthService {
 
             const cleanEmail = email.toLowerCase().trim();
 
-            // 1. Try Supabase if configured
             if (supabase) {
                 const { data, error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
                 if (error) {
@@ -173,20 +157,17 @@ export class AuthService {
                     if (message.includes('invalid login') || message.includes('invalid credentials') || message.includes('email or password')) {
                         throw new Error('Nieprawidłowy e-mail lub hasło');
                     }
-                    if (message.includes('email not confirmed')) {
-                        throw new Error('Potwierdź adres e-mail przed zalogowaniem.');
-                    }
                     throw new Error('Logowanie nie powiodło się. Spróbuj ponownie.');
                 }
                 if (!data.session || !data.user) {
                     throw new Error('Nie udało się utworzyć sesji. Spróbuj ponownie.');
                 }
-                const user = { id: data.user.id, email: data.user.email, name: data.user.user_metadata?.name || data.user.email };
+                const role = data.user.user_metadata?.role || 'candidate';
+                const user = { id: data.user.id, email: data.user.email, name: data.user.user_metadata?.name || data.user.email, role };
                 this.setUser(user, data.session.access_token, data.session.refresh_token, data.session.expires_in * 1000);
                 return user;
             }
 
-            // 2. Try Backend API
             let backendSuccess = false;
             let backendData = null;
             try {
@@ -208,9 +189,7 @@ export class AuthService {
                     try {
                         const errObj = await response.json();
                         errMessage = errObj.message || errMessage;
-                    } catch {
-                        // ignore json parse error
-                    }
+                    } catch {}
                     throw new Error(errMessage);
                 }
             } catch (err) {
@@ -224,7 +203,6 @@ export class AuthService {
                 return backendData.user;
             }
 
-            // 3. Fallback: Local Client Authentication (Offline / Static Vercel Hosting)
             const localUsers = this._getLocalUsers();
             const foundUser = localUsers.find(u => u.email === cleanEmail);
 
@@ -232,14 +210,13 @@ export class AuthService {
                 if (foundUser.password !== password) {
                     throw new Error('Nieprawidłowe hasło. Spróbuj ponownie.');
                 }
-                const safeUser = { id: foundUser.id, email: foundUser.email, name: foundUser.name };
+                const safeUser = { id: foundUser.id, email: foundUser.email, name: foundUser.name, role: foundUser.role || 'candidate' };
                 const token = 'jwt_local_' + Math.random().toString(36).substring(2);
                 const refreshToken = 'rt_local_' + Math.random().toString(36).substring(2);
                 this.setUser(safeUser, token, refreshToken, 7 * 24 * 60 * 60 * 1000);
                 return safeUser;
             }
 
-            // If no users registered locally yet, allow creating one or throw friendly error
             throw new Error('Nie znaleziono konta z tym adresem e-mail. Zarejestruj się.');
         } catch (error) {
             console.error('Login error:', error.message);
@@ -247,10 +224,6 @@ export class AuthService {
         }
     }
 
-    /**
-     * Synchronize local UI state with the current Supabase session or stored token.
-     * @returns {Promise<Object|null>} Current user or null
-     */
     static async syncSession() {
         if (supabase) {
             try {
@@ -259,12 +232,13 @@ export class AuthService {
                     this.clearStoredSession();
                     return null;
                 }
-
                 const authUser = data.session.user;
+                const role = authUser.user_metadata?.role || 'candidate';
                 const user = {
                     id: authUser.id,
                     email: authUser.email,
-                    name: authUser.user_metadata?.name || authUser.email
+                    name: authUser.user_metadata?.name || authUser.email,
+                    role
                 };
                 this.setUser(user, data.session.access_token, data.session.refresh_token, data.session.expires_in * 1000);
                 return user;
@@ -284,9 +258,6 @@ export class AuthService {
         Object.values(this.STORAGE_KEYS).forEach((key) => localStorage.removeItem(key));
     }
 
-    /**
-     * Logout user
-     */
     static async logout() {
         try {
             if (supabase) await supabase.auth.signOut();
@@ -299,10 +270,6 @@ export class AuthService {
         localStorage.removeItem(this.STORAGE_KEYS.TOKEN_EXPIRY);
     }
 
-    /**
-     * Get current user
-     * @returns {Object|null} User object or null
-     */
     static getUser() {
         try {
             const user = localStorage.getItem(this.STORAGE_KEYS.USER);
@@ -313,32 +280,34 @@ export class AuthService {
         }
     }
 
-    /**
-     * Get current token
-     * @returns {string|null} JWT token or null
-     */
+    static updateRole(newRole) {
+        const user = this.getUser();
+        if (user) {
+            user.role = newRole;
+            localStorage.setItem(this.STORAGE_KEYS.USER, JSON.stringify(user));
+
+            const localUsers = this._getLocalUsers();
+            const idx = localUsers.findIndex(u => u.email === user.email);
+            if (idx !== -1) {
+                localUsers[idx].role = newRole;
+                this._saveLocalUsers(localUsers);
+            }
+        }
+        return user;
+    }
+
     static getToken() {
         return localStorage.getItem(this.STORAGE_KEYS.TOKEN);
     }
 
-    /**
-     * Check if user is authenticated
-     * @returns {boolean}
-     */
     static isAuthenticated() {
         const token = this.getToken();
         if (!token) return false;
-
         const expiry = localStorage.getItem(this.STORAGE_KEYS.TOKEN_EXPIRY);
         if (!expiry) return false;
-
         return Date.now() < parseInt(expiry);
     }
 
-    /**
-     * Refresh token
-     * @returns {Promise<string>} New token
-     */
     static async refreshToken() {
         try {
             const refreshToken = localStorage.getItem(this.STORAGE_KEYS.REFRESH_TOKEN);
@@ -364,7 +333,6 @@ export class AuthService {
             const data = await response.json();
             localStorage.setItem(this.STORAGE_KEYS.TOKEN, data.token);
             localStorage.setItem(this.STORAGE_KEYS.TOKEN_EXPIRY, Date.now() + (data.expiresIn || 3600000));
-
             return data.token;
         } catch (error) {
             console.error('Token refresh error:', error);
@@ -373,11 +341,6 @@ export class AuthService {
         }
     }
 
-    /**
-     * Update user profile
-     * @param {Object} updates - Fields to update
-     * @returns {Promise<Object>} Updated user
-     */
     static async updateProfile(updates) {
         try {
             if (!this.isAuthenticated()) {
@@ -385,7 +348,6 @@ export class AuthService {
             }
 
             let updatedUser = { ...this.getUser(), ...updates };
-
             try {
                 const response = await fetch(`${CONFIG.API_BASE_URL}/auth/profile`, {
                     method: 'PUT',
@@ -401,9 +363,7 @@ export class AuthService {
                     const data = await response.json();
                     updatedUser = { ...this.getUser(), ...data.user };
                 }
-            } catch {
-                // Fallback to local update
-            }
+            } catch {}
 
             localStorage.setItem(this.STORAGE_KEYS.USER, JSON.stringify(updatedUser));
             return updatedUser;
@@ -413,13 +373,6 @@ export class AuthService {
         }
     }
 
-    /**
-     * Set user and token in storage
-     * @param {Object} user - User object
-     * @param {string} token - Access token
-     * @param {string} refreshToken - Refresh token
-     * @param {number} expiresIn - Expiry in ms
-     */
     static setUser(user, token, refreshToken, expiresIn = 7 * 24 * 60 * 60 * 1000) {
         try {
             localStorage.setItem(this.STORAGE_KEYS.USER, JSON.stringify(user));
@@ -432,10 +385,6 @@ export class AuthService {
         }
     }
 
-    /**
-     * Validate email format
-     * @private
-     */
     static validateEmail(email) {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);

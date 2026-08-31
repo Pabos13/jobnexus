@@ -68,6 +68,7 @@ const els = {
 document.addEventListener('DOMContentLoaded', () => {
     initNavbar();
     initAuth();
+    initDashboard();
     initInfoPages();
     initSearch();
     initFilters();
@@ -86,12 +87,16 @@ async function initAuth() {
     let registerMode = false;
     if (!els.authTrigger || !els.authModal || !els.authForm) return;
 
+    const authRoleGroup = document.getElementById('authRoleGroup');
+    const dashboardTrigger = document.getElementById('dashboardTrigger');
+
     const setMode = (register) => {
         registerMode = register;
         els.authNameGroup.classList.toggle('hidden', !register);
+        if (authRoleGroup) authRoleGroup.classList.toggle('hidden', !register);
         els.authName.required = register;
         els.authTitle.textContent = register ? 'Utwórz konto' : 'Zaloguj się';
-        els.authSubtitle.textContent = register ? 'Załóż konto, aby zapisywać oferty i dodawać ogłoszenia.' : 'Zaloguj się, aby zapisywać oferty i zarządzać kontem.';
+        els.authSubtitle.textContent = register ? 'Wybierz typ konta (Kandydat lub Pracodawca) i dołącz do JobNexus.' : 'Zaloguj się, aby uzyskać dostęp do panelu i ofert.';
         els.authSubmit.textContent = register ? 'Zarejestruj się' : 'Zaloguj się';
         els.authSwitch.textContent = register ? 'Masz już konto? Zaloguj się' : 'Nie masz konta? Zarejestruj się';
     };
@@ -127,8 +132,10 @@ async function initAuth() {
     });
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !els.authModal.classList.contains('hidden')) {
-            close();
+        if (e.key === 'Escape') {
+            if (!els.authModal.classList.contains('hidden')) close();
+            const dashM = document.getElementById('dashboardModal');
+            if (dashM && !dashM.classList.contains('hidden')) dashM.classList.add('hidden');
         }
     });
 
@@ -139,14 +146,15 @@ async function initAuth() {
         els.authError.classList.add('hidden');
         els.authSubmit.disabled = true;
         try {
+            const selectedRole = document.querySelector('input[name="authRole"]:checked')?.value || 'candidate';
             const user = registerMode 
-                ? await AuthService.register(els.authEmail.value, els.authPassword.value, els.authName.value)
+                ? await AuthService.register(els.authEmail.value, els.authPassword.value, els.authName.value, selectedRole)
                 : await AuthService.login(els.authEmail.value, els.authPassword.value);
 
             if (user) {
                 syncAuthTrigger(user);
                 close();
-                showToast(registerMode ? 'Konto utworzone pomyślnie!' : 'Zalogowano pomyślnie!', 'success');
+                showToast(registerMode ? `Witaj w JobNexus, ${user.name}!` : 'Zalogowano pomyślnie!', 'success');
             } else if (registerMode) {
                 els.authError.textContent = 'Sprawdź skrzynkę e-mail i potwierdź konto.';
                 els.authError.classList.remove('hidden');
@@ -166,13 +174,460 @@ async function initAuth() {
     });
 
     const syncAuthTrigger = (user) => {
-        els.authTrigger.textContent = user ? `Wyloguj (${user.name || user.email})` : 'Zaloguj się';
+        if (user) {
+            els.authTrigger.textContent = `Wyloguj (${user.name || user.email})`;
+            if (dashboardTrigger) {
+                dashboardTrigger.classList.remove('hidden');
+                dashboardTrigger.querySelector('span').textContent = user.role === 'recruiter' ? 'Panel Rekrutera' : 'Panel Kandydata';
+            }
+        } else {
+            els.authTrigger.textContent = 'Zaloguj się';
+            if (dashboardTrigger) {
+                dashboardTrigger.classList.add('hidden');
+            }
+        }
     };
 
     const currentUser = await AuthService.syncSession();
     syncAuthTrigger(currentUser);
     window.openAuth = open;
 }
+
+// ==========================================
+// DASHBOARD (PANEL KANDYDATA / REKRUTERA)
+// ==========================================
+function initDashboard() {
+    const dashModal = document.getElementById('dashboardModal');
+    const dashTrigger = document.getElementById('dashboardTrigger');
+    const dashClose = document.getElementById('dashboardClose');
+    const dashUserAvatar = document.getElementById('dashUserAvatar');
+    const dashUserName = document.getElementById('dashUserName');
+    const dashUserEmail = document.getElementById('dashUserEmail');
+    const dashUserRoleBadge = document.getElementById('dashUserRoleBadge');
+    const dashSwitchRoleBtn = document.getElementById('dashSwitchRoleBtn');
+    const dashTabsContainer = document.getElementById('dashTabsContainer');
+    const dashContentArea = document.getElementById('dashContentArea');
+    const dashLogoutBtn = document.getElementById('dashLogoutBtn');
+
+    if (!dashModal || !dashTrigger) return;
+
+    let currentActiveTab = 'main';
+
+    const getSavedJobs = () => {
+        try { return JSON.parse(localStorage.getItem('jobnexus_saved_jobs') || '[]'); } catch { return []; }
+    };
+
+    const getApplications = () => {
+        try { return JSON.parse(localStorage.getItem('jobnexus_applications') || '[]'); } catch { return []; }
+    };
+
+    const getRecruiterJobs = () => {
+        try { return JSON.parse(localStorage.getItem('jobnexus_recruiter_jobs') || '[]'); } catch { return []; }
+    };
+
+    const saveRecruiterJobs = (jobs) => {
+        localStorage.setItem('jobnexus_recruiter_jobs', JSON.stringify(jobs));
+    };
+
+    if (getRecruiterJobs().length === 0) {
+        saveRecruiterJobs([
+            {
+                id: 'rec_1',
+                title: 'Senior Frontend Developer (React/Vue)',
+                type: 'Pełny etat',
+                location: 'Zdalnie / Warszawa',
+                salary: '18 000 - 24 000 PLN',
+                tier: 'Wyróżnione (HOT)',
+                views: 284,
+                applicants: [
+                    { name: 'Piotr Wiśniewski', email: 'p.wisniewski@example.com', score: 94, date: '2026-08-30', status: 'Zaproszenie na rozmowę' },
+                    { name: 'Katarzyna Nowak', email: 'k.nowak@example.com', score: 88, date: '2026-08-29', status: 'W trakcie weryfikacji' },
+                    { name: 'Michał Zieliński', email: 'm.zielinski@example.com', score: 76, date: '2026-08-27', status: 'Nowa aplikacja' }
+                ],
+                createdAt: '2026-08-15'
+            },
+            {
+                id: 'rec_2',
+                title: 'Python / AI Backend Engineer',
+                type: 'Kontrakt B2B',
+                location: 'Zdalnie',
+                salary: '22 000 - 30 000 PLN',
+                tier: 'Standard',
+                views: 192,
+                applicants: [
+                    { name: 'Tomasz Lewandowski', email: 'tomek.lew@example.com', score: 96, date: '2026-08-30', status: 'Nowa aplikacja' }
+                ],
+                createdAt: '2026-08-20'
+            }
+        ]);
+    }
+
+    const openDashboard = () => {
+        const user = AuthService.getUser();
+        if (!user) {
+            window.openAuth?.(false, 'Zaloguj się, aby uzyskać dostęp do panelu.');
+            return;
+        }
+        renderDashboard(user);
+        dashModal.classList.remove('hidden');
+    };
+
+    const closeDashboard = () => {
+        dashModal.classList.add('hidden');
+    };
+
+    dashTrigger.addEventListener('click', openDashboard);
+    dashClose?.addEventListener('click', closeDashboard);
+    dashModal.addEventListener('click', (e) => {
+        if (e.target === dashModal) closeDashboard();
+    });
+
+    dashLogoutBtn?.addEventListener('click', async () => {
+        await AuthService.logout();
+        closeDashboard();
+        window.location.reload();
+    });
+
+    dashSwitchRoleBtn?.addEventListener('click', () => {
+        const user = AuthService.getUser();
+        if (!user) return;
+        const newRole = user.role === 'recruiter' ? 'candidate' : 'recruiter';
+        AuthService.updateRole(newRole);
+        const dashTriggerSpan = dashTrigger.querySelector('span');
+        if (dashTriggerSpan) {
+            dashTriggerSpan.textContent = newRole === 'recruiter' ? 'Panel Rekrutera' : 'Panel Kandydata';
+        }
+        renderDashboard(AuthService.getUser());
+        showToast(`Przełączono profil na: ${newRole === 'recruiter' ? 'Pracodawca' : 'Kandydat'}`, 'success');
+    });
+
+    function renderDashboard(user) {
+        const isRecruiter = user.role === 'recruiter';
+        dashUserName.textContent = user.name || 'Użytkownik';
+        dashUserEmail.textContent = user.email;
+        dashUserAvatar.textContent = (user.name || user.email).charAt(0).toUpperCase();
+
+        dashUserRoleBadge.textContent = isRecruiter ? 'Pracodawca / Rekruter' : 'Kandydat';
+        dashUserRoleBadge.style.background = isRecruiter ? 'rgba(99, 102, 241, 0.15)' : 'rgba(59, 130, 246, 0.15)';
+        dashUserRoleBadge.style.color = isRecruiter ? '#a5b4fc' : '#60a5fa';
+        dashUserRoleBadge.style.borderColor = isRecruiter ? 'rgba(99, 102, 241, 0.3)' : 'rgba(59, 130, 246, 0.3)';
+
+        dashSwitchRoleBtn.textContent = isRecruiter ? 'Przełącz na profil Kandydata' : 'Przełącz na profil Rekrutera';
+
+        if (isRecruiter) {
+            renderRecruiterTabs();
+        } else {
+            renderCandidateTabs();
+        }
+    }
+
+    function renderCandidateTabs() {
+        dashTabsContainer.innerHTML = `
+            <button class="dash-tab" style="padding: 8px 16px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'main' ? '#3b82f6' : 'transparent'}; color: ${currentActiveTab === 'main' ? '#60a5fa' : '#94a3b8'}; transition: all 0.2s;" data-tab="main">
+                Moje CV & Rekomendacje AI
+            </button>
+            <button class="dash-tab" style="padding: 8px 16px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'saved' ? '#3b82f6' : 'transparent'}; color: ${currentActiveTab === 'saved' ? '#60a5fa' : '#94a3b8'}; transition: all 0.2s;" data-tab="saved">
+                Zapisane Oferty (${getSavedJobs().length})
+            </button>
+            <button class="dash-tab" style="padding: 8px 16px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'apps' ? '#3b82f6' : 'transparent'}; color: ${currentActiveTab === 'apps' ? '#60a5fa' : '#94a3b8'}; transition: all 0.2s;" data-tab="apps">
+                Moje Aplikacje (${getApplications().length})
+            </button>
+        `;
+
+        attachTabEvents(renderCandidateContent);
+        renderCandidateContent(currentActiveTab);
+    }
+
+    function renderRecruiterTabs() {
+        const rJobs = getRecruiterJobs();
+        const totalApplicants = rJobs.reduce((sum, j) => sum + (j.applicants?.length || 0), 0);
+
+        dashTabsContainer.innerHTML = `
+            <button class="dash-tab" style="padding: 8px 16px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'main' ? '#6366f1' : 'transparent'}; color: ${currentActiveTab === 'main' ? '#a5b4fc' : '#94a3b8'}; transition: all 0.2s;" data-tab="main">
+                Pulpit & Ogłoszenia (${rJobs.length})
+            </button>
+            <button class="dash-tab" style="padding: 8px 16px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'candidates' ? '#6366f1' : 'transparent'}; color: ${currentActiveTab === 'candidates' ? '#a5b4fc' : '#94a3b8'}; transition: all 0.2s;" data-tab="candidates">
+                Otrzymane Aplikacje (${totalApplicants})
+            </button>
+            <button class="dash-tab" style="padding: 8px 16px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'packages' ? '#6366f1' : 'transparent'}; color: ${currentActiveTab === 'packages' ? '#a5b4fc' : '#94a3b8'}; transition: all 0.2s;" data-tab="packages">
+                Pakiety i Promowanie
+            </button>
+        `;
+
+        attachTabEvents(renderRecruiterContent);
+        renderRecruiterContent(currentActiveTab);
+    }
+
+    function attachTabEvents(renderFn) {
+        dashTabsContainer.querySelectorAll('.dash-tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentActiveTab = btn.dataset.tab;
+                dashTabsContainer.querySelectorAll('.dash-tab').forEach(b => {
+                    b.style.borderBottomColor = 'transparent';
+                    b.style.color = '#94a3b8';
+                });
+                btn.style.borderBottomColor = '#3b82f6';
+                btn.style.color = '#60a5fa';
+                renderFn(currentActiveTab);
+            });
+        });
+    }
+
+    function renderCandidateContent(tab) {
+        if (tab === 'saved') {
+            const saved = getSavedJobs();
+            if (saved.length === 0) {
+                dashContentArea.innerHTML = `
+                    <div style="text-align: center; padding: 3rem 1rem; color: #94a3b8;">
+                        <svg width="48" height="48" style="margin: 0 auto 0.75rem auto; color: #475569;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                        <h4 style="font-size: 1rem; font-weight: 600; color: white; margin-bottom: 4px;">Brak zapisanych ofert</h4>
+                        <p style="font-size: 12px;">Kliknij ikonę zakładki przy ofertach pracy na stronie głównej, aby zapisać je tutaj.</p>
+                    </div>
+                `;
+                return;
+            }
+            dashContentArea.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    ${saved.map(job => `
+                        <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                            <div>
+                                <h4 style="font-weight: 600; color: white; font-size: 14px; margin: 0;">${job.title || 'Oferta pracy'}</h4>
+                                <p style="font-size: 12px; color: #94a3b8; margin: 4px 0 0 0;">${job.company || 'Firma'} • ${job.location || 'Polska'}</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <a href="${job.link || '#'}" target="_blank" style="padding: 6px 12px; background: #2563eb; color: white; font-size: 12px; font-weight: 500; border-radius: 8px; text-decoration: none;">Aplikuj</a>
+                                <button onclick="window.removeSavedJob('${job.id}')" style="padding: 6px; color: #94a3b8; background: transparent; border: none; cursor: pointer;">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return;
+        }
+
+        if (tab === 'apps') {
+            const apps = getApplications();
+            if (apps.length === 0) {
+                dashContentArea.innerHTML = `
+                    <div style="text-align: center; padding: 3rem 1rem; color: #94a3b8;">
+                        <svg width="48" height="48" style="margin: 0 auto 0.75rem auto; color: #475569;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <h4 style="font-size: 1rem; font-weight: 600; color: white; margin-bottom: 4px;">Brak aktywnych aplikacji</h4>
+                        <p style="font-size: 12px;">Kiedy wyślesz CV do ogłoszenia, tutaj zobaczysz aktualny status rekrutacji.</p>
+                    </div>
+                `;
+                return;
+            }
+            dashContentArea.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    ${apps.map(app => `
+                        <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                            <div>
+                                <h4 style="font-weight: 600; color: white; font-size: 14px; margin: 0;">${app.jobTitle}</h4>
+                                <p style="font-size: 12px; color: #94a3b8; margin: 4px 0 0 0;">${app.company} • Aplikowano: ${app.date}</p>
+                            </div>
+                            <span style="padding: 4px 10px; font-size: 12px; font-weight: 600; border-radius: 9999px; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);">
+                                ${app.status || 'Wysłano'}
+                            </span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return;
+        }
+
+        dashContentArea.innerHTML = `
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 1.25rem;">
+                <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b;">
+                    <span style="font-size: 12px; color: #94a3b8;">Status CV</span>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #34d399; margin: 4px 0 0 0;">Aktywne & Zoptymalizowane</h3>
+                    <p style="font-size: 11px; color: #64748b; margin: 4px 0 0 0;">Ostatnia analiza AI: Dzisiaj</p>
+                </div>
+                <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b;">
+                    <span style="font-size: 12px; color: #94a3b8;">Dopasowane Oferty</span>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #60a5fa; margin: 4px 0 0 0;">18 nowych</h3>
+                    <p style="font-size: 11px; color: #64748b; margin: 4px 0 0 0;">Dopasowanie powyżej 85%</p>
+                </div>
+                <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b;">
+                    <span style="font-size: 12px; color: #94a3b8;">Wyświetlenia profilu</span>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #c084fc; margin: 4px 0 0 0;">42 rekruterów</h3>
+                    <p style="font-size: 11px; color: #64748b; margin: 4px 0 0 0;">W tym tygodniu</p>
+                </div>
+            </div>
+
+            <div style="padding: 1.25rem; border-radius: 12px; background: rgba(15, 23, 42, 0.4); border: 1px solid #1e293b;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                    <div>
+                        <h4 style="font-weight: 600; color: white; font-size: 14px; margin: 0;">Twoje Wykryte Umiejętności (AI Skills)</h4>
+                        <p style="font-size: 12px; color: #94a3b8; margin: 2px 0 0 0;">Automatycznie wyodrębnione z Twojego profilu i CV</p>
+                    </div>
+                    <a href="#cv-matcher" onclick="document.getElementById('dashboardClose').click()" style="font-size: 12px; color: #60a5fa; text-decoration: none; font-weight: 500;">Zaktualizuj CV →</a>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <span style="padding: 4px 10px; border-radius: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); color: #93c5fd; font-size: 12px; font-weight: 500;">JavaScript / TypeScript</span>
+                    <span style="padding: 4px 10px; border-radius: 8px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); color: #a5b4fc; font-size: 12px; font-weight: 500;">React.js & Next.js</span>
+                    <span style="padding: 4px 10px; border-radius: 8px; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.2); color: #d8b4fe; font-size: 12px; font-weight: 500;">Node.js & REST API</span>
+                    <span style="padding: 4px 10px; border-radius: 8px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #6ee7b7; font-size: 12px; font-weight: 500;">Tailwind CSS</span>
+                    <span style="padding: 4px 10px; border-radius: 8px; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); color: #fcd34d; font-size: 12px; font-weight: 500;">Git & CI/CD</span>
+                    <span style="padding: 4px 10px; border-radius: 8px; background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.2); color: #67e8f9; font-size: 12px; font-weight: 500;">PostgreSQL / Supabase</span>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderRecruiterContent(tab) {
+        const rJobs = getRecruiterJobs();
+
+        if (tab === 'candidates') {
+            const allApplicants = [];
+            rJobs.forEach(job => {
+                (job.applicants || []).forEach(cand => {
+                    allApplicants.push({ ...cand, jobTitle: job.title });
+                });
+            });
+
+            if (allApplicants.length === 0) {
+                dashContentArea.innerHTML = `
+                    <div style="text-align: center; padding: 3rem 1rem; color: #94a3b8;">
+                        <svg width="48" height="48" style="margin: 0 auto 0.75rem auto; color: #475569;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        <h4 style="font-size: 1rem; font-weight: 600; color: white; margin-bottom: 4px;">Brak nowych kandydatów</h4>
+                        <p style="font-size: 12px;">Gdy kandydaci zaaplikują na Twoje oferty, pojawią się tutaj wraz z oceną dopasowania AI.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            dashContentArea.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    ${allApplicants.map(cand => `
+                        <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.3); display: flex; align-items: center; justify-content: center; color: #a5b4fc; font-weight: bold; font-size: 14px;">
+                                    ${cand.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <h4 style="font-weight: 600; color: white; font-size: 14px; margin: 0;">${cand.name}</h4>
+                                        <span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                            AI Match: ${cand.score}%
+                                        </span>
+                                    </div>
+                                    <p style="font-size: 12px; color: #94a3b8; margin: 2px 0 0 0;">Stanowisko: <span style="color: #cbd5e1; font-weight: 500;">${cand.jobTitle}</span> • ${cand.date}</p>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="padding: 4px 10px; font-size: 12px; font-weight: 600; border-radius: 8px; background: #1e293b; color: #cbd5e1; border: 1px solid #334155;">
+                                    ${cand.status}
+                                </span>
+                                <a href="mailto:${cand.email}" style="padding: 6px 12px; background: #4f46e5; color: white; font-size: 12px; font-weight: 500; border-radius: 8px; text-decoration: none;">Kontakt</a>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return;
+        }
+
+        if (tab === 'packages') {
+            dashContentArea.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    <div style="padding: 1.25rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <span style="font-size: 11px; font-weight: 600; color: #60a5fa; letter-spacing: 0.05em; text-transform: uppercase;">Pakiet Standard</span>
+                            <h3 style="font-size: 1.5rem; font-weight: 700; color: white; margin: 4px 0 0 0;">9,99 zł <span style="font-size: 12px; font-weight: normal; color: #94a3b8;">/ 30 dni</span></h3>
+                            <ul style="font-size: 12px; color: #cbd5e1; margin-top: 1rem; list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px;">
+                                <li>✓ 30 dni widoczności w serwisie</li>
+                                <li>✓ Publikacja w katalogu ofert</li>
+                                <li>✓ Dostęp do kandydatów</li>
+                            </ul>
+                        </div>
+                        <button onclick="document.getElementById('dashboardClose').click(); window.location.hash='ogloszenia';" style="margin-top: 1.5rem; width: 100%; padding: 8px; background: #1e293b; color: white; font-size: 12px; font-weight: 500; border: 1px solid #334155; border-radius: 8px; cursor: pointer;">
+                            Kup ogłoszenie Standard
+                        </button>
+                    </div>
+
+                    <div style="padding: 1.25rem; border-radius: 12px; background: linear-gradient(135deg, rgba(30, 27, 75, 0.4), rgba(49, 46, 129, 0.4)); border: 1px solid rgba(99, 102, 241, 0.4); display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+                        <div>
+                            <span style="font-size: 11px; font-weight: 600; color: #a5b4fc; letter-spacing: 0.05em; text-transform: uppercase;">Pakiet Wyróżniony (HOT)</span>
+                            <h3 style="font-size: 1.5rem; font-weight: 700; color: white; margin: 4px 0 0 0;">29,99 zł <span style="font-size: 12px; font-weight: normal; color: #94a3b8;">/ 30 dni</span></h3>
+                            <ul style="font-size: 12px; color: #e0e7ff; margin-top: 1rem; list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px;">
+                                <li>★ Najwyższa pozycja na liście</li>
+                                <li>★ Graficzne wyróżnienie & badge HOT</li>
+                                <li>★ 3x więcej wyświetleń & AI Matcher boost</li>
+                            </ul>
+                        </div>
+                        <button onclick="document.getElementById('dashboardClose').click(); window.location.hash='ogloszenia';" style="margin-top: 1.5rem; width: 100%; padding: 8px; background: #4f46e5; color: white; font-size: 12px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">
+                            Wybierz Wyróżnienie
+                        </button>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        const totalViews = rJobs.reduce((sum, j) => sum + (j.views || 0), 0);
+        const totalApplicants = rJobs.reduce((sum, j) => sum + (j.applicants?.length || 0), 0);
+
+        dashContentArea.innerHTML = `
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 1.25rem;">
+                <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b;">
+                    <span style="font-size: 12px; color: #94a3b8;">Aktywne Ogłoszenia</span>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: white; margin: 4px 0 0 0;">${rJobs.length}</h3>
+                    <p style="font-size: 11px; color: #64748b; margin: 4px 0 0 0;">Wszystkie w statusie publikacji</p>
+                </div>
+                <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b;">
+                    <span style="font-size: 12px; color: #94a3b8;">Łącznie Wyświetleń</span>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #a5b4fc; margin: 4px 0 0 0;">${totalViews}</h3>
+                    <p style="font-size: 11px; color: #64748b; margin: 4px 0 0 0;">Średnio ${Math.round(totalViews / (rJobs.length || 1))} na ogłoszenie</p>
+                </div>
+                <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b;">
+                    <span style="font-size: 12px; color: #94a3b8;">Otrzymane CV</span>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #34d399; margin: 4px 0 0 0;">${totalApplicants}</h3>
+                    <p style="font-size: 11px; color: #64748b; margin: 4px 0 0 0;">Średnie AI Match: 88%</p>
+                </div>
+            </div>
+
+            <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                    <h4 style="font-weight: 600; color: white; font-size: 14px; margin: 0;">Twoje Ogłoszenia Rekrutacyjne</h4>
+                    <button onclick="document.getElementById('dashboardClose').click(); document.getElementById('openAddModal').click();" style="padding: 6px 12px; background: #4f46e5; color: white; font-size: 12px; font-weight: 500; border: none; border-radius: 8px; cursor: pointer;">
+                        + Dodaj nowe ogłoszenie
+                    </button>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    ${rJobs.map(job => `
+                        <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <h4 style="font-weight: 600; color: white; font-size: 14px; margin: 0;">${job.title}</h4>
+                                    <span style="padding: 2px 6px; font-size: 10px; font-weight: 700; border-radius: 4px; ${job.tier.includes('HOT') ? 'background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);' : 'background: #1e293b; color: #94a3b8; border: 1px solid #334155;'}">
+                                        ${job.tier}
+                                    </span>
+                                </div>
+                                <p style="font-size: 12px; color: #94a3b8; margin: 4px 0 0 0;">${job.type} • ${job.location} • ${job.salary}</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <span style="font-size: 12px; color: #94a3b8;">Wyświetlenia: <strong style="color: white;">${job.views}</strong></span>
+                                <span style="font-size: 12px; color: #94a3b8;">CV: <strong style="color: #a5b4fc;">${job.applicants?.length || 0}</strong></span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    window.openDashboard = openDashboard;
+    window.removeSavedJob = (jobId) => {
+        const saved = getSavedJobs().filter(j => j.id !== jobId);
+        localStorage.setItem('jobnexus_saved_jobs', JSON.stringify(saved));
+        renderCandidateContent('saved');
+        showToast('Usunięto ofertę z zapisanych', 'info');
+    };
+}
+
 
 function initInfoPages() {
     const pages = { 'O nas': ['O nas', 'JobNexus łączy kandydatów i pracodawców z wykorzystaniem nowoczesnych narzędzi oraz inteligentnego dopasowania ofert.'], Kontakt: ['Kontakt', 'Napisz do nas: kontakt@jobnexus.pl'], Regulamin: ['Regulamin', 'Korzystając z serwisu, akceptujesz zasady publikowania ofert i ogłoszeń.'], Cennik: ['Cennik', 'Publikacja ogłoszenia standardowego: 9,99 zł. Wyróżnienie: 29,99 zł.'] };

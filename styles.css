@@ -1935,3 +1935,41 @@ img {
 @media (prefers-color-scheme: light) {
     /* Keeping dark mode as default brand identity */
 }
+
+
+/* DASHBOARD MODAL EXTENSIONS */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(3, 7, 18, 0.75);
+    backdrop-filter: blur(8px);
+    padding: 1rem;
+}
+
+.modal-overlay.hidden {
+    display: none !important;
+}
+
+.modal-card {
+    background: #0b1120;
+    border: 1px solid rgba(51, 65, 85, 0.8);
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    color: #e2e8f0;
+}
+
+.dash-tab {
+    cursor: pointer;
+    background: transparent;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+.dash-tab:hover {
+    color: #ffffff;
+}
