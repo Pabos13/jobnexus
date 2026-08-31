@@ -2112,3 +2112,107 @@ img {
 .dash-tab:hover {
     color: #ffffff !important;
 }
+
+
+/* ==========================================================================
+   GLOBAL MODAL & DASHBOARD SCROLLING AND RESPONSIVE FIXES (2026)
+   ========================================================================== */
+
+.modal-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 10000 !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    background: rgba(3, 7, 18, 0.85) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    padding: 20px 10px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.modal-overlay.hidden {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.modal, .modal-card, .auth-modal, .dashboard-modal {
+    background: #0f172a !important;
+    border: 1px solid rgba(51, 65, 85, 0.9) !important;
+    border-radius: 1.25rem !important;
+    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.95) !important;
+    color: #f1f5f9 !important;
+    max-height: 92vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    margin: auto 0 !important;
+    animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.auth-modal {
+    max-width: 480px !important;
+    width: 100% !important;
+}
+
+.dashboard-modal {
+    max-width: 1000px !important;
+    width: 100% !important;
+    height: 88vh !important;
+}
+
+.modal-body, .dashboard-content, #dashboardContent {
+    overflow-y: auto !important;
+    flex: 1 1 auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 1.25rem 0.5rem !important;
+}
+
+.role-card {
+    transition: all 0.2s ease-in-out !important;
+}
+
+.role-card:hover {
+    border-color: #60a5fa !important;
+    transform: translateY(-2px) !important;
+}
+
+.role-card.active {
+    border-color: #3b82f6 !important;
+    background: rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Custom Scrollbars */
+.modal-overlay::-webkit-scrollbar,
+.dashboard-content::-webkit-scrollbar,
+#dashboardContent::-webkit-scrollbar,
+.modal-body::-webkit-scrollbar,
+.dash-tabs::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.modal-overlay::-webkit-scrollbar-track,
+.dashboard-content::-webkit-scrollbar-track,
+#dashboardContent::-webkit-scrollbar-track,
+.dash-tabs::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 4px;
+}
+
+.modal-overlay::-webkit-scrollbar-thumb,
+.dashboard-content::-webkit-scrollbar-thumb,
+#dashboardContent::-webkit-scrollbar-thumb,
+.dash-tabs::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+}
+
+.modal-overlay::-webkit-scrollbar-thumb:hover,
+.dashboard-content::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}

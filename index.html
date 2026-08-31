@@ -493,8 +493,8 @@
 
 
     <!-- DASHBOARD MODAL (PANEL KANDYDATA / REKRUTERA) -->
-    <div id="dashboardModal" class="modal-overlay hidden">
-        <div class="modal-card max-w-4xl w-full max-h-[90vh] flex flex-col p-0 overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl rounded-2xl" style="max-width: 850px; width: 100%; max-height: 85vh;">
+    <div id="dashboardModal" class="modal-overlay hidden" style="align-items: flex-start; padding: 1.5rem 0.5rem; overflow-y: auto; z-index: 10000;">
+        <div class="modal-card max-w-4xl w-full flex flex-col p-0 overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl rounded-2xl" style="max-width: 920px; width: 100%; height: 88vh; max-height: 88vh; min-height: 0; display: flex; flex-direction: column; margin: auto 0; background: #0f172a; border: 1px solid #334155; border-radius: 1.25rem; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95);">
             <!-- Header Pulpitu -->
             <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid #1e293b; background: rgba(15, 23, 42, 0.8); display: flex; align-items: center; justify-content: space-between;">
                 <div style="display: flex; align-items: center; gap: 1rem;">
@@ -528,7 +528,7 @@
             </div>
 
             <!-- Zawartość Pulpitu -->
-            <div id="dashContentArea" style="padding: 1.5rem; overflow-y: auto; flex: 1;">
+            <div id="dashContentArea" style="padding: 1.25rem; overflow-y: auto; flex: 1 1 auto; min-height: 0; -webkit-overflow-scrolling: touch;">
                 <!-- Dynamiczny widok -->
             </div>
 

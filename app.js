@@ -713,6 +713,117 @@ function initDashboard() {
     function renderRecruiterContent(tab) {
         const rJobs = getRecruiterJobs();
 
+        
+        if (tab === 'add_job') {
+            dashContentArea.innerHTML = `
+                <div style="background: #0b1120; border: 1px solid #1e293b; border-radius: 12px; padding: 1.5rem; max-width: 700px; margin: 0 auto;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                        <h3 style="font-size: 16px; font-weight: 700; color: white; margin: 0;">➕ Dodaj Nowe Ogłoszenie o Pracę</h3>
+                        <span style="font-size: 11px; padding: 3px 8px; border-radius: 6px; background: rgba(99, 102, 241, 0.2); color: #a5b4fc; font-weight: 600;">Publikacja natychmiastowa</span>
+                    </div>
+
+                    <form id="recruiterAddJobForm" style="display: flex; flex-direction: column; gap: 12px;">
+                        <div>
+                            <label style="display: block; font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">Tytuł stanowiska *</label>
+                            <input type="text" id="newJobTitle" placeholder="np. Senior Frontend Developer (React / TypeScript)" required style="width: 100%; padding: 10px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px; box-sizing: border-box;">
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">Nazwa Firmy *</label>
+                                <input type="text" id="newJobCompany" placeholder="np. TechCorp Polska" required style="width: 100%; padding: 10px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px; box-sizing: border-box;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">Lokalizacja *</label>
+                                <input type="text" id="newJobLocation" placeholder="np. Warszawa / Zdalnie" required style="width: 100%; padding: 10px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px; box-sizing: border-box;">
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">Typ zatrudnienia</label>
+                                <select id="newJobType" style="width: 100%; padding: 10px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px; box-sizing: border-box;">
+                                    <option value="Pełny etat">Pełny etat</option>
+                                    <option value="Zdalna">Zdalna (100% Remote)</option>
+                                    <option value="Kontrakt B2B">Kontrakt B2B</option>
+                                    <option value="Część etatu">Część etatu</option>
+                                    <option value="Staż">Staż / Praktyki</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">Widełki wynagrodzenia</label>
+                                <input type="text" id="newJobSalary" placeholder="np. 16 000 - 22 000 PLN net" style="width: 100%; padding: 10px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px; box-sizing: border-box;">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style="display: block; font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">Opis stanowiska & Wymagania</label>
+                            <textarea id="newJobDesc" rows="4" placeholder="Opisz kluczowe obowiązki, stack technologiczny i benefity..." style="width: 100%; padding: 10px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px; line-height: 1.4; resize: vertical; box-sizing: border-box;"></textarea>
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+                            <button type="button" onclick="window.switchRecruiterTab('main')" style="padding: 10px 18px; background: #334155; color: white; font-size: 13px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer;">
+                                Anuluj
+                            </button>
+                            <button type="submit" style="padding: 10px 22px; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; font-size: 13px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);">
+                                🚀 Opublikuj Ogłoszenie
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+
+            setTimeout(() => {
+                document.getElementById('recruiterAddJobForm')?.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const title = document.getElementById('newJobTitle')?.value.trim();
+                    const company = document.getElementById('newJobCompany')?.value.trim();
+                    const location = document.getElementById('newJobLocation')?.value.trim();
+                    const type = document.getElementById('newJobType')?.value;
+                    const salary = document.getElementById('newJobSalary')?.value.trim() || 'Do negocjacji';
+                    const desc = document.getElementById('newJobDesc')?.value.trim() || 'Brak szczegółowego opisu.';
+
+                    if (!title || !company || !location) {
+                        showToast('Wypełnij wymagane pola (Tytuł, Firma, Lokalizacja)', 'error');
+                        return;
+                    }
+
+                    const newJob = {
+                        id: 'job_' + Date.now().toString(36),
+                        title,
+                        company,
+                        location,
+                        type,
+                        salary,
+                        description: desc,
+                        views: 1,
+                        applications: 0,
+                        status: 'Aktywne',
+                        date: new Date().toISOString().split('T')[0],
+                        applicants: []
+                    };
+
+                    const currentJobs = getRecruiterJobs();
+                    currentJobs.unshift(newJob);
+                    saveRecruiterJobs(currentJobs);
+
+                    if (state && Array.isArray(state.allJobs)) {
+                        state.allJobs.unshift({
+                            ...newJob,
+                            source: 'recruiter',
+                            featured: true,
+                            url: '#'
+                        });
+                        if (typeof renderJobs === 'function') renderJobs();
+                    }
+
+                    showToast(`🎉 Ogłoszenie "${title}" zostało pomyślnie opublikowane!`, 'success');
+                    window.switchRecruiterTab('main');
+                });
+            }, 50);
+            return;
+        }
+
         if (tab === 'pipeline') {
             const allApplicants = [];
             rJobs.forEach(job => {
@@ -966,6 +1077,19 @@ function initDashboard() {
         saveRecruiterJobs(rJobs);
         renderRecruiterContent('pipeline');
         showToast(`Zaktualizowano status kandydata ${candName} na: ${newStatus}`, 'success');
+    };
+
+    
+    window.switchRecruiterTab = (tabName) => {
+        currentActiveTab = tabName;
+        renderRecruiterTabs();
+        renderRecruiterContent(tabName);
+    };
+
+    window.switchCandidateTab = (tabName) => {
+        currentActiveTab = tabName;
+        renderCandidateTabs();
+        renderCandidateContent(tabName);
     };
 
     window.generateAICoverLetter = () => {

@@ -65,7 +65,7 @@ export class AuthService {
     }
 
     /**
-     * Register a new user
+     * Register a new user with selected role (candidate / recruiter)
      */
     static async register(email, password, name, role = 'candidate') {
         try {
@@ -146,7 +146,7 @@ export class AuthService {
     /**
      * Log in existing user
      */
-    static async login(email, password) {
+    static async login(email, password, preferredRole = 'candidate') {
         try {
             if (!this.validateEmail(email)) {
                 throw new Error('Niepoprawny format adresu e-mail');
@@ -162,7 +162,7 @@ export class AuthService {
                 try {
                     const { data, error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
                     if (!error && data?.session && data?.user) {
-                        const role = data.user.user_metadata?.role || 'candidate';
+                        const role = data.user.user_metadata?.role || preferredRole || 'candidate';
                         const user = { id: data.user.id, email: data.user.email, name: data.user.user_metadata?.name || data.user.email.split('@')[0], role };
                         this.setUser(user, data.session.access_token, data.session.refresh_token, data.session.expires_in * 1000);
                         return user;
@@ -177,12 +177,12 @@ export class AuthService {
             let foundUser = localUsers.find(u => u.email === cleanEmail);
 
             if (!foundUser) {
-                // Auto-create account so the user never gets blocked by "Login failed"
+                // Auto-create account with chosen role
                 foundUser = {
                     id: 'usr_' + Date.now().toString(36),
                     email: cleanEmail,
                     name: cleanEmail.split('@')[0],
-                    role: cleanEmail.includes('rekruter') || cleanEmail.includes('hr') ? 'recruiter' : 'candidate',
+                    role: preferredRole || (cleanEmail.includes('rekruter') || cleanEmail.includes('hr') ? 'recruiter' : 'candidate'),
                     password: password,
                     createdAt: new Date().toISOString()
                 };
@@ -190,7 +190,7 @@ export class AuthService {
                 this._saveLocalUsers(localUsers);
             }
 
-            const safeUser = { id: foundUser.id, email: foundUser.email, name: foundUser.name, role: foundUser.role || 'candidate' };
+            const safeUser = { id: foundUser.id, email: foundUser.email, name: foundUser.name, role: foundUser.role || preferredRole || 'candidate' };
             const token = 'jwt_local_' + Math.random().toString(36).substring(2);
             const refreshToken = 'rt_local_' + Math.random().toString(36).substring(2);
             this.setUser(safeUser, token, refreshToken, 7 * 24 * 60 * 60 * 1000);
@@ -238,6 +238,10 @@ export class AuthService {
         }
     }
 
+    static getCurrentUser() {
+        return this.getUser();
+    }
+
     /**
      * Get JWT token
      */
@@ -259,6 +263,10 @@ export class AuthService {
         }
     }
 
+    static setCurrentUser(user, token = null) {
+        return this.setUser(user, token);
+    }
+
     /**
      * Check user role
      */
@@ -268,26 +276,14 @@ export class AuthService {
     }
 
     /**
-     * Switch role (candidate <-> recruiter)
+     * Switch / update role (candidate <-> recruiter)
      */
-    static updateRole(newRole) {
-        return this.switchRole(newRole);
-    }
-
-    static getCurrentUser() {
-        return this.getUser();
-    }
-
-    static setCurrentUser(user, token = null) {
-        return this.setUser(user, token);
-    }
-
     static switchRole(newRole) {
         const user = this.getUser();
         if (user) {
             user.role = newRole;
             localStorage.setItem(this.STORAGE_KEYS.USER, JSON.stringify(user));
-            
+
             const localUsers = this._getLocalUsers();
             const u = localUsers.find(x => x.email === user.email);
             if (u) {
@@ -296,6 +292,10 @@ export class AuthService {
             }
         }
         return user;
+    }
+
+    static updateRole(newRole) {
+        return this.switchRole(newRole);
     }
 
     /**
