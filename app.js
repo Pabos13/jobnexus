@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function initAuth() {
     let registerMode = false;
     if (!els.authTrigger || !els.authModal || !els.authForm) return;
+
     const setMode = (register) => {
         registerMode = register;
         els.authNameGroup.classList.toggle('hidden', !register);
@@ -94,32 +95,80 @@ async function initAuth() {
         els.authSubmit.textContent = register ? 'Zarejestruj się' : 'Zaloguj się';
         els.authSwitch.textContent = register ? 'Masz już konto? Zaloguj się' : 'Nie masz konta? Zarejestruj się';
     };
+
     const open = (register = false, message = '') => {
         setMode(register);
         els.authForm.reset();
         els.authError.textContent = message;
         els.authError.classList.toggle('hidden', !message);
         els.authModal.classList.remove('hidden');
-        els.authEmail.focus();
+        setTimeout(() => {
+            (register ? els.authName : els.authEmail)?.focus();
+        }, 50);
     };
+
     const close = () => els.authModal.classList.add('hidden');
+
     const handleAuthTrigger = async (event) => {
         event.preventDefault();
         if (AuthService.isAuthenticated() || AuthService.getUser()) {
             await AuthService.logout();
-            els.authTrigger.textContent = 'Zaloguj się';
+            syncAuthTrigger(null);
             showToast('Wylogowano pomyślnie', 'success');
             return;
         }
         open(false);
     };
+
     els.authTrigger.addEventListener('click', handleAuthTrigger);
     els.authClose.addEventListener('click', close);
+    els.authModal.addEventListener('click', (e) => {
+        if (e.target === els.authModal) close();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !els.authModal.classList.contains('hidden')) {
+            close();
+        }
+    });
+
     els.authSwitch.addEventListener('click', () => setMode(!registerMode));
-    els.authForm.addEventListener('submit', async (event) => { event.preventDefault(); els.authError.classList.add('hidden'); els.authSubmit.disabled = true; try { const user = registerMode ? await AuthService.register(els.authEmail.value, els.authPassword.value, els.authName.value) : await AuthService.login(els.authEmail.value, els.authPassword.value); if (user) { els.authTrigger.textContent = `Wyloguj (${user.name || user.email})`; close(); showToast(registerMode ? 'Konto utworzone' : 'Zalogowano pomyślnie', 'success'); } else if (registerMode) { els.authError.textContent = 'Sprawdź skrzynkę e-mail i potwierdź konto.'; els.authError.classList.remove('hidden'); } } catch (error) { els.authError.textContent = error.message || 'Nie udało się wykonać operacji.'; els.authError.classList.remove('hidden'); } finally { els.authSubmit.disabled = false; } });
+
+    els.authForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        els.authError.classList.add('hidden');
+        els.authSubmit.disabled = true;
+        try {
+            const user = registerMode 
+                ? await AuthService.register(els.authEmail.value, els.authPassword.value, els.authName.value)
+                : await AuthService.login(els.authEmail.value, els.authPassword.value);
+
+            if (user) {
+                syncAuthTrigger(user);
+                close();
+                showToast(registerMode ? 'Konto utworzone pomyślnie!' : 'Zalogowano pomyślnie!', 'success');
+            } else if (registerMode) {
+                els.authError.textContent = 'Sprawdź skrzynkę e-mail i potwierdź konto.';
+                els.authError.classList.remove('hidden');
+            }
+        } catch (error) {
+            let userMsg = error.message || 'Nie udało się wykonać operacji.';
+            if (userMsg.includes('Invalid email format')) userMsg = 'Niepoprawny format adresu e-mail.';
+            if (userMsg.includes('Password must be at least 8 characters')) userMsg = 'Hasło musi mieć co najmniej 8 znaków.';
+            if (userMsg.includes('Name must be at least 2 characters')) userMsg = 'Imię musi mieć co najmniej 2 znaki.';
+            if (userMsg.includes('Password is required')) userMsg = 'Hasło jest wymagane.';
+            if (userMsg.includes('Invalid credentials')) userMsg = 'Nieprawidłowy e-mail lub hasło.';
+            els.authError.textContent = userMsg;
+            els.authError.classList.remove('hidden');
+        } finally {
+            els.authSubmit.disabled = false;
+        }
+    });
+
     const syncAuthTrigger = (user) => {
         els.authTrigger.textContent = user ? `Wyloguj (${user.name || user.email})` : 'Zaloguj się';
     };
+
     const currentUser = await AuthService.syncSession();
     syncAuthTrigger(currentUser);
     window.openAuth = open;
