@@ -270,6 +270,18 @@ export class AuthService {
     /**
      * Switch role (candidate <-> recruiter)
      */
+    static updateRole(newRole) {
+        return this.switchRole(newRole);
+    }
+
+    static getCurrentUser() {
+        return this.getUser();
+    }
+
+    static setCurrentUser(user, token = null) {
+        return this.setUser(user, token);
+    }
+
     static switchRole(newRole) {
         const user = this.getUser();
         if (user) {

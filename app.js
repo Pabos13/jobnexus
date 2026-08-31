@@ -252,20 +252,61 @@ async function initAuth() {
         }
     });
 
+    const navDashBtn = document.getElementById('navDashboardBtn');
+    const navDashBtnText = document.getElementById('navDashboardBtnText');
+
     const syncAuthTrigger = (user) => {
         if (user) {
+            const roleLabel = user.role === 'recruiter' ? 'Panel Rekrutera' : 'Panel Kandydata';
             els.authTrigger.textContent = `Wyloguj (${user.name || user.email})`;
+
             if (dashboardTrigger) {
                 dashboardTrigger.classList.remove('hidden');
-                dashboardTrigger.querySelector('span').textContent = user.role === 'recruiter' ? 'Panel Rekrutera' : 'Panel Kandydata';
+                const span = dashboardTrigger.querySelector('span');
+                if (span) span.textContent = roleLabel;
+            }
+
+            if (navDashBtn) {
+                navDashBtn.classList.remove('hidden');
+                if (navDashBtnText) navDashBtnText.textContent = roleLabel;
             }
         } else {
             els.authTrigger.textContent = 'Zaloguj się';
             if (dashboardTrigger) {
                 dashboardTrigger.classList.add('hidden');
             }
+            if (navDashBtn) {
+                navDashBtn.classList.add('hidden');
+            }
         }
     };
+
+    navDashBtn?.addEventListener('click', () => {
+        if (typeof window.openDashboard === 'function') {
+            window.openDashboard();
+        }
+    });
+
+    // Podepnij Moje CV oraz Dodaj Ogłoszenie do paneli
+    document.querySelectorAll('a[href="#cv"]').forEach(a => {
+        a.addEventListener('click', (e) => {
+            const u = AuthService.getUser();
+            if (u) {
+                e.preventDefault();
+                window.openDashboard?.();
+            }
+        });
+    });
+
+    document.querySelectorAll('a[href="#dodaj"], a[href="#ogloszenia"]').forEach(a => {
+        a.addEventListener('click', (e) => {
+            const u = AuthService.getUser();
+            if (u && u.role === 'recruiter') {
+                e.preventDefault();
+                window.openDashboard?.();
+            }
+        });
+    });
 
     const currentUser = await AuthService.syncSession();
     syncAuthTrigger(currentUser);
@@ -276,6 +317,19 @@ async function initAuth() {
 // ==========================================
 function initDashboard() {
     const dashModal = document.getElementById('dashboardModal');
+    window.openDashboard = () => {
+        const user = AuthService.getUser();
+        if (!user) {
+            window.openAuth?.(false, 'Zaloguj się, aby przejść do panelu.');
+            return;
+        }
+        if (typeof renderDashboard === 'function') {
+            renderDashboard(user);
+        }
+        if (dashModal) {
+            dashModal.classList.remove('hidden');
+        }
+    };
     const dashTrigger = document.getElementById('dashboardTrigger');
     const dashClose = document.getElementById('dashboardClose');
     const dashUserAvatar = document.getElementById('dashUserAvatar');
