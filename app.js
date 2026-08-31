@@ -155,13 +155,6 @@ async function initAuth() {
                 syncAuthTrigger(user);
                 close();
                 showToast(registerMode ? `Witaj w JobNexus, ${user.name}!` : 'Zalogowano pomyślnie!', 'success');
-
-                // AUTOMATYCZNE OTWARCIE PANELU (KANDYDAT / REKRUTER) PO LOGOWANIU
-                setTimeout(() => {
-                    if (typeof window.openDashboard === 'function') {
-                        window.openDashboard();
-                    }
-                }, 200);
             } else if (registerMode) {
                 els.authError.textContent = 'Sprawdź skrzynkę e-mail i potwierdź konto.';
                 els.authError.classList.remove('hidden');
@@ -201,7 +194,8 @@ async function initAuth() {
 }
 
 // ==========================================
-// DASHBOARD (PANEL KANDYDATA / REKRUTERA)
+// ==========================================
+// DASHBOARD (PANEL KANDYDATA / REKRUTERA + EXTRA PREMIUM)
 // ==========================================
 function initDashboard() {
     const dashModal = document.getElementById('dashboardModal');
@@ -247,9 +241,9 @@ function initDashboard() {
                 tier: 'Wyróżnione (HOT)',
                 views: 284,
                 applicants: [
-                    { name: 'Piotr Wiśniewski', email: 'p.wisniewski@example.com', score: 94, date: '2026-08-30', status: 'Zaproszenie na rozmowę' },
-                    { name: 'Katarzyna Nowak', email: 'k.nowak@example.com', score: 88, date: '2026-08-29', status: 'W trakcie weryfikacji' },
-                    { name: 'Michał Zieliński', email: 'm.zielinski@example.com', score: 76, date: '2026-08-27', status: 'Nowa aplikacja' }
+                    { id: 'cand_1', name: 'Piotr Wiśniewski', email: 'p.wisniewski@example.com', score: 94, date: '2026-08-30', status: 'Rozmowa kwalifikacyjna', exp: '5 lat', skills: ['React', 'TypeScript', 'Node.js'] },
+                    { id: 'cand_2', name: 'Katarzyna Nowak', email: 'k.nowak@example.com', score: 88, date: '2026-08-29', status: 'W trakcie weryfikacji', exp: '3 lata', skills: ['Vue.js', 'Tailwind', 'JavaScript'] },
+                    { id: 'cand_3', name: 'Michał Zieliński', email: 'm.zielinski@example.com', score: 76, date: '2026-08-27', status: 'Nowa aplikacja', exp: '2 lata', skills: ['React', 'CSS', 'HTML'] }
                 ],
                 createdAt: '2026-08-15'
             },
@@ -262,7 +256,7 @@ function initDashboard() {
                 tier: 'Standard',
                 views: 192,
                 applicants: [
-                    { name: 'Tomasz Lewandowski', email: 'tomek.lew@example.com', score: 96, date: '2026-08-30', status: 'Nowa aplikacja' }
+                    { id: 'cand_4', name: 'Tomasz Lewandowski', email: 'tomek.lew@example.com', score: 96, date: '2026-08-30', status: 'Oferta złożona', exp: '6 lat', skills: ['Python', 'FastAPI', 'LangChain', 'Docker'] }
                 ],
                 createdAt: '2026-08-20'
             }
@@ -300,6 +294,7 @@ function initDashboard() {
         if (!user) return;
         const newRole = user.role === 'recruiter' ? 'candidate' : 'recruiter';
         AuthService.updateRole(newRole);
+        currentActiveTab = 'main';
         const dashTriggerSpan = dashTrigger?.querySelector('span');
         if (dashTriggerSpan) {
             dashTriggerSpan.textContent = newRole === 'recruiter' ? 'Panel Rekrutera' : 'Panel Kandydata';
@@ -314,7 +309,7 @@ function initDashboard() {
         dashUserEmail.textContent = user.email;
         dashUserAvatar.textContent = (user.name || user.email).charAt(0).toUpperCase();
 
-        dashUserRoleBadge.textContent = isRecruiter ? 'Pracodawca / Rekruter' : 'Kandydat';
+        dashUserRoleBadge.textContent = isRecruiter ? 'Pracodawca / Rekruter (PRO)' : 'Kandydat (PRO Talent)';
         dashUserRoleBadge.style.background = isRecruiter ? 'rgba(99, 102, 241, 0.15)' : 'rgba(59, 130, 246, 0.15)';
         dashUserRoleBadge.style.color = isRecruiter ? '#a5b4fc' : '#60a5fa';
         dashUserRoleBadge.style.borderColor = isRecruiter ? 'rgba(99, 102, 241, 0.3)' : 'rgba(59, 130, 246, 0.3)';
@@ -330,14 +325,20 @@ function initDashboard() {
 
     function renderCandidateTabs() {
         dashTabsContainer.innerHTML = `
-            <button class="dash-tab" style="padding: 8px 16px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'main' ? '#3b82f6' : 'transparent'}; color: ${currentActiveTab === 'main' ? '#60a5fa' : '#94a3b8'}; transition: all 0.2s;" data-tab="main">
-                Moje CV & Rekomendacje AI
+            <button class="dash-tab" style="padding: 8px 14px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'main' ? '#3b82f6' : 'transparent'}; color: ${currentActiveTab === 'main' ? '#60a5fa' : '#94a3b8'}; transition: all 0.2s; white-space: nowrap;" data-tab="main">
+                Pulpit & CV AI
             </button>
-            <button class="dash-tab" style="padding: 8px 16px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'saved' ? '#3b82f6' : 'transparent'}; color: ${currentActiveTab === 'saved' ? '#60a5fa' : '#94a3b8'}; transition: all 0.2s;" data-tab="saved">
+            <button class="dash-tab" style="padding: 8px 14px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'ai_tools' ? '#3b82f6' : 'transparent'}; color: ${currentActiveTab === 'ai_tools' ? '#60a5fa' : '#94a3b8'}; transition: all 0.2s; white-space: nowrap;" data-tab="ai_tools">
+                ✨ AI Asystent Kariery & ATS
+            </button>
+            <button class="dash-tab" style="padding: 8px 14px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'salary' ? '#3b82f6' : 'transparent'}; color: ${currentActiveTab === 'salary' ? '#60a5fa' : '#94a3b8'}; transition: all 0.2s; white-space: nowrap;" data-tab="salary">
+                💰 Wycena Stawek & Rynek
+            </button>
+            <button class="dash-tab" style="padding: 8px 14px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'saved' ? '#3b82f6' : 'transparent'}; color: ${currentActiveTab === 'saved' ? '#60a5fa' : '#94a3b8'}; transition: all 0.2s; white-space: nowrap;" data-tab="saved">
                 Zapisane Oferty (${getSavedJobs().length})
             </button>
-            <button class="dash-tab" style="padding: 8px 16px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'apps' ? '#3b82f6' : 'transparent'}; color: ${currentActiveTab === 'apps' ? '#60a5fa' : '#94a3b8'}; transition: all 0.2s;" data-tab="apps">
-                Moje Aplikacje (${getApplications().length})
+            <button class="dash-tab" style="padding: 8px 14px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'apps' ? '#3b82f6' : 'transparent'}; color: ${currentActiveTab === 'apps' ? '#60a5fa' : '#94a3b8'}; transition: all 0.2s; white-space: nowrap;" data-tab="apps">
+                Aplikacje (${getApplications().length})
             </button>
         `;
 
@@ -350,14 +351,17 @@ function initDashboard() {
         const totalApplicants = rJobs.reduce((sum, j) => sum + (j.applicants?.length || 0), 0);
 
         dashTabsContainer.innerHTML = `
-            <button class="dash-tab" style="padding: 8px 16px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'main' ? '#6366f1' : 'transparent'}; color: ${currentActiveTab === 'main' ? '#a5b4fc' : '#94a3b8'}; transition: all 0.2s;" data-tab="main">
-                Pulpit & Ogłoszenia (${rJobs.length})
+            <button class="dash-tab" style="padding: 8px 14px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'main' ? '#6366f1' : 'transparent'}; color: ${currentActiveTab === 'main' ? '#a5b4fc' : '#94a3b8'}; transition: all 0.2s; white-space: nowrap;" data-tab="main">
+                Pulpit & Oferty (${rJobs.length})
             </button>
-            <button class="dash-tab" style="padding: 8px 16px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'candidates' ? '#6366f1' : 'transparent'}; color: ${currentActiveTab === 'candidates' ? '#a5b4fc' : '#94a3b8'}; transition: all 0.2s;" data-tab="candidates">
-                Otrzymane Aplikacje (${totalApplicants})
+            <button class="dash-tab" style="padding: 8px 14px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'pipeline' ? '#6366f1' : 'transparent'}; color: ${currentActiveTab === 'pipeline' ? '#a5b4fc' : '#94a3b8'}; transition: all 0.2s; white-space: nowrap;" data-tab="pipeline">
+                📊 Lejek Kandydatów (Kanban)
             </button>
-            <button class="dash-tab" style="padding: 8px 16px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'packages' ? '#6366f1' : 'transparent'}; color: ${currentActiveTab === 'packages' ? '#a5b4fc' : '#94a3b8'}; transition: all 0.2s;" data-tab="packages">
-                Pakiety i Promowanie
+            <button class="dash-tab" style="padding: 8px 14px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'headhunter' ? '#6366f1' : 'transparent'}; color: ${currentActiveTab === 'headhunter' ? '#a5b4fc' : '#94a3b8'}; transition: all 0.2s; white-space: nowrap;" data-tab="headhunter">
+                🎯 AI Headhunter (Baza Talentów)
+            </button>
+            <button class="dash-tab" style="padding: 8px 14px; font-size: 13px; font-weight: 600; border-bottom: 2px solid ${currentActiveTab === 'packages' ? '#6366f1' : 'transparent'}; color: ${currentActiveTab === 'packages' ? '#a5b4fc' : '#94a3b8'}; transition: all 0.2s; white-space: nowrap;" data-tab="packages">
+                Pakiety & Promowanie
             </button>
         `;
 
@@ -381,6 +385,98 @@ function initDashboard() {
     }
 
     function renderCandidateContent(tab) {
+        if (tab === 'ai_tools') {
+            dashContentArea.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <!-- ATS Score Card -->
+                    <div style="padding: 1.25rem; border-radius: 12px; background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.6)); border: 1px solid rgba(59, 130, 246, 0.3);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                            <div>
+                                <span style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em;">AI ATS Resume Score</span>
+                                <h3 style="font-size: 1.5rem; font-weight: 800; color: #34d399; margin: 4px 0 0 0;">94 / 100 <span style="font-size: 12px; color: #94a3b8; font-weight: 400;">(Doskonała zgodność)</span></h3>
+                                <p style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">Twoje CV przechodzi automatyczne filtry 98% systemów rekrutacyjnych.</p>
+                            </div>
+                            <button onclick="showToast('Analiza ATS odświeżona pomyślnie!', 'success')" style="padding: 8px 16px; background: #2563eb; color: white; font-size: 12px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer;">
+                                Przelicz Score CV
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Generator Listu & Mock Interview -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+                        <!-- Generator Listu Motywacyjnego AI -->
+                        <div style="padding: 1.25rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="padding: 4px 8px; border-radius: 6px; background: rgba(59, 130, 246, 0.15); color: #60a5fa; font-size: 12px; font-weight: 700;">AI Writer</span>
+                                    <h4 style="color: white; font-size: 14px; font-weight: 700; margin: 0;">Generator Listu Motywacyjnego</h4>
+                                </div>
+                                <p style="font-size: 12px; color: #94a3b8; margin-top: 8px;">AI wygeneruje spersonalizowany, profesjonalny list motywacyjny dopasowany do wybranego stanowiska w kilka sekund.</p>
+
+                                <div style="margin-top: 12px;">
+                                    <label style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">Stanowisko / Link do oferty</label>
+                                    <input type="text" id="aiCoverRoleInput" placeholder="np. Senior Frontend Developer" style="width: 100%; padding: 8px 12px; background: #0b1120; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 12px; box-sizing: border-box;">
+                                </div>
+                            </div>
+                            <button onclick="window.generateAICoverLetter()" style="margin-top: 14px; width: 100%; padding: 9px; background: #3b82f6; color: white; font-size: 12px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer;">
+                                ✨ Wygeneruj List Motywacyjny AI
+                            </button>
+                        </div>
+
+                        <!-- Symulator Rozmowy Kwalifikacyjnej AI -->
+                        <div style="padding: 1.25rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="padding: 4px 8px; border-radius: 6px; background: rgba(168, 85, 247, 0.15); color: #c084fc; font-size: 12px; font-weight: 700;">AI Mock Interview</span>
+                                    <h4 style="color: white; font-size: 14px; font-weight: 700; margin: 0;">Trener Rozmów Rekrutacyjnych</h4>
+                                </div>
+                                <p style="font-size: 12px; color: #94a3b8; margin-top: 8px;">Przećwicz pytania behawioralne i techniczne dopasowane do Twojej branży z natychmiastową oceną i wskazówkami AI.</p>
+
+                                <div style="margin-top: 12px; padding: 10px; border-radius: 8px; background: #0b1120; border: 1px solid #334155;">
+                                    <span style="font-size: 11px; color: #34d399; font-weight: 600;">Przykładowe pytanie:</span>
+                                    <p style="font-size: 12px; color: #e2e8f0; margin: 4px 0 0 0;">„Opowiedz o najtrudniejszym problemie architektonicznym, który rozwiązałeś w ostatnim projekcie.”</p>
+                                </div>
+                            </div>
+                            <button onclick="showToast('Uruchomiono symulator pytań rekrutacyjnych!', 'success')" style="margin-top: 14px; width: 100%; padding: 9px; background: #8b5cf6; color: white; font-size: 12px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer;">
+                                🎙️ Rozpocznij Symulację Wywiadu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        if (tab === 'salary') {
+            dashContentArea.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <div style="padding: 1.25rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b;">
+                        <h4 style="font-size: 15px; font-weight: 700; color: white; margin: 0 0 6px 0;">Analiza Stawek Rynkowych (Benchmark Wynagrodzeń 2026)</h4>
+                        <p style="font-size: 12px; color: #94a3b8; margin: 0 0 16px 0;">Dane oparte na 12 000+ zweryfikowanych ofertach pracy w IT i nowoczesnych branżach.</p>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                            <div style="padding: 1rem; border-radius: 10px; background: #0b1120; border: 1px solid #334155;">
+                                <span style="font-size: 11px; color: #94a3b8;">Twoja estymacja rynkowa</span>
+                                <h3 style="font-size: 1.25rem; font-weight: 700; color: #34d399; margin: 4px 0 0 0;">19 500 - 26 000 PLN</h3>
+                                <p style="font-size: 11px; color: #64748b; margin-top: 2px;">B2B netto (+VAT) / msc</p>
+                            </div>
+                            <div style="padding: 1rem; border-radius: 10px; background: #0b1120; border: 1px solid #334155;">
+                                <span style="font-size: 11px; color: #94a3b8;">Odpowiednik na Umowę o Pracę</span>
+                                <h3 style="font-size: 1.25rem; font-weight: 700; color: #60a5fa; margin: 4px 0 0 0;">15 000 - 20 500 PLN</h3>
+                                <p style="font-size: 11px; color: #64748b; margin-top: 2px;">Brutto / msc</p>
+                            </div>
+                            <div style="padding: 1rem; border-radius: 10px; background: #0b1120; border: 1px solid #334155;">
+                                <span style="font-size: 11px; color: #94a3b8;">Potencjał Negocjacyjny</span>
+                                <h3 style="font-size: 1.25rem; font-weight: 700; color: #c084fc; margin: 4px 0 0 0;">Bardzo Wysoki (+15%)</h3>
+                                <p style="font-size: 11px; color: #64748b; margin-top: 2px;">Wysokie zapotrzebowanie na rynku</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
         if (tab === 'saved') {
             const saved = getSavedJobs();
             if (saved.length === 0) {
@@ -447,19 +543,19 @@ function initDashboard() {
         dashContentArea.innerHTML = `
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 1.25rem;">
                 <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b;">
-                    <span style="font-size: 12px; color: #94a3b8;">Status CV</span>
-                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #34d399; margin: 4px 0 0 0;">Aktywne & Zoptymalizowane</h3>
+                    <span style="font-size: 12px; color: #94a3b8;">Status CV & Profilu</span>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #34d399; margin: 4px 0 0 0;">Aktywne & Zoptymalizowane (PRO)</h3>
                     <p style="font-size: 11px; color: #64748b; margin: 4px 0 0 0;">Ostatnia analiza AI: Dzisiaj</p>
                 </div>
                 <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b;">
-                    <span style="font-size: 12px; color: #94a3b8;">Dopasowane Oferty</span>
+                    <span style="font-size: 12px; color: #94a3b8;">Dopasowane Oferty AI</span>
                     <h3 style="font-size: 1.1rem; font-weight: 700; color: #60a5fa; margin: 4px 0 0 0;">18 nowych</h3>
                     <p style="font-size: 11px; color: #64748b; margin: 4px 0 0 0;">Dopasowanie powyżej 85%</p>
                 </div>
                 <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b;">
-                    <span style="font-size: 12px; color: #94a3b8;">Wyświetlenia profilu</span>
-                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #c084fc; margin: 4px 0 0 0;">42 rekruterów</h3>
-                    <p style="font-size: 11px; color: #64748b; margin: 4px 0 0 0;">W tym tygodniu</p>
+                    <span style="font-size: 12px; color: #94a3b8;">Widoczność w bazie Talentów</span>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #c084fc; margin: 4px 0 0 0;">Top 3% Talentów</h3>
+                    <p style="font-size: 11px; color: #64748b; margin: 4px 0 0 0;">Wyróżniony profil kandydata</p>
                 </div>
             </div>
 
@@ -486,7 +582,7 @@ function initDashboard() {
     function renderRecruiterContent(tab) {
         const rJobs = getRecruiterJobs();
 
-        if (tab === 'candidates') {
+        if (tab === 'pipeline') {
             const allApplicants = [];
             rJobs.forEach(job => {
                 (job.applicants || []).forEach(cand => {
@@ -494,43 +590,136 @@ function initDashboard() {
                 });
             });
 
-            if (allApplicants.length === 0) {
-                dashContentArea.innerHTML = `
-                    <div style="text-align: center; padding: 3rem 1rem; color: #94a3b8;">
-                        <svg width="48" height="48" style="margin: 0 auto 0.75rem auto; color: #475569;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                        <h4 style="font-size: 1rem; font-weight: 600; color: white; margin-bottom: 4px;">Brak nowych kandydatów</h4>
-                        <p style="font-size: 12px;">Gdy kandydaci zaaplikują na Twoje oferty, pojawią się tutaj wraz z oceną dopasowania AI.</p>
-                    </div>
-                `;
-                return;
-            }
+            const colNew = allApplicants.filter(c => c.status === 'Nowa aplikacja' || c.status === 'W trakcie weryfikacji');
+            const colInterview = allApplicants.filter(c => c.status === 'Rozmowa kwalifikacyjna' || c.status === 'Zaproszenie na rozmowę');
+            const colOffer = allApplicants.filter(c => c.status === 'Oferta złożona' || c.status === 'Zatrudniony');
 
             dashContentArea.innerHTML = `
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    ${allApplicants.map(cand => `
-                        <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.3); display: flex; align-items: center; justify-content: center; color: #a5b4fc; font-weight: bold; font-size: 14px;">
-                                    ${cand.name.charAt(0)}
-                                </div>
-                                <div>
-                                    <div style="display: flex; align-items: center; gap: 8px;">
-                                        <h4 style="font-weight: 600; color: white; font-size: 14px; margin: 0;">${cand.name}</h4>
-                                        <span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3);">
-                                            AI Match: ${cand.score}%
-                                        </span>
-                                    </div>
-                                    <p style="font-size: 12px; color: #94a3b8; margin: 2px 0 0 0;">Stanowisko: <span style="color: #cbd5e1; font-weight: 500;">${cand.jobTitle}</span> • ${cand.date}</p>
-                                </div>
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                        <h4 style="font-size: 14px; font-weight: 700; color: white; margin: 0;">Kanban Rekrutacyjny & Statusy Kandydatów</h4>
+                        <button onclick="showToast('Raport kandydatów wyeksportowany do CSV!', 'success')" style="padding: 6px 12px; background: #1e293b; border: 1px solid #334155; color: #cbd5e1; font-size: 12px; font-weight: 500; border-radius: 8px; cursor: pointer;">
+                            📥 Eksportuj Raport CSV
+                        </button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
+                        <!-- Kolumna 1: Nowe zgłoszenia -->
+                        <div style="padding: 1rem; border-radius: 12px; background: #0b1120; border: 1px solid #1e293b;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                                <span style="font-size: 12px; font-weight: 700; color: #60a5fa;">Nowe Zgłoszenia</span>
+                                <span style="font-size: 11px; padding: 2px 6px; border-radius: 9999px; background: rgba(59, 130, 246, 0.2); color: #93c5fd; font-weight: bold;">${colNew.length}</span>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span style="padding: 4px 10px; font-size: 12px; font-weight: 600; border-radius: 8px; background: #1e293b; color: #cbd5e1; border: 1px solid #334155;">
-                                    ${cand.status}
-                                </span>
-                                <a href="mailto:${cand.email}" style="padding: 6px 12px; background: #4f46e5; color: white; font-size: 12px; font-weight: 500; border-radius: 8px; text-decoration: none;">Kontakt</a>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                ${colNew.map(c => `
+                                    <div style="padding: 10px; border-radius: 8px; background: #1e293b; border: 1px solid #334155;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-size: 13px; color: white;">${c.name}</strong>
+                                            <span style="font-size: 10px; font-weight: 800; color: #34d399;">${c.score}%</span>
+                                        </div>
+                                        <p style="font-size: 11px; color: #94a3b8; margin: 2px 0 6px 0;">${c.jobTitle}</p>
+                                        <button onclick="window.advanceCandidate('${c.name}', 'Rozmowa kwalifikacyjna')" style="width: 100%; padding: 4px; background: #2563eb; color: white; font-size: 11px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer;">
+                                            Przenieś do Rozmowy →
+                                        </button>
+                                    </div>
+                                `).join('')}
                             </div>
                         </div>
-                    `).join('')}
+
+                        <!-- Kolumna 2: Rozmowy kwalifikacyjne -->
+                        <div style="padding: 1rem; border-radius: 12px; background: #0b1120; border: 1px solid #1e293b;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                                <span style="font-size: 12px; font-weight: 700; color: #c084fc;">Rozmowa Kwalifikacyjna</span>
+                                <span style="font-size: 11px; padding: 2px 6px; border-radius: 9999px; background: rgba(168, 85, 247, 0.2); color: #d8b4fe; font-weight: bold;">${colInterview.length}</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                ${colInterview.map(c => `
+                                    <div style="padding: 10px; border-radius: 8px; background: #1e293b; border: 1px solid #334155;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-size: 13px; color: white;">${c.name}</strong>
+                                            <span style="font-size: 10px; font-weight: 800; color: #34d399;">${c.score}%</span>
+                                        </div>
+                                        <p style="font-size: 11px; color: #94a3b8; margin: 2px 0 6px 0;">${c.jobTitle}</p>
+                                        <button onclick="window.advanceCandidate('${c.name}', 'Oferta złożona')" style="width: 100%; padding: 4px; background: #8b5cf6; color: white; font-size: 11px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer;">
+                                            Złóż Ofertę Pracy →
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Kolumna 3: Oferta / Zatrudniony -->
+                        <div style="padding: 1rem; border-radius: 12px; background: #0b1120; border: 1px solid #1e293b;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                                <span style="font-size: 12px; font-weight: 700; color: #34d399;">Oferta / Hired</span>
+                                <span style="font-size: 11px; padding: 2px 6px; border-radius: 9999px; background: rgba(16, 185, 129, 0.2); color: #6ee7b7; font-weight: bold;">${colOffer.length}</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                ${colOffer.map(c => `
+                                    <div style="padding: 10px; border-radius: 8px; background: #1e293b; border: 1px solid rgba(16, 185, 129, 0.4);">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-size: 13px; color: white;">${c.name}</strong>
+                                            <span style="font-size: 10px; font-weight: 800; color: #34d399;">${c.score}%</span>
+                                        </div>
+                                        <p style="font-size: 11px; color: #94a3b8; margin: 2px 0 4px 0;">${c.jobTitle}</p>
+                                        <span style="display:block; text-align:center; padding: 2px; font-size: 10px; color: #34d399; font-weight: 700;">★ Status: Oferta zaakceptowana</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        if (tab === 'headhunter') {
+            dashContentArea.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                    <div style="padding: 1.25rem; border-radius: 12px; background: linear-gradient(135deg, rgba(30, 27, 75, 0.6), rgba(49, 46, 129, 0.4)); border: 1px solid rgba(99, 102, 241, 0.4);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                            <div>
+                                <span style="font-size: 11px; font-weight: 700; color: #a5b4fc; text-transform: uppercase;">AI Talent Scout & Direct Outreach</span>
+                                <h3 style="font-size: 1.25rem; font-weight: 800; color: white; margin: 4px 0 0 0;">Baza 4 800+ Aktywnych Kandydatów</h3>
+                                <p style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">Wyszukuj kandydatów po tagach technologicznych i zapraszaj ich do swoich rekrutacji.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista Kandydatów w bazie Talentów -->
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 42px; height: 42px; border-radius: 10px; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 15px;">AK</div>
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <h4 style="font-weight: 700; color: white; font-size: 14px; margin: 0;">Aleksander Kowalczyk</h4>
+                                        <span style="padding: 2px 6px; font-size: 10px; font-weight: bold; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #34d399;">Top 1% Talent</span>
+                                    </div>
+                                    <p style="font-size: 12px; color: #94a3b8; margin: 2px 0 0 0;">Senior Fullstack Engineer (React, Node, Go) • 7 lat doświadczenia</p>
+                                </div>
+                            </div>
+                            <button onclick="showToast('Wysłano bezpośrednie zaproszenie do aplikacji!', 'success')" style="padding: 8px 14px; background: #4f46e5; color: white; font-size: 12px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer;">
+                                ✉️ Zaproś do Aplikacji
+                            </button>
+                        </div>
+
+                        <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 42px; height: 42px; border-radius: 10px; background: #7c3aed; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 15px;">MN</div>
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <h4 style="font-weight: 700; color: white; font-size: 14px; margin: 0;">Marta Nowicka</h4>
+                                        <span style="padding: 2px 6px; font-size: 10px; font-weight: bold; border-radius: 4px; background: rgba(59, 130, 246, 0.2); color: #60a5fa;">AI Specialist</span>
+                                    </div>
+                                    <p style="font-size: 12px; color: #94a3b8; margin: 2px 0 0 0;">Machine Learning & Python Engineer (LangChain, PyTorch) • 4 lata</p>
+                                </div>
+                            </div>
+                            <button onclick="showToast('Wysłano bezpośrednie zaproszenie do aplikacji!', 'success')" style="padding: 8px 14px; background: #4f46e5; color: white; font-size: 12px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer;">
+                                ✉️ Zaproś do Aplikacji
+                            </button>
+                        </div>
+                    </div>
                 </div>
             `;
             return;
@@ -562,6 +751,7 @@ function initDashboard() {
                                 <li>★ Najwyższa pozycja na liście</li>
                                 <li>★ Graficzne wyróżnienie & badge HOT</li>
                                 <li>★ 3x więcej wyświetleń & AI Matcher boost</li>
+                                <li>★ Dostęp do bazy AI Headhunter</li>
                             </ul>
                         </div>
                         <button onclick="document.getElementById('dashboardClose').click(); window.location.hash='ogloszenia';" style="margin-top: 1.5rem; width: 100%; padding: 8px; background: #4f46e5; color: white; font-size: 12px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">
@@ -573,6 +763,7 @@ function initDashboard() {
             return;
         }
 
+        // Default 'main' tab for recruiter
         const totalViews = rJobs.reduce((sum, j) => sum + (j.views || 0), 0);
         const totalApplicants = rJobs.reduce((sum, j) => sum + (j.applicants?.length || 0), 0);
 
@@ -632,6 +823,51 @@ function initDashboard() {
         localStorage.setItem('jobnexus_saved_jobs', JSON.stringify(saved));
         renderCandidateContent('saved');
         showToast('Usunięto ofertę z zapisanych', 'info');
+    };
+
+    window.advanceCandidate = (candName, newStatus) => {
+        const rJobs = getRecruiterJobs();
+        rJobs.forEach(j => {
+            (j.applicants || []).forEach(c => {
+                if (c.name === candName) c.status = newStatus;
+            });
+        });
+        saveRecruiterJobs(rJobs);
+        renderRecruiterContent('pipeline');
+        showToast(`Zaktualizowano status kandydata ${candName} na: ${newStatus}`, 'success');
+    };
+
+    window.generateAICoverLetter = () => {
+        const input = document.getElementById('aiCoverRoleInput')?.value.trim() || 'Frontend Developer';
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-card" style="max-width: 600px; width: 100%; padding: 1.5rem; background: #0f172a; border: 1px solid #334155; border-radius: 1rem;">
+                <h3 style="color: white; font-size: 16px; font-weight: 700; margin-bottom: 8px;">Wygenerowany List Motywacyjny AI</h3>
+                <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Stanowisko: <strong style="color: #60a5fa;">${input}</strong></p>
+                <textarea readonly style="width: 100%; height: 200px; padding: 10px; background: #0b1120; border: 1px solid #1e293b; border-radius: 8px; color: #e2e8f0; font-size: 12px; line-height: 1.5; resize: none; box-sizing: border-box;">
+Szanowni Państwo,
+
+Z wielkim zainteresowaniem aplikuję na stanowisko ${input} w Państwa zespole. Posiadam wieloletnie doświadczenie w tworzeniu skalowalnych aplikacji oraz optymalizacji rozwiązań technicznych. 
+
+Moje kompetencje obejmują pracę z nowoczesnymi technologiami, dbałość o najwyższą jakość kodu oraz efektywną współpracę zespołową w zwinnych metodykach. Wierzę, że moje umiejętności oraz zaangażowanie przyniosą realną wartość Państwa projektom.
+
+Z chęcią przedstawię szczegóły mojego doświadczenia podczas rozmowy rekrutacyjnej.
+
+Z poważaniem,
+${AuthService.getUser()?.name || 'Kandydat'}
+                </textarea>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px;">
+                    <button onclick="navigator.clipboard.writeText(this.parentElement.previousElementSibling.value); showToast('Skopiowano do schowka!', 'success');" style="padding: 8px 16px; background: #2563eb; color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;">
+                        📋 Kopiuj Treść
+                    </button>
+                    <button onclick="this.closest('.modal-overlay').remove()" style="padding: 8px 16px; background: #334155; color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer;">
+                        Zamknij
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
     };
 }
 
