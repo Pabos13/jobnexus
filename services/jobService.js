@@ -1,6 +1,6 @@
 /**
  * Job Service
- * Handles all job-related API calls through backend proxy
+ * Handles all job-related API calls and fallbacks
  */
 
 import { CONFIG } from '../config.js';
@@ -27,16 +27,43 @@ export class JobService {
     }
     
     /**
-     * Load jobs from Jooble API via backend proxy
+     * Load jobs from Jooble API or demo data
      * @param {string} keywords - Search keywords
      * @param {string} location - Job location
      * @returns {Promise<Array>} Array of job objects
      */
     static async loadJoobleJobs(keywords = 'praca', location = 'Polska') {
+        const JOOBLE_KEY = '5be594f9-f5e0-41f5-a41a-9c1ea12566be';
+        
+        // 1. Try Jooble API directly
         try {
-            // Call backend proxy instead of Jooble directly
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), CONFIG.API_TIMEOUT);
+            const timeoutId = setTimeout(() => controller.abort(), CONFIG.API_TIMEOUT || 8000);
+            const response = await fetch(`https://jooble.org/api/${JOOBLE_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    keywords: keywords || 'praca', 
+                    location: location || 'Polska' 
+                }),
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.jobs && Array.isArray(data.jobs) && data.jobs.length > 0) {
+                    return data.jobs.map(job => this.normalizeJoobleJob(job));
+                }
+            }
+        } catch (err) {
+            console.warn('Direct Jooble API attempt:', err.message);
+        }
+
+        // 2. Try Backend Proxy if available
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4000);
             const response = await fetch(`${CONFIG.API_BASE_URL}/jobs/search`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -45,22 +72,19 @@ export class JobService {
             });
             clearTimeout(timeoutId);
             
-            if (!response.ok) {
-                throw new Error(`API error: ${response.status}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.jobs && Array.isArray(data.jobs) && data.jobs.length > 0) {
+                    return data.jobs.map(job => this.normalizeJoobleJob(job));
+                }
             }
-            
-            const data = await response.json();
-            
-            if (data.jobs && Array.isArray(data.jobs)) {
-                return data.jobs.map(job => this.normalizeJoobleJob(job));
-            }
-            
-            return [];
         } catch (err) {
-            console.warn('Jooble API error:', err.message);
-            console.info('Using demo data as fallback');
-            return this.getDemoJobs();
+            // silent fallback
         }
+
+        // 3. Fallback to Demo jobs filtered by query
+        console.info('Using high quality demo jobs');
+        return this.filterJobs(this.getDemoJobs(), { searchQuery: keywords, locationQuery: location, currentFilter: 'all' });
     }
     
     /**
@@ -74,10 +98,10 @@ export class JobService {
             title: raw.title || 'Oferta pracy',
             company: raw.company || 'Pracodawca',
             location: raw.location || 'Polska',
-            type: this.detectJobType(raw.title, raw.snippet),
+            type: this.detectJobType(raw.title, raw.snippet || ''),
             salary: raw.salary || 'Do negocjacji',
             date: raw.updated || raw.date || new Date().toISOString().split('T')[0],
-            description: raw.snippet || raw.description || '',
+            description: (raw.snippet || raw.description || '').replace(/<\/?[^>]+(>|$)/g, ''),
             source: 'jooble',
             featured: false,
             url: raw.link || raw.url || '#'
@@ -107,28 +131,28 @@ export class JobService {
      */
     static getDemoJobs() {
         const demoTitles = [
-            'Frontend Developer React', 'Backend Developer Node.js', 'Fullstack Developer',
-            'DevOps Engineer', 'Data Scientist', 'Product Manager',
-            'UX/UI Designer', 'QA Engineer', 'Scrum Master',
-            'Java Developer', 'Python Developer', 'Mobile Developer',
-            'Cloud Architect', 'Security Engineer', 'ML Engineer',
-            'Project Manager', 'Business Analyst', 'HR Specialist',
-            'Marketing Manager', 'Sales Representative', 'Accountant',
-            'Customer Support', 'Content Writer', 'Graphic Designer'
+            'Frontend Developer React & TypeScript', 'Backend Developer Node.js / Express', 'Fullstack Developer (React + Node)',
+            'DevOps Engineer (AWS/Docker)', 'Data Scientist & AI Specialist', 'Product Manager B2B',
+            'UX/UI Designer Figma', 'QA Automation Engineer', 'Scrum Master / Agile Coach',
+            'Java Spring Boot Developer', 'Python Django / FastAPI Developer', 'Mobile Developer (React Native / Flutter)',
+            'Cloud Architect (GCP/Azure)', 'Security Engineer & Pentester', 'Machine Learning Engineer',
+            'Project Manager IT', 'Business System Analyst', 'HR Specialist / Tech Recruiter',
+            'Performance Marketing Specialist', 'B2B Sales Representative', 'Samodzielna Księgowa',
+            'Customer Support Specialist', 'SEO & Content Specialist', 'Graphic Designer 3D'
         ];
         
         const companies = [
             'TechCorp Poland', 'InnovateSoft', 'Digital Ventures',
-            'CloudNative Sp. z o.o.', 'DataDriven', 'FutureWorks',
-            'CodeCraft', 'AppMasters', 'WebSolutions',
-            'SmartSystems', 'NextGen IT', 'CyberShield'
+            'CloudNative Sp. z o.o.', 'DataDriven AI', 'FutureWorks Labs',
+            'CodeCraft Studio', 'AppMasters Group', 'WebSolutions Polska',
+            'SmartSystems Enterprise', 'NextGen IT', 'CyberShield Security'
         ];
         
         const locations = [
             'Warszawa, mazowieckie', 'Kraków, małopolskie', 'Wrocław, dolnośląskie',
             'Gdańsk, pomorskie', 'Poznań, wielkopolskie', 'Łódź, łódzkie',
             'Katowice, śląskie', 'Lublin, lubelskie', 'Szczecin, zachodniopomorskie',
-            'Bydgoszcz, kujawsko-pomorskie', 'Białystok, podlaskie', 'Toruń, kujawsko-pomorskie'
+            'Zdalnie', 'Zdalnie (Polska)', 'Wrocław / Zdalnie'
         ];
         
         const types = ['Pełny etat', 'Zdalna', 'Kontrakt', 'Staż', 'Część etatu'];
@@ -139,9 +163,9 @@ export class JobService {
             company: companies[i % companies.length],
             location: locations[i % locations.length],
             type: types[i % types.length],
-            salary: `${8000 + (i * 500)} - ${12000 + (i * 800)} zł`,
+            salary: `${9000 + (i * 600)} - ${14000 + (i * 900)} PLN`,
             date: new Date(Date.now() - i * 86400000).toISOString().split('T')[0],
-            description: `Szukamy ${title} do naszego zespołu. Atrakcyjne warunki, możliwość rozwoju.`,
+            description: `Poszukujemy osoby na stanowisko ${title}. Oferujemy pracę w nowoczesnym środowisku, stabilne zatrudnienie, elastyczne godziny oraz pakiet benefitów (Multisport, opieka medyczna).`,
             source: 'demo',
             featured: i < 3,
             url: '#'
@@ -159,7 +183,7 @@ export class JobService {
         const combined = [];
         
         // Add CSV jobs first (local data takes priority)
-        csvJobs.forEach(job => {
+        (csvJobs || []).forEach(job => {
             const key = `${job.title}|${job.company}`.toLowerCase();
             if (!seen.has(key)) {
                 seen.add(key);
@@ -168,7 +192,7 @@ export class JobService {
         });
         
         // Add API jobs, skip duplicates
-        apiJobs.forEach(job => {
+        (apiJobs || []).forEach(job => {
             const key = `${job.title}|${job.company}`.toLowerCase();
             if (!seen.has(key)) {
                 seen.add(key);
@@ -186,23 +210,23 @@ export class JobService {
      * @returns {Array} Filtered jobs
      */
     static filterJobs(jobs, filters) {
-        let filtered = [...jobs];
+        let filtered = [...(jobs || [])];
         
         // Text search
-        if (filters.searchQuery) {
+        if (filters && filters.searchQuery) {
             const q = filters.searchQuery.toLowerCase();
             filtered = filtered.filter(j =>
-                j.title.toLowerCase().includes(q) ||
-                j.company.toLowerCase().includes(q) ||
-                j.description.toLowerCase().includes(q)
+                (j.title && j.title.toLowerCase().includes(q)) ||
+                (j.company && j.company.toLowerCase().includes(q)) ||
+                (j.description && j.description.toLowerCase().includes(q))
             );
         }
         
         // Location filter
-        if (filters.locationQuery) {
+        if (filters && filters.locationQuery) {
             const loc = filters.locationQuery.toLowerCase();
             filtered = filtered.filter(j =>
-                j.location.toLowerCase().includes(loc)
+                j.location && j.location.toLowerCase().includes(loc)
             );
         }
         
@@ -215,10 +239,10 @@ export class JobService {
             'internship': 'staż'
         };
         
-        if (filters.currentFilter !== 'all' && filterMap[filters.currentFilter]) {
+        if (filters && filters.currentFilter !== 'all' && filterMap[filters.currentFilter]) {
             const typeQ = filterMap[filters.currentFilter];
             filtered = filtered.filter(j =>
-                j.type.toLowerCase().includes(typeQ)
+                j.type && j.type.toLowerCase().includes(typeQ)
             );
         }
         
@@ -226,7 +250,7 @@ export class JobService {
         filtered.sort((a, b) => {
             if (a.featured && !b.featured) return -1;
             if (!a.featured && b.featured) return 1;
-            return new Date(b.date) - new Date(a.date);
+            return new Date(b.date || 0) - new Date(a.date || 0);
         });
         
         return filtered;
