@@ -1973,3 +1973,80 @@ img {
 .dash-tab:hover {
     color: #ffffff;
 }
+
+
+/* ==========================================
+   MOBILE NAVBAR & HAMBURGER SLIDEOUT FIX
+   ========================================== */
+@media (max-width: 768px) {
+    .nav-toggle {
+        display: flex !important;
+        position: relative !important;
+        z-index: 10002 !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: transparent !important;
+        border: none !important;
+        cursor: pointer !important;
+        padding: 8px !important;
+    }
+
+    .nav-toggle span {
+        display: block !important;
+        width: 24px !important;
+        height: 2.5px !important;
+        background: #f0f0f5 !important;
+        border-radius: 2px !important;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .nav-toggle.active span:nth-child(1) {
+        transform: translateY(7.5px) rotate(45deg) !important;
+    }
+
+    .nav-toggle.active span:nth-child(2) {
+        opacity: 0 !important;
+        transform: scaleX(0) !important;
+    }
+
+    .nav-toggle.active span:nth-child(3) {
+        transform: translateY(-7.5px) rotate(-45deg) !important;
+    }
+
+    .nav-menu {
+        position: fixed !important;
+        top: 0 !important;
+        right: -100% !important;
+        width: 80% !important;
+        max-width: 320px !important;
+        height: 100vh !important;
+        z-index: 10001 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 80px 1.5rem 1.5rem 1.5rem !important;
+        background: rgba(10, 10, 15, 0.98) !important;
+        backdrop-filter: blur(30px) !important;
+        -webkit-backdrop-filter: blur(30px) !important;
+        border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+        box-shadow: -15px 0 35px rgba(0, 0, 0, 0.8) !important;
+        transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        gap: 0.5rem !important;
+    }
+
+    .nav-menu.open {
+        right: 0 !important;
+    }
+
+    .nav-menu .nav-link {
+        width: 100% !important;
+        padding: 0.875rem 1rem !important;
+        font-size: 1rem !important;
+        border-radius: 8px !important;
+        text-align: left !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+}
