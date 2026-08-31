@@ -155,6 +155,13 @@ async function initAuth() {
                 syncAuthTrigger(user);
                 close();
                 showToast(registerMode ? `Witaj w JobNexus, ${user.name}!` : 'Zalogowano pomyślnie!', 'success');
+
+                // AUTOMATYCZNE OTWARCIE PANELU (KANDYDAT / REKRUTER) PO LOGOWANIU
+                setTimeout(() => {
+                    if (typeof window.openDashboard === 'function') {
+                        window.openDashboard();
+                    }
+                }, 200);
             } else if (registerMode) {
                 els.authError.textContent = 'Sprawdź skrzynkę e-mail i potwierdź konto.';
                 els.authError.classList.remove('hidden');
@@ -209,7 +216,7 @@ function initDashboard() {
     const dashContentArea = document.getElementById('dashContentArea');
     const dashLogoutBtn = document.getElementById('dashLogoutBtn');
 
-    if (!dashModal || !dashTrigger) return;
+    if (!dashModal) return;
 
     let currentActiveTab = 'main';
 
@@ -276,7 +283,7 @@ function initDashboard() {
         dashModal.classList.add('hidden');
     };
 
-    dashTrigger.addEventListener('click', openDashboard);
+    dashTrigger?.addEventListener('click', openDashboard);
     dashClose?.addEventListener('click', closeDashboard);
     dashModal.addEventListener('click', (e) => {
         if (e.target === dashModal) closeDashboard();
@@ -293,7 +300,7 @@ function initDashboard() {
         if (!user) return;
         const newRole = user.role === 'recruiter' ? 'candidate' : 'recruiter';
         AuthService.updateRole(newRole);
-        const dashTriggerSpan = dashTrigger.querySelector('span');
+        const dashTriggerSpan = dashTrigger?.querySelector('span');
         if (dashTriggerSpan) {
             dashTriggerSpan.textContent = newRole === 'recruiter' ? 'Panel Rekrutera' : 'Panel Kandydata';
         }
