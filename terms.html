@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regulamin Serwisu — JobNexus</title>
+    <meta name="description" content="Regulamin świadczenia usług drogą elektroniczną, publikacji ogłoszeń oraz subskrypcji rekruterskich w platformie JobNexus.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./styles-mobile.css">
+    <style>
+        .legal-page-container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 5rem 1.5rem;
+        }
+        .legal-header-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
+            border: 1px solid rgba(79, 70, 229, 0.35);
+            border-radius: 1.25rem;
+            padding: 2.5rem 2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        .legal-header-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .legal-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.35);
+            color: #a5b4fc;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .legal-title {
+            font-size: 2.25rem;
+            font-weight: 900;
+            color: #f8fafc;
+            line-height: 1.2;
+            margin: 0 0 0.75rem 0;
+        }
+        .legal-subtitle {
+            font-size: 1.05rem;
+            color: #94a3b8;
+            margin: 0;
+            line-height: 1.6;
+        }
+        .legal-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1.25rem;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .legal-section {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(12px);
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+        .legal-section:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+        .legal-section-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .legal-section-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+        .legal-text {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin: 0 0 1rem 0;
+        }
+        .legal-list {
+            margin: 0 0 1rem 1.25rem;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        .legal-list li {
+            margin-bottom: 0.5rem;
+        }
+        .legal-highlight-box {
+            background: rgba(15, 23, 42, 0.75);
+            border-left: 4px solid #6366f1;
+            padding: 1rem 1.25rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin: 1.25rem 0;
+            font-size: 0.9rem;
+            color: #e2e8f0;
+        }
+        .btn-back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f8fafc;
+            border-radius: 0.6rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            margin-bottom: 1.5rem;
+        }
+        .btn-back-home:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #6366f1;
+            color: #a5b4fc;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER / NAVIGATION -->
+    <header class="header" id="header">
+        <div class="header-inner">
+            <a href="./index.html" class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Job<span class="logo-accent">Nexus</span></span>
+            </a>
+
+            <div class="header-actions">
+                <a href="./index.html" class="btn btn-secondary btn-sm" style="text-decoration: none;">
+                    <span>🏠 Strona Główna</span>
+                </a>
+                <a href="./privacy.html" class="btn btn-secondary btn-sm" style="text-decoration: none;">
+                    <span>🛡️ Prywatność & RODO</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN LEGAL CONTENT -->
+    <main class="main">
+        <div class="legal-page-container">
+            <a href="./index.html" class="btn-back-home">
+                ← Wróć do serwisu JobNexus
+            </a>
+
+            <div class="legal-header-card">
+                <div class="legal-badge">📜 Warunki Korzystania z Usług</div>
+                <h1 class="legal-title">Regulamin Serwisu JobNexus</h1>
+                <p class="legal-subtitle">
+                    Niniejszy regulamin określa zasady i warunki techniczne korzystania z platformy internetowej JobNexus, w tym zasady publikowania ofert pracy, zleceń oraz zakupu płatnych pakietów publikacji i subskrypcji PRO.
+                </p>
+                <div class="legal-meta">
+                    <span>📅 Obowiązuje od: 1 września 2026 r.</span>
+                    <span>⚖️ Wersja regulaminu: v2.5</span>
+                </div>
+            </div>
+
+            <!-- § 1 -->
+            <div class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="legal-section-num">1</span>
+                    § 1. Postanowienia Ogólne i Definicje
+                </h2>
+                <p class="legal-text">
+                    1. Właścicielem i operatorem platformy rekrutacyjnej <strong>JobNexus</strong> dostępnej pod adresem internetowym <em>jobnexus-two.vercel.app</em> jest:
+                </p>
+                <div class="legal-highlight-box">
+                    <strong>JobNexus Sp. z o.o.</strong> z siedzibą w Warszawie (00-807), Al. Jerozolimskie 100, wpisana do rejestru przedsiębiorców KRS pod numerem 0000891240, NIP: 5252899441, REGON: 389912440.
+                </div>
+                <p class="legal-text">
+                    2. Użyte w niniejszym Regulaminie pojęcia oznaczają:
+                </p>
+                <ul class="legal-list">
+                    <li><strong>Serwis / Portal:</strong> platforma internetowa JobNexus.</li>
+                    <li><strong>Użytkownik:</strong> każda osoba fizyczna lub prawna korzystająca z usług Serwisu.</li>
+                    <li><strong>Kandydat:</strong> Użytkownik poszukujący zatrudnienia lub zleceń freelance, który może wgrywać pliki CV i aplikować na ogłoszenia.</li>
+                    <li><strong>Pracodawca / Rekruter:</strong> Użytkownik publikujący oferty pracy, zlecenia lub korzystający z Abonamentu PRO i Bazy CV.</li>
+                    <li><strong>AI CV Matcher:</strong> moduł algorytmiczny analizujący strukturę pliku CV pod kątem wymagań ATS i dopasowania do ogłoszeń.</li>
+                </ul>
+            </div>
+
+            <!-- § 2 -->
+            <div class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="legal-section-num">2</span>
+                    § 2. Warunki Techniczne i Rejestracja Konta
+                </h2>
+                <p class="legal-text">
+                    1. Korzystanie z Serwisu wymaga urządzenia z dostępem do Internetu oraz nowoczesnej przeglądarki internetowej obsługującej standardy HTML5, CSS3 oraz JavaScript.
+                </p>
+                <p class="legal-text">
+                    2. Rejestracja w Serwisie jest dobrowolna i bezpłatna. Wymaga podania prawdziwego adresu e-mail, imienia i nazwiska / nazwy firmy oraz bezpiecznego hasła (min. 6 znaków).
+                </p>
+                <p class="legal-text">
+                    3. Użytkownik ponosi pełną odpowiedzialność za zachowanie poufności swoich danych logowania i nieudostępnianie ich osobom nieupoważnionym.
+                </p>
+            </div>
+
+            <!-- § 3 -->
+            <div class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="legal-section-num">3</span>
+                    § 3. Publikacja Ofert Pracy i Zleceń Freelance
+                </h2>
+                <p class="legal-text">
+                    1. Pracodawca może publikować w Serwisie oferty zatrudnienia oraz zlecenia projektowe dla freelancerów.
+                </p>
+                <p class="legal-text">
+                    2. Zabrania się publikowania ogłoszeń:
+                </p>
+                <ul class="legal-list">
+                    <li>Niezgodnych z obowiązującym polskim i unijnym prawem.</li>
+                    <li>Dyskryminujących kandydatów ze względu na płeć, wiek, rasę, wyznanie lub orientację.</li>
+                    <li>Wprowadzających w błąd odnośnie widełek wynagrodzenia lub charakteru pracy.</li>
+                    <li>Zawierających treści pornograficzne, nielegalne oferty finansowe (np. piramidy finansowe, MLM).</li>
+                </ul>
+                <p class="legal-text">
+                    3. Administrator zastrzega sobie prawo do natychmiastowego usunięcia ogłoszenia naruszającego powyższe standardy bez prawa do zwrotu opłaty publikacyjnej.
+                </p>
+            </div>
+
+            <!-- § 4 -->
+            <div class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="legal-section-num">4</span>
+                    § 4. Pakiety Publikacji, Cennik i Płatności
+                </h2>
+                <p class="legal-text">
+                    1. Serwis oferuje następujące płatne pakiety publikacyjne i subskrypcyjne:
+                </p>
+                <ul class="legal-list">
+                    <li><strong>Pakiet Standard (9,99 zł brutto / 30 dni):</strong> podstawowa publikacja oferty pracy lub zlecenia na okres 30 dni.</li>
+                    <li><strong>Pakiet Wyróżniony HOT (29,99 zł brutto / 30 dni):</strong> priorytet na liście ofert, wyróżniająca etykieta graficzna HOT oraz powiadomienie e-mail do pasujących kandydatów.</li>
+                    <li><strong>Abonament PRO (99,00 zł brutto / 30 dni):</strong> pełny dostęp do Bazy CV i AI Headhuntera (4 800+ talentów), lejek rekrutacyjny Kanban oraz nielimitowane publikacje ofert.</li>
+                </ul>
+                <p class="legal-text">
+                    2. Płatności realizowane są za pośrednictwem bezpiecznych operatorów płatności elektronicznych (BLIK, Szybki Przelew bankowy PayU/Przelewy24, Karta płatnicza Visa/Mastercard).
+                </p>
+                <p class="legal-text">
+                    3. Dostęp do zakupionej usługi aktywowany jest natychmiast po potwierdzeniu pomyślnej autoryzacji płatności.
+                </p>
+            </div>
+
+            <!-- § 5 -->
+            <div class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="legal-section-num">5</span>
+                    § 5. AI CV Matcher i Weryfikacja ATS
+                </h2>
+                <p class="legal-text">
+                    1. Moduł AI CV Matcher umożliwia kandydatom analizę dopasowania ich doświadczenia i umiejętności do ofert pracy w czasie rzeczywistym.
+                </p>
+                <p class="legal-text">
+                    2. Wgrany plik CV jest bezpiecznie przetwarzany i parsowany. Wynik ATS ma charakter informacyjno-doradczy i nie gwarantuje zatrudnienia u pracodawcy.
+                </p>
+            </div>
+
+            <!-- § 6 -->
+            <div class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="legal-section-num">6</span>
+                    § 6. Postępowanie Reklamacyjne i Odstąpienie od Umowy
+                </h2>
+                <p class="legal-text">
+                    1. Wszelkie reklamacje dotyczące funkcjonowania Serwisu lub płatności należy zgłaszać drogą elektroniczną na adres: <a href="mailto:kontakt@jobnexus.pl" style="color:#6366f1; font-weight:700;">kontakt@jobnexus.pl</a>.
+                </p>
+                <p class="legal-text">
+                    2. Administrator rozpatruje reklamacje w terminie 14 dni kalendarzowych od dnia ich otrzymania i udziela odpowiedzi drogą mailową.
+                </p>
+                <p class="legal-text">
+                    3. Konsument, który zawarł umowę o świadczenie usług, może w terminie 14 dni odstąpić od niej bez podawania przyczyny, chyba że wyraził zgodę na natychmiastowe rozpoczęcie świadczenia usługi cyfrowej przed upływem tego terminu.
+                </p>
+            </div>
+
+            <!-- § 7 -->
+            <div class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="legal-section-num">7</span>
+                    § 7. Postanowienia Końcowe
+                </h2>
+                <p class="legal-text">
+                    1. W sprawach nieuregulowanych niniejszym Regulaminem zastosowanie mają właściwe przepisy prawa polskiego, w szczególności Kodeksu Cywilnego oraz Ustawy o świadczeniu usług drogą elektroniczną.
+                </p>
+                <p class="legal-text">
+                    2. Administrator zastrzega sobie prawo do zmiany niniejszego Regulaminu z ważnych przyczyn prawnych, technologicznych lub organizacyjnych z 7-dniowym wyprzedzeniem.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <a href="./index.html" class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">Job<span class="logo-accent">Nexus</span></span>
+                </a>
+                <p class="footer-desc">
+                    Inteligentna platforma nowej generacji łącząca kandydatów, freelancerów i rekruterów przy wsparciu algorytmów AI oraz Jooble API.
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>Nawigacja</h4>
+                    <a href="./index.html#oferty">Oferty Pracy</a>
+                    <a href="./index.html#zlecenia">Zlecenia Freelance</a>
+                    <a href="./index.html#cennik">Cennik</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Dokumenty</h4>
+                    <a href="./privacy.html">Prywatność & RODO</a>
+                    <a href="./terms.html" style="color:#6366f1; font-weight:700;">Regulamin Serwisu</a>
+                    <a href="mailto:kontakt@jobnexus.pl">Pomoc Techniczna</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 JobNexus AI Engine. Wszelkie prawa zastrzeżone.</p>
+        </div>
+    </footer>
+</body>
+</html>

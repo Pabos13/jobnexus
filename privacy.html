@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polityka Prywatności & RODO — JobNexus</title>
+    <meta name="description" content="Szczegółowe zasady ochrony danych osobowych, RODO oraz polityka plików cookies w serwisie JobNexus.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./styles-mobile.css">
+    <style>
+        .legal-page-container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 5rem 1.5rem;
+        }
+        .legal-header-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 1.25rem;
+            padding: 2.5rem 2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        .legal-header-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.25) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .legal-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #38bdf8;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .legal-title {
+            font-size: 2.25rem;
+            font-weight: 900;
+            color: #f8fafc;
+            line-height: 1.2;
+            margin: 0 0 0.75rem 0;
+        }
+        .legal-subtitle {
+            font-size: 1.05rem;
+            color: #94a3b8;
+            margin: 0;
+            line-height: 1.6;
+        }
+        .legal-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1.25rem;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .legal-section {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(12px);
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+        .legal-section:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+        .legal-section-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .legal-section-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+        .legal-text {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin: 0 0 1rem 0;
+        }
+        .legal-list {
+            margin: 0 0 1rem 1.25rem;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        .legal-list li {
+            margin-bottom: 0.5rem;
+        }
+        .legal-highlight-box {
+            background: rgba(15, 23, 42, 0.75);
+            border-left: 4px solid #38bdf8;
+            padding: 1rem 1.25rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin: 1.25rem 0;
+            font-size: 0.9rem;
+            color: #e2e8f0;
+        }
+        .btn-back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f8fafc;
+            border-radius: 0.6rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            margin-bottom: 1.5rem;
+        }
+        .btn-back-home:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER / NAVIGATION -->
+    <header class="header" id="header">
+        <div class="header-inner">
+            <a href="./index.html" class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Job<span class="logo-accent">Nexus</span></span>
+            </a>
+
+            <div class="header-actions">
+                <a href="./index.html" class="btn btn-secondary btn-sm" style="text-decoration: none;">
+                    <span>🏠 Strona Główna</span>
+                </a>
+                <a href="./terms.html" class="btn btn-primary btn-sm" style="text-decoration: none;">
+                    <span>📜 Regulamin</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN LEGAL CONTENT -->
+    <main class="main">
+        <div class="legal-page-container">
+            <a href="./index.html" class="btn-back-home">
+                ← Wróć do serwisu JobNexus
+            </a>
+
+            <div class="legal-header-card">
+                <div class="legal-badge">🛡️ Ochrona Danych Osobowych</div>
+                <h1 class="legal-title">Polityka Prywatności & Standardy RODO</h1>
+                <p class="legal-subtitle">
+                    Niniejszy dokument określa zasady przetwarzania i ochrony danych osobowych użytkowników, kandydatów oraz pracodawców korzystających z platformy rekrutacyjnej JobNexus.
+                </p>
+                <div class="legal-meta">
+                    <span>📅 Ostatnia aktualizacja: 1 września 2026 r.</span>
+                    <span>🔒 Status: Obowiązująca</span>
+                </div>
+            </div>
+
+            <!-- SEKCJA 1 -->
+            <div class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="legal-section-num">1</span>
+                    Administrator Danych Osobowych
+                </h2>
+                <p class="legal-text">
+                    Administratorem Danych Osobowych (w rozumieniu Rozporządzenia Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. – <strong>RODO</strong>) zbieranych za pośrednictwem serwisu internetowego <strong>JobNexus</strong> jest:
+                </p>
+                <div class="legal-highlight-box">
+                    <strong>JobNexus Sp. z o.o.</strong><br>
+                    Al. Jerozolimskie 100, 00-807 Warszawa<br>
+                    NIP: 5252899441 • REGON: 389912440<br>
+                    E-mail do kontaktu w sprawach prywatności: <a href="mailto:iod@jobnexus.pl" style="color:#38bdf8; text-decoration:underline;">iod@jobnexus.pl</a>
+                </div>
+            </div>
+
+            <!-- SEKCJA 2 -->
+            <div class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="legal-section-num">2</span>
+                    Podstawa Prawna i Cele Przetwarzania Danych
+                </h2>
+                <p class="legal-text">
+                    Twoje dane osobowe są przetwarzane zgodnie z obowiązującymi przepisami prawa w następujących celach:
+                </p>
+                <ul class="legal-list">
+                    <li><strong>Świadczenie usług drogą elektroniczną (art. 6 ust. 1 lit. b RODO):</strong> rejestracja konta użytkownika, publikowanie ofert pracy, składanie aplikacji rekrutacyjnych oraz obsługa zleceń freelance.</li>
+                    <li><strong>Dopasowanie kandydatów przez AI CV Matcher (art. 6 ust. 1 lit. a RODO):</strong> dobrowolna zgoda kandydata na skanowanie umiejętności z pliku CV w celu rekomendacji pasujących ofert.</li>
+                    <li><strong>Realizacja płatności i fakturowanie (art. 6 ust. 1 lit. c RODO):</strong> wypełnienie obowiązków prawnych ciążących na Administratorze (wystawianie faktur VAT za pakiety Standard, HOT oraz PRO).</li>
+                    <li><strong>Prawnie uzasadniony interes Administratora (art. 6 ust. 1 lit. f RODO):</strong> zapobieganie nadużyciom, zapewnienie bezpieczeństwa IT, analityka odwiedzin oraz dochodzenie ewentualnych roszczeń.</li>
+                </ul>
+            </div>
+
+            <!-- SEKCJA 3 -->
+            <div class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="legal-section-num">3</span>
+                    Zakres Zbieranych Danych
+                </h2>
+                <p class="legal-text">
+                    W zależności od roli użytkownika w serwisie, przetwarzamy następujące kategorie informacji:
+                </p>
+                <ul class="legal-list">
+                    <li><strong>Kandydaci i Freelancerzy:</strong> Imię i nazwisko, adres e-mail, historia aplikacji, pliki CV (wykształcenie, staż pracy, stack technologiczny, znajomość języków) oraz wyliczony wskaźnik zgodności ATS.</li>
+                    <li><strong>Pracodawcy i Rekruterzy:</strong> Nazwa firmy, NIP, adres siedziby, e-mail rekrutacyjny, numer telefonu kontaktowego, treść publikowanych ogłoszeń oraz historia płatności.</li>
+                    <li><strong>Dane techniczne:</strong> Adres IP, identyfikatory sesji, logi serwera, rodzaj przeglądarki i urządzenia.</li>
+                </ul>
+            </div>
+
+            <!-- SEKCJA 4 -->
+            <div class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="legal-section-num">4</span>
+                    Algorytmy AI i Automatyczne Dopasowanie ATS
+                </h2>
+                <p class="legal-text">
+                    Serwis JobNexus wykorzystuje zaawansowane modele sztucznej inteligencji (AI Neural Engine) do ekstrakcji słów kluczowych i kalkulacji dopasowania profilu kandydata do wymagań ogłoszeń:
+                </p>
+                <div class="legal-highlight-box">
+                    💡 <strong>Brak w pełni zautomatyzowanego podejmowania decyzji:</strong> Algorytm AI pełni funkcję wyłącznie doradczą i filtrującą. Ostateczne decyzje o zaproszeniu na rozmowę kwalifikacyjną lub zatrudnieniu podejmuje wyłącznie człowiek (rekruter).
+                </div>
+            </div>
+
+            <!-- SEKCJA 5 -->
+            <div class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="legal-section-num">5</span>
+                    Prawa Użytkownika Wynikające z RODO
+                </h2>
+                <p class="legal-text">
+                    Każdemu użytkownikowi przysługują pełne prawa gwarantowane przez RODO:
+                </p>
+                <ul class="legal-list">
+                    <li><strong>Prawo dostępu do danych (art. 15 RODO):</strong> możliwość uzyskania wglądu w swoje dane oraz kopię przetwarzanych informacji.</li>
+                    <li><strong>Prawo do sprostowania (art. 16 RODO):</strong> poprawianie nieaktualnych lub błędnych informacji w profilu.</li>
+                    <li><strong>Prawo do usunięcia danych („Prawo do bycia zapomnianym” - art. 17 RODO):</strong> trwałe skasowanie konta i powiązanych plików CV.</li>
+                    <li><strong>Prawo do ograniczenia przetwarzania (art. 18 RODO) oraz przenoszenia danych (art. 20 RODO).</strong></li>
+                    <li><strong>Prawo do wniesienia sprzeciwu (art. 21 RODO):</strong> wstrzymanie przetwarzania danych w celach marketingowych lub statystycznych.</li>
+                    <li><strong>Prawo do skargi:</strong> możliwość wniesienia skargi do organu nadzorczego – Prezesa Urzędu Ochrony Danych Osobowych (PUODO, ul. Stawki 2, 00-193 Warszawa).</li>
+                </ul>
+            </div>
+
+            <!-- SEKCJA 6 -->
+            <div class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="legal-section-num">6</span>
+                    Pliki Cookies i Pamięć Lokalna (LocalStorage)
+                </h2>
+                <p class="legal-text">
+                    Serwis JobNexus korzysta z technologii plików cookies oraz LocalStorage w celu:
+                </p>
+                <ul class="legal-list">
+                    <li>Utrzymania bezpiecznej sesji zalogowanego użytkownika (tokeny autoryzacji).</li>
+                    <li>Zapamiętania preferencji wyszukiwania (filtry wynagrodzenia, tryb pracy zdalnej, lokalizacja).</li>
+                    <li>Zapewnienia ochrony przed atakami typu CSRF i nadużyciami API.</li>
+                </ul>
+                <p class="legal-text">
+                    Użytkownik może w każdej chwili zmienić ustawienia dotyczące plików cookies w swojej przeglądarce internetowej lub wyczyścić pamięć podręczną.
+                </p>
+            </div>
+
+            <!-- SEKCJA 7 -->
+            <div class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="legal-section-num">7</span>
+                    Bezpieczeństwo i Szyfrowanie
+                </h2>
+                <p class="legal-text">
+                    Wdrożyliśmy najwyższe standardy cyberbezpieczeństwa klasy Enterprise, w tym szyfrowanie protokołem <strong>SSL/TLS (256-bit)</strong>, haszowanie haseł algorytmem <strong>bcrypt</strong>, izolację baz danych oraz regularne audyty bezpieczeństwa.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <a href="./index.html" class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">Job<span class="logo-accent">Nexus</span></span>
+                </a>
+                <p class="footer-desc">
+                    Inteligentna platforma nowej generacji łącząca kandydatów, freelancerów i rekruterów przy wsparciu algorytmów AI oraz Jooble API.
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>Nawigacja</h4>
+                    <a href="./index.html#oferty">Oferty Pracy</a>
+                    <a href="./index.html#zlecenia">Zlecenia Freelance</a>
+                    <a href="./index.html#cennik">Cennik</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Dokumenty</h4>
+                    <a href="./privacy.html" style="color:#38bdf8; font-weight:700;">Prywatność & RODO</a>
+                    <a href="./terms.html">Regulamin Serwisu</a>
+                    <a href="mailto:kontakt@jobnexus.pl">Pomoc Techniczna</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 JobNexus AI Engine. Wszelkie prawa zastrzeżone.</p>
+        </div>
+    </footer>
+</body>
+</html>
