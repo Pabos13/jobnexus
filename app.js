@@ -1,3 +1,35 @@
+
+window.openCvBuilder = function() {
+    var user = null;
+    try {
+        var raw = localStorage.getItem('jobnexus_user');
+        user = raw ? JSON.parse(raw) : null;
+    } catch(e) {}
+    if (!user) {
+        if (typeof window.openAuthModal === 'function') {
+            window.openAuthModal('register');
+        }
+        if (typeof showToast === 'function') {
+            showToast('Zarejestruj się lub zaloguj, aby korzystać z Kreatora CV.', 'info');
+        }
+        return;
+    }
+    if (typeof window.openDashboard === 'function') {
+        window.openDashboard('cv_builder');
+    }
+};
+
+window.toggleBrowseOffersView = function() {
+    var hero = document.getElementById('hero');
+    if (hero) {
+        hero.style.display = 'block';
+        hero.scrollIntoView({ behavior: 'smooth' });
+    }
+    if (typeof window.closeDashboardModal === 'function') {
+        window.closeDashboardModal();
+    }
+};
+
 /**
  * JobNexus — Refactored Application
  * Integrates Jooble API (via backend proxy), CSV import, AI CV matching, announcements
@@ -2803,6 +2835,12 @@ window.switchAuthTab = function(mode) {
 };
 
 window.syncUserHeader = function(user) {
+    if (user === null) {
+        var portalSec = document.getElementById('userPortalSection');
+        var heroSec = document.getElementById('hero');
+        if (portalSec) { portalSec.classList.add('hidden'); portalSec.style.display = 'none'; }
+        if (heroSec) { heroSec.style.display = 'block'; }
+    }
     if (user === undefined) {
         try {
             var raw = localStorage.getItem('jobnexus_user');

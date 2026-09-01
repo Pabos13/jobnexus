@@ -33,6 +33,39 @@
 
     <!-- MAIN CONTENT -->
     <main class="main">
+        <!-- DEDICATED IN-PAGE USER PORTAL SECTION (ACTIVATED UPON LOGIN) -->
+        <section class="section hidden" id="userPortalSection" style="display: none; padding-top: 1.5rem; margin-bottom: 2rem;">
+            <div class="modal modal-xl modal-expanded" style="width: 100%; max-width: 1100px; margin: 0 auto; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1.25rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div id="portalUserAvatar" style="width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; font-weight: 800; border: 2px solid rgba(255,255,255,0.2);">👤</div>
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                <h2 class="modal-title" id="portalUserName" style="font-size: 1.4rem; font-weight: 800; color: #f8fafc; margin: 0;">Panel Użytkownika</h2>
+                                <span id="portalUserRoleBadge" style="padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4);">Profil</span>
+                            </div>
+                            <p id="portalUserEmail" style="font-size: 0.85rem; color: #94a3b8; margin: 0.25rem 0 0 0;">Zarządzaj swoim profilem, Kreatorem CV 5★ oraz ofertami</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="window.toggleBrowseOffersView()" style="font-size: 0.82rem; padding: 0.45rem 0.85rem; border-radius: 8px; display: flex; align-items: center; gap: 6px;">
+                            🔍 Przeglądaj Oferty
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="window.handleNavRegisterClick()" style="font-size: 0.85rem; padding: 0.45rem 0.95rem; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; font-weight: 700; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                            🚪 Wyloguj się
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TABS -->
+                <div id="portalTabsContainer" style="display: flex; gap: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 0.85rem 0; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                </div>
+
+                <!-- CONTENT AREA -->
+                <div id="portalContentArea" style="padding: 1.75rem 0; min-height: 400px;">
+                </div>
+            </div>
+        </section>
         <!-- HERO SECTION WITH FUTURISTIC AI SEARCH -->
         <section class="hero" id="hero">
             <div class="hero-content">
@@ -258,6 +291,8 @@
                     <a href="./index.html#oferty">Oferty Pracy</a>
                     <a href="./index.html#zlecenia">Zlecenia Freelance</a>
                     <a href="./index.html#cennik">Cennik</a>
+                    <a href="javascript:void(0)" onclick="window.openCvBuilder()" style="color: #fbbf24; font-weight: 700;">📄 Kreator CV (5★)</a>
+                    <a href="javascript:void(0)" onclick="window.openCvBuilder()" style="color: #fbbf24; font-weight: 700;">📄 Kreator CV (5★)</a>
                 </div>
 
                 <div class="footer-col">
