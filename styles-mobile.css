@@ -1,11 +1,87 @@
 /* ==========================================================================
-   JOBNEXUS — RESPONSIVE MOBILE UTILITIES
+   JOBNEXUS — RESPONSIVE MOBILE + GLOBAL OVERRIDES (Futuristic Theme)
+   Apply futuristic theme adjustments across entire site on small screens
+   and provide accessibility fallbacks (prefers-reduced-motion).
    ========================================================================== */
+
+/* Ensure base typography and spacings adapt on mobile */
+@media (max-width: 1024px) {
+  :root {
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+  }
+  body {
+    background-size: cover;
+    animation-duration: 36s;
+  }
+}
+
+/* Mobile-specific layout adjustments */
 @media (max-width: 768px) {
-    .hide-on-mobile {
-        display: none !important;
-    }
-    .show-on-mobile {
-        display: block !important;
-    }
+  .header-inner { padding: 10px 14px; }
+  .logo-text { font-size: 1rem; }
+  .logo-icon { width:36px; height:36px }
+
+  .main { padding: 18px 14px 48px; }
+
+  .hero { padding: 28px 12px 24px }
+  .hero-title { font-size: 1.6rem; line-height:1.08 }
+  .hero-subtitle { font-size: 0.95rem }
+
+  /* Search becomes stacked */
+  .search-box { flex-direction: column; gap: 10px; padding: 10px }
+  .search-btn { width: 100%; border-radius: 12px }
+
+  /* Cards full width, single column */
+  .jobs-grid { grid-template-columns: 1fr !important; gap: 14px }
+  .job-card { padding: 14px; border-radius: 14px }
+  .job-company-logo { width:48px; height:48px }
+
+  .job-card-footer { justify-content: space-between }
+  .btn { padding: 8px 12px; font-size: 0.95rem }
+  .btn-primary { padding: 10px 14px }
+
+  /* Pricing cards stack and compact */
+  .pricing-grid { grid-template-columns: 1fr }
+  .pricing-card { padding: 16px }
+
+  /* Modals full screen friendly */
+  .modal { width: 100%; max-width: 100%; border-radius: 12px; padding: 16px }
+  .modal-backdrop { padding: 10px }
+
+  /* Footer adjustments */
+  .footer-inner { flex-direction: column; gap: 18px }
+  .footer { padding: 20px }
+}
+
+/* Extra small devices tweaks */
+@media (max-width: 420px) {
+  .hero-title { font-size: 1.35rem }
+  .job-description { font-size: 0.9rem }
+  .search-field input { font-size: 0.95rem }
+  .logo-text { display:none } /* keep compact */
+}
+
+/* prefers-reduced-motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  body, .btn-primary { animation: none !important }
+  * { transition: none !important }
+}
+
+/* Global utility overrides to ensure futuristic look is applied everywhere */
+/* Buttons across site should use neon primary unless explicitly secondary */
+.btn:not(.btn-secondary) { box-shadow: 0 8px 28px rgba(56,189,248,0.06) }
+
+/* Ensure form controls are large enough on touch devices */
+input[type="text"], input[type="email"], input[type="password"], textarea, select {
+  min-height:44px; font-size: 1rem; padding: 10px 12px
+}
+
+/* Make interactive elements more prominent on mobile */
+.job-card .btn, .pricing-card .btn { min-width: 120px }
+
+/* Ensure header actions are stacked if there isn't enough room */
+@media (max-width: 540px) {
+  .header-actions { gap: 8px; flex-wrap: wrap; justify-content: flex-end }
 }
