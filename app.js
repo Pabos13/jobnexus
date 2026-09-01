@@ -1203,6 +1203,488 @@ function initNavbar() {
         if (navbar) {
             navbar.classList.toggle('scrolled', window.scrollY > 20);
         }
+
+// ============================================
+// JOB OFFERS & ADVANCED PAGINATION
+// ============================================
+async function loadData() {
+    showLoading(true);
+
+    try {
+        // 1. Load CSV jobs
+        const csvJobs = await JobService.loadCSVJobs();
+        state.csvJobs = csvJobs || [];
+
+        // 2. Load Jooble / fallback jobs
+        const apiJobs = await JobService.loadJoobleJobs(
+            state.searchQuery || 'praca',
+            state.locationQuery || 'Polska'
+        );
+
+        // 3. Combine and deduplicate
+        state.jobs = JobService.combineJobs(state.csvJobs, apiJobs || []);
+
+        filterAndDisplay();
+    } catch (err) {
+        console.error('Data loading error:', err);
+        state.jobs = [...state.csvJobs];
+        filterAndDisplay();
+    } finally {
+        showLoading(false);
+    }
+}
+
+function initSearch() {
+    let debounceTimer;
+
+    const doSearch = () => {
+        state.searchQuery = els.searchInput ? els.searchInput.value.trim() : '';
+        state.locationQuery = els.locationInput ? els.locationInput.value.trim() : '';
+        state.jobsPage = 1;
+
+        if (state.searchQuery) {
+            StorageService.addSearchHistory(state.searchQuery);
+        }
+
+        filterAndDisplay();
+    };
+
+    if (els.searchInput) {
+        els.searchInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(doSearch, CONFIG.DEBOUNCE_DELAY || 300);
+        });
+        els.searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') doSearch();
+        });
+    }
+
+    if (els.locationInput) {
+        els.locationInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(doSearch, CONFIG.DEBOUNCE_DELAY || 300);
+        });
+        els.locationInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') doSearch();
+        });
+    }
+
+    if (els.searchBtn) {
+        els.searchBtn.addEventListener('click', doSearch);
+    }
+}
+
+function initFilters() {
+    if (els.filterChips) {
+        els.filterChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                els.filterChips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                state.currentFilter = chip.dataset.filter || 'all';
+                state.jobsPage = 1;
+                filterAndDisplay();
+            });
+        });
+    }
+}
+
+function filterAndDisplay() {
+    const filters = {
+        searchQuery: state.searchQuery,
+        locationQuery: state.locationQuery,
+        currentFilter: state.currentFilter
+    };
+
+    state.filteredJobs = JobService.filterJobs(state.jobs, filters);
+    state.jobsPage = state.jobsPage || 1;
+    state.jobsPerPage = state.jobsPerPage || 9;
+
+    displayJobs();
+}
+
+function displayJobs() {
+    if (!els.jobsGrid) return;
+
+    const total = state.filteredJobs.length;
+    const perPage = state.jobsPerPage || 9;
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const current = Math.min(Math.max(1, state.jobsPage || 1), totalPages);
+    state.jobsPage = current;
+
+    els.jobsGrid.innerHTML = '';
+
+    if (total === 0) {
+        if (els.jobsEmpty) els.jobsEmpty.classList.remove('hidden');
+        renderPaginationBar('jobsPagination', 1, 0, 0, perPage, null, null);
+        return;
+    }
+
+    if (els.jobsEmpty) els.jobsEmpty.classList.add('hidden');
+
+    const start = (current - 1) * perPage;
+    const end = Math.min(start + perPage, total);
+    const toShow = state.filteredJobs.slice(start, end);
+
+    toShow.forEach((job, idx) => {
+        const card = createJobCard(job);
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(15px)';
+        els.jobsGrid.appendChild(card);
+
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, idx * 40);
+        });
+    });
+
+    // Render Advanced Pagination for Jobs
+    renderPaginationBar('jobsPagination', current, totalPages, total, perPage, (newPage) => {
+        state.jobsPage = newPage;
+        displayJobs();
+        const jobsSection = document.getElementById('jobs') || document.getElementById('oferty');
+        if (jobsSection) {
+            jobsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, (newPerPage) => {
+        state.jobsPerPage = newPerPage;
+        state.jobsPage = 1;
+        displayJobs();
+    });
+}
+
+function createJobCard(job) {
+    const card = document.createElement('article');
+    card.className = `job-card${job.featured ? ' featured' : ''}`;
+    card.dataset.id = job.id;
+
+    const initials = (job.company || 'JN').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    const typeIcon = getTypeIcon(job.type);
+    const locIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+    const dateIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>`;
+    const timeAgo = getTimeAgo(job.date || new Date().toISOString());
+    const isFav = FavoritesService.isFavorite(job.id);
+
+    card.innerHTML = `
+        <button class="job-save" type="button" aria-label="${isFav ? 'Usuń z zakładek' : 'Zapisz ofertę'}" style="background:transparent;border:none;font-size:20px;cursor:pointer;color:${isFav ? '#eab308' : '#64748b'};">${isFav ? '★' : '☆'}</button>
+        <div class="job-header">
+            <div class="job-logo">${initials}</div>
+            <div class="job-meta">
+                <h3 class="job-title">${escapeHtml(job.title || 'Oferta pracy')}</h3>
+                <p class="job-company">${escapeHtml(job.company || 'Firma')}</p>
+            </div>
+        </div>
+        <div class="job-details">
+            <span class="job-tag">${typeIcon}${escapeHtml(job.type || 'Pełny etat')}</span>
+            <span class="job-tag">${locIcon}${escapeHtml(job.location || 'Polska')}</span>
+            <span class="job-tag">${dateIcon}${timeAgo}</span>
+        </div>
+        <div class="job-footer">
+            <span class="job-salary">${escapeHtml(job.salary || 'Konkurencyjne')}</span>
+            <button class="job-apply btn btn-primary" type="button" data-job-id="${escapeHtml(String(job.id))}">Aplikuj</button>
+        </div>
+    `;
+
+    const saveBtn = card.querySelector('.job-save');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', async (event) => {
+            event.stopPropagation();
+            try {
+                if (FavoritesService.isFavorite(job.id)) {
+                    await FavoritesService.removeFavorite(job.id);
+                } else {
+                    await FavoritesService.addFavorite(job);
+                }
+                displayJobs();
+                showToast(FavoritesService.isFavorite(job.id) ? 'Oferta dodana do zakładek' : 'Oferta usunięta z zakładek', 'success');
+            } catch (error) {
+                showToast(error.message || 'Nie udało się zapisać oferty', 'error');
+            }
+        });
+    }
+
+    const applyBtn = card.querySelector('.job-apply');
+    if (applyBtn) {
+        applyBtn.addEventListener('click', () => applyJob(job.id));
+    }
+
+    return card;
+}
+
+function getTypeIcon(type) {
+    const icons = {
+        'Zdalna': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>',
+        'Staż': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>',
+        'Kontrakt': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>'
+    };
+    return icons[type] || '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>';
+}
+
+function getTimeAgo(dateStr) {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return 'Niedawno';
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+
+    if (diff < 60) return 'Przed chwilą';
+    if (diff < 3600) return `${Math.floor(diff / 60)} min temu`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} h temu`;
+    if (diff < 604800) return `${Math.floor(diff / 86400)} dni temu`;
+    return date.toLocaleDateString('pl-PL');
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function applyJob(id) {
+    const job = state.jobs.find(j => j.id === id);
+    if (!job) return;
+
+    if (job.url && job.url !== '#') {
+        window.open(job.url, '_blank');
+    } else {
+        showToast(`Aplikacja wysłana na stanowisko: ${job.title}`, 'success');
+    }
+}
+
+function showLoading(show) {
+    if (els.jobsLoading) els.jobsLoading.classList.toggle('hidden', !show);
+    if (show && els.jobsGrid) els.jobsGrid.innerHTML = '';
+}
+
+// ============================================
+// MODAL — ADD ANNOUNCEMENT / OGLOSZENIE
+// ============================================
+function initModal() {
+    if (els.modalClose) els.modalClose.addEventListener('click', closeModal);
+    if (els.addModal) {
+        els.addModal.addEventListener('click', (e) => {
+            if (e.target === els.addModal) closeModal();
+        });
+    }
+
+    if (els.annFeatured && els.submitPrice) {
+        els.annFeatured.addEventListener('change', () => {
+            els.submitPrice.textContent = els.annFeatured.checked ? '29,99 zł' : '9,99 zł';
+        });
+    }
+
+    if (els.addForm) {
+        els.addForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitAnnouncement();
+        });
+    }
+}
+
+function openAddModal(plan = 'standard') {
+    if (!els.addModal) return;
+    if (els.annFeatured) els.annFeatured.checked = plan === 'featured';
+    if (els.submitPrice) els.submitPrice.textContent = plan === 'featured' ? '29,99 zł' : '9,99 zł';
+    els.addModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+window.openAddModal = openAddModal;
+
+function closeModal() {
+    if (!els.addModal) return;
+    els.addModal.classList.add('hidden');
+    document.body.style.overflow = '';
+    if (els.addForm) els.addForm.reset();
+}
+
+function submitAnnouncement() {
+    const titleInput = document.getElementById('annTitle');
+    const catInput = document.getElementById('annCategory');
+    const locInput = document.getElementById('annLocation');
+    const descInput = document.getElementById('annDesc');
+    const budgetInput = document.getElementById('annBudget');
+    const typeInput = document.getElementById('annType');
+
+    const title = titleInput ? titleInput.value.trim() : '';
+    const category = catInput ? catInput.value : 'Inne';
+    const location = locInput ? locInput.value.trim() || 'Polska' : 'Polska';
+    const desc = descInput ? descInput.value.trim() : '';
+    const budget = budgetInput ? budgetInput.value || 'Do negocjacji' : 'Do negocjacji';
+    const type = typeInput ? typeInput.value : 'Zlecenie';
+    const featured = els.annFeatured ? els.annFeatured.checked : false;
+
+    if (!title || !desc) {
+        showToast('Wypełnij wymagane pola!', 'error');
+        return;
+    }
+
+    const newAnn = {
+        id: `ann-${Date.now()}`,
+        title,
+        category,
+        location,
+        desc,
+        budget,
+        type,
+        featured
+    };
+
+    state.announcements = state.announcements || [];
+    state.announcements.unshift(newAnn);
+    StorageService.saveAnnouncements(state.announcements);
+    closeModal();
+
+    const price = featured ? '29,99 zł' : '9,99 zł';
+    showToast(`Ogłoszenie opublikowane pomyślnie! Kwota: ${price}`, 'success');
+}
+
+// ============================================
+// CV UPLOAD & AI MATCHING
+// ============================================
+function initCVUpload() {
+    if (!els.cvUploadZone || !els.cvFileInput) return;
+
+    els.cvUploadZone.addEventListener('click', () => els.cvFileInput.click());
+
+    els.cvUploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        els.cvUploadZone.classList.add('dragover');
+    });
+
+    els.cvUploadZone.addEventListener('dragleave', () => {
+        els.cvUploadZone.classList.remove('dragover');
+    });
+
+    els.cvUploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        els.cvUploadZone.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length) handleCVFile(files[0]);
+    });
+
+    els.cvFileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) handleCVFile(e.target.files[0]);
+    });
+}
+
+function handleCVFile(file) {
+    if (!file) return;
+
+    if (els.cvUploadZone) {
+        els.cvUploadZone.innerHTML = `
+            <div class="cv-upload-content" style="padding: 2rem; text-align: center;">
+                <div class="spinner" style="margin: 0 auto 1.5rem; width: 40px; height: 40px; border: 3px solid rgba(59,130,246,0.2); border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                <h3 style="color: white; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Analizowanie CV przez AI...</h3>
+                <p style="color: #94a3b8; font-size: 0.95rem;">AI skanuje Twoje kompetencje, technologie i doświadczenie zawodowe</p>
+            </div>
+        `;
+    }
+
+    setTimeout(() => {
+        const keywords = extractKeywordsFromFilename(file.name);
+        const matches = findMatchingJobs(keywords);
+
+        state.cvMatches = matches;
+        StorageService.saveCVMatches(matches);
+        displayCVMatches(matches);
+
+        if (els.cvUploadZone) {
+            els.cvUploadZone.innerHTML = `
+                <input type="file" id="cvFileInput" accept=".pdf,.doc,.docx" hidden>
+                <div class="cv-upload-content">
+                    <div class="cv-upload-icon">
+                        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M32 8v48M16 32l16-16 16 16"/>
+                            <rect x="8" y="48" width="48" height="8" rx="2"/>
+                        </svg>
+                    </div>
+                    <h3>Upuść CV lub kliknij, aby wybrać</h3>
+                    <p>PDF, DOC, DOCX — maks. 10 MB</p>
+                    <span class="cv-formats">AI automatycznie rozpozna Twoje umiejętności</span>
+                </div>
+            `;
+            const newInput = els.cvUploadZone.querySelector('#cvFileInput');
+            if (newInput) {
+                newInput.addEventListener('change', (e) => {
+                    if (e.target.files.length) handleCVFile(e.target.files[0]);
+                });
+            }
+        }
+
+        showToast(`🎉 Znaleziono ${matches.length} ofert idealnie dopasowanych do Twojego CV!`, 'success');
+    }, 2000);
+}
+
+function extractKeywordsFromFilename(filename) {
+    const lower = (filename || '').toLowerCase().replace(/\.[^.]+$/, '');
+    const keywordMap = {
+        'programista': ['programista', 'developer', 'frontend', 'backend', 'fullstack', 'javascript', 'python', 'react', 'node'],
+        'spawacz': ['spawacz', 'spawanie', 'welder', 'mig', 'mag', 'tig'],
+        'ksiegow': ['księgowy', 'księgowa', 'accountant', 'finanse', 'rachunkowość'],
+        'kierowca': ['kierowca', 'transport', 'kat', 'c+e', 'spedycja'],
+        'elektryk': ['elektryk', 'elektryka', 'instalacje', 'sep'],
+        'marketing': ['marketing', 'seo', 'social media', 'copywriter', 'content'],
+        'grafik': ['grafik', 'design', 'ui', 'ux', 'figma', 'photoshop']
+    };
+
+    for (const [key, synonyms] of Object.entries(keywordMap)) {
+        if (synonyms.some(s => lower.includes(s))) {
+            return synonyms;
+        }
+    }
+
+    return ['praca', 'developer', 'specjalista'];
+}
+
+function findMatchingJobs(keywords) {
+    const allJobs = state.jobs && state.jobs.length ? state.jobs : [];
+    const scored = allJobs.map(job => {
+        const text = `${job.title} ${job.company} ${job.description || ''} ${job.type}`.toLowerCase();
+        let score = 0;
+        keywords.forEach(kw => {
+            if (text.includes(kw.toLowerCase())) score += 2;
+        });
+        if (job.featured) score += 1;
+        return { job, score };
+    });
+
+    const matched = scored.filter(s => s.score > 0).sort((a, b) => b.score - a.score).slice(0, 6).map(s => s.job);
+    return matched.length ? matched : allJobs.slice(0, 4);
+}
+
+function displayCVMatches(matches) {
+    if (!els.cvMatches || !els.cvMatchesGrid) return;
+
+    els.cvMatches.classList.remove('hidden');
+    els.cvMatchesGrid.innerHTML = '';
+
+    if (matches.length === 0) {
+        els.cvMatchesGrid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1; padding: 2rem; text-align: center; color: #94a3b8;">
+                <p>Nie znaleziono bezpośrednich dopasowań. Sprawdź oferty poniżej.</p>
+            </div>
+        `;
+        return;
+    }
+
+    matches.forEach((job, idx) => {
+        const card = createJobCard(job);
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(15px)';
+        els.cvMatchesGrid.appendChild(card);
+
+        setTimeout(() => {
+            card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, idx * 60);
+    });
+
+    els.cvMatches.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
     }, { passive: true });
 }
 
