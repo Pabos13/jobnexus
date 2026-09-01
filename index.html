@@ -3,367 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobNexus — Inteligentna Platforma Pracy i Zleceń AI</title>
-    <meta name="description" content="Nowoczesny portal z ofertami pracy zintegrowany z Jooble API oraz zleceniami freelance. AI CV Matcher i zaawansowana wyszukiwarka.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css">
-    <link rel="stylesheet" href="./styles-mobile.css">
+    <title>JobNexus - Znajdź Swoją Pracę</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles-ux.css">
+    <link rel="stylesheet" href="styles-mobile.css">
 </head>
 <body>
-    <!-- HEADER / NAVIGATION (PERFECTLY ALIGNED SINGLE ROW) -->
-    <header class="header" id="header">
-        <div class="header-inner">
-            <a href="#" class="logo">
-                <span class="logo-icon">⚡</span>
-                <span class="logo-text">Job<span class="logo-accent">Nexus</span></span>
-            </a>
+    <div id="app">
+        <!-- Header & Navigation -->
+        <header id="header">
+            <nav class="navbar">
+                <div class="logo">💼 JobNexus</div>
+                <ul class="nav-menu">
+                    <li><a href="#jobs">Oferty Pracy</a></li>
+                    <li><a href="#services">Usługi i Zlecenia</a></li>
+                    <li><a href="javascript:void(0)" onclick="window.openCvBuilder()" style="color: #f59e0b; font-weight: 700;">📄 Kreator CV (14,99 zł)</a></li>
+                    <li><a href="#stats">Statystyki</a></li>
+                </ul>
+            </nav>
+        </header>
 
-            <div class="header-actions" id="headerAuthActions">
-                <button type="button" class="btn btn-secondary btn-auth-login" id="loginBtnNav" onclick="window.handleNavLoginClick()">
-                    <span id="loginBtnNavText">Zaloguj się</span>
-                </button>
-                <button type="button" class="btn btn-primary btn-auth-register" id="registerBtnNav" onclick="window.handleNavRegisterClick()">
-                    <span id="registerBtnNavText">Zarejestruj się</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- MAIN CONTENT -->
-    <main class="main">
-        <!-- DEDICATED IN-PAGE USER PORTAL SECTION (ACTIVATED UPON LOGIN) -->
-        <section class="section hidden" id="userPortalSection" style="display: none; padding-top: 1.5rem; margin-bottom: 2rem;">
-            <div class="modal modal-xl modal-expanded" style="width: 100%; max-width: 1100px; margin: 0 auto; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1.25rem;">
-                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 1.25rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <div id="portalUserAvatar" style="width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem;">PN</div>
-                        <div>
-                            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                                <h2 class="modal-title" id="portalUserName" style="font-size: 1.4rem; font-weight: 800; color: #f8fafc; margin: 0;">Panel Użytkownika</h2>
-                                <span id="portalUserRoleBadge" style="padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(99, 102, 241, 0.2); color: #a5b4fc;">CANDIDATE</span>
-                            </div>
-                            <p id="portalUserEmail" style="font-size: 0.85rem; color: #94a3b8; margin: 0.25rem 0 0 0;">Zarządzaj swoim profilem, Kreatorem CV 5★ oraz ofertami</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="window.toggleBrowseOffersView()" style="font-size: 0.82rem; padding: 0.45rem 0.85rem; border-radius: 8px;">
-                            🔍 Przeglądaj Oferty
-                        </button>
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="window.handleNavRegisterClick()" style="font-size: 0.85rem; padding: 0.45rem 0.95rem; background: rgba(239, 68, 68, 0.06);">
-                            🚪 Wyloguj się
-                        </button>
-                    </div>
+        <!-- Main Content -->
+        <main id="main">
+            <!-- Search Section -->
+            <section id="search" class="search-section">
+                <h1>Znajdź Swoją Następną Pracę</h1>
+                <p style="font-size: 1.1rem; color: #64748b; margin-bottom: 2rem;">Przejrzyj tysiące ofert pracy i usług z najlepszymi firmami</p>
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Szukaj pozycji, firmy, lokalizacji..." class="search-input">
+                    <button id="searchBtn" class="search-btn">🔍 Szukaj</button>
                 </div>
+            </section>
 
-                <!-- TABS -->
-                <div id="portalTabsContainer" style="display: flex; gap: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 0.85rem 0; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <!-- Filters Section -->
+            <section id="filters" class="filters-section">
+                <div class="filter-group">
+                    <label for="categoryFilter">Kategoria</label>
+                    <select id="categoryFilter" class="filter-input">
+                        <option value="">Wszystkie kategorie</option>
+                        <option value="IT">IT / Programowanie</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="HR">HR / Kadrowe</option>
+                        <option value="Sales">Sprzedaż</option>
+                        <option value="Design">Design</option>
+                    </select>
                 </div>
-
-                <!-- CONTENT AREA -->
-                <div id="portalContentArea" style="padding: 1.75rem 0; min-height: 400px;">
+                <div class="filter-group">
+                    <label for="typeFilter">Typ umowy</label>
+                    <select id="typeFilter" class="filter-input">
+                        <option value="">Wszystkie typy</option>
+                        <option value="full-time">Pełny etat</option>
+                        <option value="part-time">Część etatu</option>
+                        <option value="contract">Kontrakt</option>
+                        <option value="freelance">Freelance</option>
+                    </select>
                 </div>
-            </div>
-        </section>
-
-        <!-- HERO SECTION WITH FUTURISTIC AI SEARCH -->
-        <section class="hero" id="hero">
-            <div class="hero-content">
-                <div class="hero-badge">
-                    <span class="badge-dot"></span>
-                    <span>AI Neural Search Engine v2.5</span>
+                <div class="filter-group">
+                    <label for="locationFilter">Lokalizacja</label>
+                    <input type="text" id="locationFilter" placeholder="np. Warszawa" class="filter-input">
                 </div>
-                <h1 class="hero-title">
-                    Inteligentny Rynek Pracy <br>oraz <span class="text-gradient">Zleceń Nowej Generacji</span>
-                </h1>
-                <p class="hero-subtitle">
-                    Wyszukuj oferty w czasie rzeczywistym z Jooble API, filtruj widełki płacowe i dopasowuj swoje CV przez sztuczną inteligencję.
-                </p>
+                <button id="clearFilters" class="btn-secondary">🔄 Wyczyść filtry</button>
+            </section>
 
-                <!-- FUTURISTIC AI SEARCH BAR -->
-                <div class="futuristic-search-container">
-                    <div class="futuristic-search-glow"></div>
-                    <div class="search-box">
-                        <div class="search-field">
-                            <span class="search-icon">⚡</span>
-                            <input type="text" id="searchInput" placeholder="Stanowisko, technologia, rola (np. React, Spawacz, Python)..." autocomplete="off">
-                        </div>
-                        <div class="search-divider"></div>
-                        <div class="search-field location-field">
-                            <span class="search-icon">📍</span>
-                            <input type="text" id="locationInput" placeholder="Lokalizacja (np. Warszawa, Zdalnie, Cała Polska)..." autocomplete="off">
-                        </div>
-                        <button class="btn btn-primary search-btn" id="searchBtn">
-                            <span>Szukaj z AI</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- AI CV UPLOAD & INSTANT MATCHING CARD -->
-                <div class="ai-cv-matcher-card">
-                    <div class="ai-cv-header">
-                        <div class="ai-cv-icon-badge">🎯 AI CV Matcher & Weryfikacja ATS</div>
-                        <h2 class="ai-cv-title">Wgraj CV — AI zweryfikuje Twoje umiejętności i dopasuje oferty</h2>
-                        <p class="ai-cv-subtitle">Algorytm AI natychmiast przeskanuje technologie, staż i poziom dopasowania ATS do aktualnych ofert pracy.</p>
-                    </div>
-                    <div class="cv-dropzone" id="heroCvDropzone">
-                        <input type="file" id="heroCvInput" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" hidden>
-                        <div class="cv-dropzone-inner" id="heroCvDropzoneInner">
-                            <div class="cv-upload-pulse-icon">📄</div>
-                            <div class="cv-drop-text">
-                                <strong class="cv-drop-title">Przeciągnij i upuść swoje CV lub <span style="color:#38bdf8; text-decoration:underline;">kliknij, aby wybrać plik</span></strong>
-                                <span class="cv-drop-desc">Obsługiwane formaty: PDF, DOCX, DOC, JPG, PNG (maks. 10 MB)</span>
-                            </div>
-                            <button type="button" class="btn btn-primary cv-scan-btn" id="btnPickCv">
-                                ⚡ Skanuj CV i weryfikuj dopasowanie
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PERSONALIZED MATCHED JOBS CONTAINER -->
-                <div class="personalized-matches-container hidden" id="personalizedMatchesSection">
-                    <div class="personalized-matches-header">
-                        <div>
-                            <div class="ats-match-pill">
-                                ✨ Weryfikacja AI zakończona • Wynik ATS: <span id="atsScoreValue" style="font-weight:900; color:#38bdf8;">96%</span>
-                            </div>
-                            <h2 class="personalized-matches-title">🎯 Oferty Spersonalizowane pod Twoje CV</h2>
-                            <p class="personalized-matches-subtitle" id="matchedSkillsText">Dopasowano automatycznie na podstawie Twojego profilu i zweryfikowanych umiejętności.</p>
-                        </div>
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="window.resetCvMatches()">
-                            ✕ Zresetuj filtr CV
-                        </button>
-                    </div>
-                    <div class="jobs-grid" id="personalizedJobsGrid">
-                        <!-- Cards injected by JS -->
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SECTION 1: OFERTY PRACY -->
-        <section class="section" id="oferty">
-            <div class="section-header">
-                <h2 class="section-title">💼 Oferty Pracy (Live Jooble + Zweryfikowane)</h2>
-                <p class="section-subtitle">Aktualne oferty zsynchronizowane z Jooble API oraz bazą sprawdzonych pracodawców</p>
-            </div>
-
-            <!-- ACTION BANNER: DODAJ OGŁOSZENIE PRACY -->
-            <div class="action-banner-card">
-                <div class="action-banner-left">
-                    <div class="action-banner-icon">🏢</div>
-                    <div>
-                        <h3 class="action-banner-title">Rekrutujesz do swojej firmy?</h3>
-                        <p class="action-banner-subtitle">Opublikuj szczegółową ofertę pracy i dotrzyj do zweryfikowanych specjalistów w całej Polsce.</p>
-                    </div>
-                </div>
-                <button type="button" class="btn btn-primary action-banner-btn" id="heroAddJobBtn" onclick="window.openAddModal('standard')">
-                    ➕ Dodaj ofertę pracy - 9,99 zł
-                </button>
-            </div>
-
-            <!-- Jobs Grid -->
-            <div class="jobs-grid" id="jobsGrid">
-                <!-- Injected via app.js -->
-            </div>
-
-            <div class="loading-state" id="jobsLoading">
+            <!-- Loading Indicator -->
+            <div id="loadingSpinner" class="loading-container" style="display: none;">
                 <div class="spinner"></div>
-                <p>Ładowanie ofert z Jooble API...</p>
+                <p>Ładowanie ofert pracy...</p>
             </div>
 
-            <div class="empty-state hidden" id="jobsEmpty">
-                <div class="empty-icon">🔍</div>
-                <h3>Brak ofert spełniających kryteria</h3>
-                <p>Spróbuj zmienić słowo kluczowe lub zresetować filtry.</p>
-            </div>
-
-            <!-- Advanced Pagination for Job Offers -->
-            <div id="jobsPagination" class="pagination-bar" style="margin-top: 2.5rem;"></div>
-        </section>
-
-        <!-- SECTION 2: OFERTY ZLECEŃ / FREELANCE -->
-        <section class="section" id="zlecenia" style="background: rgba(15, 23, 42, 0.4); border-radius: 1.5rem; padding: 3rem 2rem; margin: 3rem 0; border: 1px solid rgba(255, 255, 255, 0.05);">
-            <div class="section-header">
-                <h2 class="section-title">🚀 Oferty Zleceń (Gigs & Freelance)</h2>
-                <p class="section-subtitle">Zlecenia projektowe, zadania dorywcze i kontrakty dla freelancerów</p>
-            </div>
-
-            <!-- ACTION BANNER: DODAJ ZLECENIE -->
-            <div class="action-banner-card action-banner-gig">
-                <div class="action-banner-left">
-                    <div class="action-banner-icon">⚡</div>
-                    <div>
-                        <h3 class="action-banner-title">Masz projekt lub szybkie zadanie do wykonania?</h3>
-                        <p class="action-banner-subtitle">Zleć zadanie freelance i otrzymaj natychmiastowe oferty od doświadczonych wykonawców.</p>
-                    </div>
+            <!-- Jobs Section - Single Column Layout -->
+            <section id="jobs" class="jobs-section">
+                <div class="section-title-container">
+                    <h2 class="section-title">📋 Dostępne Oferty Pracy</h2>
+                    <span id="jobsCount" class="jobs-count">Ładowanie...</span>
                 </div>
-                <button type="button" class="btn btn-secondary action-banner-btn" id="heroAddGigBtn" onclick="window.openAddModal('gig')">
-                    ➕ Dodaj Ogłoszenie / Zlecenie - 9,99 zł
-                </button>
-            </div>
+                <div id="jobsList" class="jobs-list"></div>
 
-            <!-- Gigs Grid -->
-            <div class="jobs-grid" id="gigsGrid">
-                <!-- Injected via app.js -->
-            </div>
-
-            <!-- Empty state for gigs -->
-            <div class="empty-state hidden" id="gigsEmpty">
-                <div class="empty-icon">📁</div>
-                <h3>Brak zleceń w wybranej kategorii</h3>
-                <p>Bądź pierwszy i dodaj zlecenie dla społeczności!</p>
-            </div>
-
-            <div id="gigsPagination" class="pagination-bar" style="margin-top: 2.5rem;"></div>
-        </section>
-
-        <!-- SECTION 3: CENNIK OGŁOSZEŃ -->
-        <section class="section" id="cennik">
-            <div class="section-header">
-                <h2 class="section-title">💎 Pakiety i Cennik Ogłoszeń</h2>
-                <p class="section-subtitle">Skuteczna rekrutacja bez ukrytych prowizji i zbędnych formalności</p>
-            </div>
-
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <div class="pricing-badge">Standard</div>
-                    <div class="pricing-price">9,99 zł <span class="pricing-period">/ 30 dni</span></div>
-                    <ul class="pricing-features">
-                        <li>✓ Publikacja ogłoszenia na 30 dni</li>
-                        <li>✓ Indeksacja w wyszukiwarce JobNexus</li>
-                        <li>✓ Bezpośredni kontakt z kandydatem</li>
-                        <li>✓ Podstawowy algorytm dopasowania</li>
-                    </ul>
-                    <button type="button" class="btn btn-secondary btn-block" onclick="window.openAddModal('standard')">
-                        Dodaj ogłoszenie standard (9,99 zł)
+                <!-- Pagination -->
+                <div id="pagination" class="pagination-container">
+                    <button id="prevBtn" class="pagination-btn" disabled>
+                        <span>← Poprzednia</span>
+                    </button>
+                    <div id="pageNumbers" class="page-numbers"></div>
+                    <button id="nextBtn" class="pagination-btn">
+                        <span>Następna →</span>
                     </button>
                 </div>
+                <div id="paginationInfo" class="pagination-info">Strona <span id="currentPage">1</span> z <span id="totalPages">1</span></div>
+            </section>
 
-                <div class="pricing-card pricing-card-featured">
-                    <div class="pricing-badge-popular">Polecane • HOT</div>
-                    <div class="pricing-price">29,99 zł <span class="pricing-period">/ 30 dni</span></div>
-                    <ul class="pricing-features">
-                        <li>✓ Wszystko z pakietu Standard</li>
-                        <li>✓ <strong>Wyróżnienie kolorem i etykietą HOT</strong></li>
-                        <li>✓ Pierwszeństwo na liście ofert</li>
-                        <li>✓ Powiadomienie e-mail do dopasowanych kandydatów</li>
-                    </ul>
-                    <button type="button" class="btn btn-primary btn-block" onclick="window.openAddModal('featured')">
-                        Dodaj ogłoszenie wyróżnione (29,99 zł)
-                    </button>
+            <!-- Services & Gigs Section -->
+            <section id="services" class="services-section">
+                <div class="section-title-container">
+                    <h2 class="section-title">🎯 Usługi i Zlecenia (Korepetycje, Porady, Konsultacje)</h2>
+                    <span id="servicesCount" class="services-count">Ładowanie...</span>
                 </div>
 
-                <div class="pricing-card">
-                    <div class="pricing-badge">Abonament PRO</div>
-                    <div class="pricing-price">99 zł <span class="pricing-period">/ miesiąc</span></div>
-                    <ul class="pricing-features">
-                        <li>✓ Nielimitowane oferty pracy i zlecenia</li>
-                        <li>✓ Dostęp do bazy CV i filtrów ATS</li>
-                        <li>✓ Panel rekrutera z Kanbanem aplikacji</li>
-                        <li>✓ Dedykowany opiekun klienta</li>
-                    </ul>
-                    <button type="button" class="btn btn-primary btn-block" onclick="window.openRecruiterPanel()">
-                        🚀 Aktywuj Plan PRO & Otwórz Panel (99 zł)
-                    </button>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="footer">
-        <div class="footer-inner">
-            <div class="footer-brand">
-                <a href="#" class="logo">
-                    <span class="logo-icon">⚡</span>
-                    <span class="logo-text">Job<span class="logo-accent">Nexus</span></span>
-                </a>
-                <p class="footer-desc">
-                    Inteligentna platforma nowej generacji łącząca kandydatów, freelancerów i rekruterów przy wsparciu algorytmów AI oraz Jooble API.
-                </p>
-            </div>
-
-                                                                                                                                                                         <div class="footer-links">
-                <div class="footer-col">
-                    <h4>Nawigacja</h4>
-                    <a href="./index.html#oferty">Oferty Pracy</a>
-                    <a href="./index.html#zlecenia">Zlecenia Freelance</a>
-                    <a href="./index.html#cennik">Cennik</a>
-                    <a href="javascript:void(0)" onclick="window.openCvBuilder()" style="color: #fbbf24; font-weight: 700;">📄 Kreator CV (14,99 zł)</a>
-                </div>
-
-                <div class="footer-col">
-                    <h4>Pracodawcy</h4>
-                    <a href="javascript:void(0)" onclick="window.openAddModal('standard')">Dodaj Ogłoszenie</a>
-                    <a href="./index.html#zlecenia">Oferty Zleceń</a>
-                    <a href="javascript:void(0)" onclick="window.openRecruiterPanel()">🏢 Panel Rekrutera & Baza CV (99 zł)</a>
-                </div>
-
-                <div class="footer-col">
-                    <h4>Dokumenty & Pomoc</h4>
-                    <a href="./privacy.html">Prywatność & RODO</a>
-                    <a href="./terms.html">Regulamin Serwisu</a>
-                    <a href="./help.html">Pomoc Techniczna & Kontakt</a>
-                    <a href="javascript:void(0)" onclick="window.handleNavRegisterClick()" style="color: #f87171; font-weight: 600;">🚪 Wyloguj się</a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 JobNexus AI Engine. Wszelkie prawa zastrzeżone.</p>
-        </div>
-    </footer>
-
-    <!-- MODAL: ROZBUDOWANY FORMULARZ DODAWANIA OGŁOSZENIA / ZLECENIA Z PŁATNOŚCIĄ -->
-    <div class="modal-backdrop hidden" id="addModalBackdrop" onclick="if(event.target===this) window.closeAddModal()">
-        <div class="modal modal-xl modal-expanded" id="addModal">
-            <div class="modal-header">
-                <div>
-                    <h3 class="modal-title" id="addModalTitle">💼 Dodaj Ofertę Pracy / Zlecenie</h3>
-                    <p class="modal-subtitle" id="addModalSubtitle">Uzupełnij szczegółowe dane, widełki finansowe oraz wymagania, aby dotrzeć do najlepszych specjalistów.</p>
-                </div>
-                <button type="button" class="modal-close" onclick="window.closeAddModal()">&times;</button>
-            </div>
-
-            <form id="addOfferForm" class="add-offer-form" onsubmit="window.handleAddOfferSubmit(event)">
-                <!-- SEKCJA 1: TYP I DANE PODSTAWOWE -->
-                <div class="form-section-header">
-                    <span class="form-section-badge">1</span>
-                    <h4>Podstawowe Informacje & Pakiet Publikacji</h4>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Wybierz Pakiet Publikacji *</label>
-                        <select id="offerTypeSelect" class="form-input" required onchange="var b = document.getElementById('orderPriceBadge'); if(b){ b.textContent = (this.value === 'featured' || this.value === 'gig_featured') ? '29,99 zł' : '9,99 zł'; }">
-                            <option value="standard">💼 Oferta Pracy Standard (9,99 zł / 30 dni)</option>
-                            <option value="featured">🔥 Oferta Pracy Wyróżniona HOT (29,99 zł / 30 dni)</option>
-                            <option value="gig">🚀 Zlecenie Freelance / Projekt (9,99 zł / 30 dni)</option>
-                            <option value="gig_featured">🔥 Zlecenie Wyróżnione HOT (29,99 zł / 30 dni)</option>
+                <!-- Services Filters -->
+                <div class="services-filters">
+                    <div class="filter-group">
+                        <label for="serviceTypeFilter">Typ usługi</label>
+                        <select id="serviceTypeFilter" class="filter-input">
+                            <option value="">Wszystkie usługi</option>
+                            <option value="korepetycje">Korepetycje</option>
+                            <option value="konsultacje">Konsultacje</option>
+                            <option value="porady">Porady Biznesowe</option>
+                            <option value="tłumaczenia">Tłumaczenia</option>
+                            <option value="grafika">Grafika i Design</option>
+                            <option value="pisanie">Pisanie i Content</option>
+                            <option value="programowanie">Programowanie</option>
+                            <option value="muzyka">Muzyka i Lekcje</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>Kategoria / Branża *</label>
-                        <select id="offerCategorySelect" class="form-input" required>
-                            <option value="IT / Software">💻 IT / Software & Web</option>
-                            <option value="AI & Data Science">🧠 AI & Machine Learning / Data</option>
-                            <option value="Design & Creative">🎨 Grafika, UI/UX & Design</option>
-                            <option value="Marketing & Sales">📈 Marketing, SEO & Sprzedaż</option>
-                            <option value="Finanse / Księgowość">📊 Finanse, Księgowość & Analityka</option>
-                            <option value="Praca Fizyczna / Techniczna">🔧 Praca Techniczna, Inżynieria & Produkcja</option>
-                            <option value="Obsługa Klienta">🎧 Obsługa Klienta / Support</option>
-                            <option value="Inne">🌐 Inna Kategoria</option>
+                    <div class="filter-group">
+                        <label for="serviceLocationFilter">Lokalizacja</label>
+                        <input type="text" id="serviceLocationFilter" placeholder="np. Online" class="filter-input">
+                    </div>
+                    <div class="filter-group">
+                        <label for="priceSortFilter">Sortowanie</label>
+                        <select id="priceSortFilter" class="filter-input">
+                            <option value="latest">Najnowsze</option>
+                            <option value="price-asc">Cena: od najniższej</option>
+                            <option value="price-desc">Cena: od najwyższej</option>
+                            <option value="rating">Najwyżej oceniane</option>
                         </select>
                     </div>
+                    <button id="clearServicesFilters" class="btn-secondary">🔄 Wyczyść filtry</button>
                 </div>
 
-(<!-- file truncated for brevity in commit - full file stored in repo -->)
+                <div id="loadingServicesSpinner" class="loading-container" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Ładowanie usług...</p>
+                </div>
 
-    <!-- Load authService first, then app bundle -->
-    <script type="module" src="./services/authService.js"></script>
-    <!-- JAVASCRIPT BUNDLE (Vite bundle with all services & styles included) -->
-    <script type="module" src="./app.js"></script>
+                <div id="servicesList" class="services-grid"></div>
+
+                <!-- Services Pagination -->
+                <div id="servicesPagination" class="pagination-container">
+                    <button id="servicesPrevBtn" class="pagination-btn" disabled>
+                        <span>← Poprzednia</span>
+                    </button>
+                    <div id="servicesPageNumbers" class="page-numbers"></div>
+                    <button id="servicesNextBtn" class="pagination-btn">
+                        <span>Następna →</span>
+                    </button>
+                </div>
+                <div id="servicesPaginationInfo" class="pagination-info">Strona <span id="servicesCurrentPage">1</span> z <span id="servicesTotal">1</span></div>
+            </section>
+
+            <!-- Stats Section -->
+            <section id="stats" class="stats-section">
+                <h2 style="text-align: center; margin-bottom: 3rem; font-size: 2rem; color: #1e293b;">Statystyki Portalu</h2>
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalJobsStat">0</span>
+                        <span class="stat-label">Ofert Pracy</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalServicesStat">0</span>
+                        <span class="stat-label">Usług i Zleceń</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalCompaniesStat">0</span>
+                        <span class="stat-label">Pracodawców</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalViewsStat">1.2M</span>
+                        <span class="stat-label">Przeglądów</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalUsersStat">50K</span>
+                        <span class="stat-label">Aktywnych Użytkowników</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+                <!-- Footer -->
+        <footer id="footer">
+            <p>&copy; 2026 JobNexus. Wszystkie prawa zastrzeżone.</p>
+            <ul class="footer-links">
+                <li><a href="./privacy.html">Polityka Prywatności</a></li>
+                <li><a href="./terms.html">Regulamin Serwisu</a></li>
+                <li><a href="./help.html">Pomoc i Wsparcie</a></li>
+                <li><a href="javascript:void(0)" onclick="window.openCvBuilder()" style="color: #f59e0b; font-weight: 700;">📄 Kreator CV (14,99 zł)</a></li>
+            </ul>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js" type="module"></script>
 </body>
 </html>

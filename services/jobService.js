@@ -1,420 +1,395 @@
-/**
- * JobService - API & Data Management for JobNexus
- * Integrates with Jooble API (Key: 5be594f9-f5e0-41f5-a41a-9c1ea12566be), internal CSV offers, and local state
- */
-import { CONFIG } from '../config.js';
 
-const DEMO_JOBS = [
-    {
-        id: 'job-1',
-        title: 'Senior Fullstack Developer (React & Node.js)',
-        company: 'NexusTech Solutions Sp. z o.o.',
-        location: 'Warszawa / Zdalnie',
-        salary: '22 000 - 28 000 PLN (B2B)',
-        type: 'Zdalna',
-        category: 'IT / Software',
-        tags: ['React', 'Node.js', 'TypeScript', 'AWS', 'B2B'],
-        description: 'Poszukujemy doświadczonego Fullstack Developera do rozbudowy nowoczesnej platformy chmurowej w architekturze mikroserwisowej.',
-        requirements: ['Minimum 4 lata doświadczenia w React i Node.js', 'Znajomość TypeScript i Docker', 'Dobra znajomość języka angielskiego (min. B2)'],
-        source: 'Zweryfikowany Pracodawca',
-        sourceUrl: '#',
-        featured: true,
-        createdAt: new Date().toISOString()
-    },
-    {
-        id: 'job-2',
-        title: 'Mid / Senior Python Backend Developer',
-        company: 'DataPulse Poland',
-        location: 'Kraków / Hybrydowo',
-        salary: '18 000 - 24 000 PLN (B2B / UoP)',
-        type: 'Pełny etat',
-        category: 'IT / Software',
-        tags: ['Python', 'FastAPI', 'PostgreSQL', 'Docker'],
-        description: 'Budujemy skalowalne API i systemy analityczne oparte o sztuczną inteligencję i uczenie maszynowe dla klientów enterprise.',
-        requirements: ['Komercyjne doświadczenie z Python 3.10+ i FastAPI / Django', 'Doświadczenie z bazami PostgreSQL i Redis', 'Umiejętność pisania testów jednostkowych'],
-        source: 'Jooble API Live',
-        sourceUrl: 'https://pl.jooble.org',
-        featured: true,
-        createdAt: new Date(Date.now() - 3600000).toISOString()
-    },
-    {
-        id: 'job-3',
-        title: 'DevOps Cloud Engineer (AWS / Kubernetes)',
-        company: 'CloudScale Sp. k.',
-        location: 'Wrocław / Zdalnie',
-        salary: '20 000 - 26 000 PLN (B2B)',
-        type: 'Zdalna',
-        category: 'IT / Software',
-        tags: ['AWS', 'Kubernetes', 'Terraform', 'CI/CD'],
-        description: 'Automatyzacja wdrożeń, optymalizacja infrastruktury Kubernetes w chmurze AWS oraz implementacja pipeline CI/CD.',
-        requirements: ['Praktyczna znajomość AWS, Terraform, Helm i Kubernetes', 'Doświadczenie z monitoringiem (Prometheus / Grafana)', 'Inicjatywa i samodzielność'],
-        source: 'Zweryfikowany Pracodawca',
-        sourceUrl: '#',
-        featured: false,
-        createdAt: new Date(Date.now() - 7200000).toISOString()
-    },
-    {
-        id: 'job-4',
-        title: 'UI/UX Product Designer & Design System',
-        company: 'CreativeFlow Studio',
-        location: 'Gdańsk / Zdalnie',
-        salary: '13 000 - 17 000 PLN (UoP / B2B)',
-        type: 'Zdalna',
-        category: 'Design / UX',
-        tags: ['Figma', 'UI/UX', 'Design System', 'Prototyping'],
-        description: 'Projektowanie intuicyjnych interfejsów dla aplikacji webowych i mobilnych oraz rozwijanie globalnego systemu designu.',
-        requirements: ['Bogate portfolio projektów UI/UX', 'Zaawansowana znajomość Figmy i Auto Layout', 'Doświadczenie w badaniach z użytkownikami'],
-        source: 'Jooble API Live',
-        sourceUrl: 'https://pl.jooble.org',
-        featured: false,
-        createdAt: new Date(Date.now() - 10800000).toISOString()
-    },
-    {
-        id: 'job-5',
-        title: 'Główny Księgowy / Senior Accountant',
-        company: 'FinanceAudit Partners',
-        location: 'Poznań / Stacjonarnie',
-        salary: '12 000 - 16 000 PLN (UoP)',
-        type: 'Pełny etat',
-        category: 'Finanse / Księgowość',
-        tags: ['Księgowość', 'Podatki', 'CIT/VAT', 'KSeF'],
-        description: 'Kompleksowe prowadzenie ksiąg rachunkowych spółek z o.o., sporządzanie sprawozdań finansowych i deklaracji podatkowych.',
-        requirements: ['Wykształcenie wyższe kierunkowe (Finanse / Rachunkowość)', 'Min. 5 lat doświadczenia na stanowisku Samodzielnego Księgowego', 'Znajomość przepisów podatkowych i KSeF'],
-        source: 'Zweryfikowany Pracodawca',
-        sourceUrl: '#',
-        featured: false,
-        createdAt: new Date(Date.now() - 14400000).toISOString()
-    },
-    {
-        id: 'job-6',
-        title: 'Performance Marketing & SEO Specialist',
-        company: 'GrowthForge Agency',
-        location: 'Warszawa / Zdalnie',
-        salary: '9 000 - 13 000 PLN (B2B / UoP)',
-        type: 'Zdalna',
-        category: 'Sprzedaż / Marketing',
-        tags: ['Google Ads', 'Meta Ads', 'SEO', 'Analytics'],
-        description: 'Zarządzanie płatnymi kampaniami Google Ads i Meta Ads, analiza konwersji w GA4 oraz optymalizacja SEO serwisów klientów.',
-        requirements: ['Praktyczne doświadczenie w prowadzeniu kampanii PPC z budżetami > 50k PLN/mc', 'Biegłość w Google Analytics 4 i Google Tag Manager', 'Certyfikaty Google Ads mile widziane'],
-        source: 'Jooble API Live',
-        sourceUrl: 'https://pl.jooble.org',
-        featured: false,
-        createdAt: new Date(Date.now() - 18000000).toISOString()
-    },
-    {
-        id: 'job-7',
-        title: 'Inżynier Automatyk / PLC Programmer',
-        company: 'InduTech Polska',
-        location: 'Katowice / Hybrydowo',
-        salary: '11 000 - 15 500 PLN (UoP)',
-        type: 'Pełny etat',
-        category: 'Praca Fizyczna / Techniczna',
-        tags: ['Siemens TIA Portal', 'PLC', 'SCADA', 'Automatyka'],
-        description: 'Programowanie i uruchamianie sterowników PLC oraz systemów SCADA dla zautomatyzowanych linii produkcyjnych.',
-        requirements: ['Wykształcenie techniczne (Automatyka, Robotyka, Elektrotechnika)', 'Umiejętność programowania sterowników Siemens S7-1200 / 1500 w TIA Portal', 'Uprawnienia SEP do 1kV'],
-        source: 'Zweryfikowany Pracodawca',
-        sourceUrl: '#',
-        featured: false,
-        createdAt: new Date(Date.now() - 21600000).toISOString()
-    },
-    {
-        id: 'job-8',
-        title: 'Frontend Developer (Vue.js / Nuxt 3)',
-        company: 'AppVenture Digital',
-        location: 'Łódź / Zdalnie',
-        salary: '14 000 - 19 000 PLN (B2B)',
-        type: 'Zdalna',
-        category: 'IT / Software',
-        tags: ['Vue.js', 'Nuxt 3', 'TailwindCSS', 'TypeScript'],
-        description: 'Rozwój platformy e-commerce opartej o Nuxt 3 i headless CMS z naciskiem na szybkość ładowania i Core Web Vitals.',
-        requirements: ['Min. 3 lata doświadczenia z ekosystemem Vue / Nuxt', 'Bardzo dobra znajomość TypeScript i TailwindCSS', 'Zrozumienie zagadnień SSR i SEO'],
-        source: 'Jooble API Live',
-        sourceUrl: 'https://pl.jooble.org',
-        featured: false,
-        createdAt: new Date(Date.now() - 25200000).toISOString()
-    },
-    {
-        id: 'job-9',
-        title: 'Specjalista ds. Logistyki i Spedycji Międzynarodowej',
-        company: 'TransEuro Logistics Sp. z o.o.',
-        location: 'Szczecin / Stacjonarnie',
-        salary: '7 500 - 10 500 PLN (UoP + Premie)',
-        type: 'Pełny etat',
-        category: 'Logistyka / Transport',
-        tags: ['Spedycja', 'Giełdy transportowe', 'Angielski/Niemiecki'],
-        description: 'Planowanie i organizacja przewozów drobnicowych oraz całopojazdowych na trasach Polska - Europa Zachodnia.',
-        requirements: ['Doświadczenie w spedycji międzynarodowej drogowej', 'Znajomość giełd Trans.eu, TimoCom', 'Znajomość j. niemieckiego lub angielskiego w stopniu komunikatywnym'],
-        source: 'Zweryfikowany Pracodawca',
-        sourceUrl: '#',
-        featured: false,
-        createdAt: new Date(Date.now() - 28800000).toISOString()
-    },
-    {
-        id: 'job-10',
-        title: 'HR & Talent Acquisition Specialist',
-        company: 'TalentPeak Partners',
-        location: 'Kraków / Hybrydowo',
-        salary: '8 000 - 11 000 PLN (UoP)',
-        type: 'Pełny etat',
-        category: 'HR / Kadry',
-        tags: ['Direct Search', 'LinkedIn Recruiter', 'Onboarding'],
-        description: 'Prowadzenie rekrutacji end-to-end na stanowiska specjalistyczne i techniczne dla międzynarodowych klientów.',
-        requirements: ['Doświadczenie w rekrutacjach Direct Search', 'Umiejętność budowania relacji z kandydatami', 'Biegłość w posługiwaniu się narzędziami ATS i LinkedIn'],
-        source: 'Jooble API Live',
-        sourceUrl: 'https://pl.jooble.org',
-        featured: false,
-        createdAt: new Date(Date.now() - 32400000).toISOString()
-    },
-    {
-        id: 'job-11',
-        title: 'Java Enterprise Developer (Spring Boot / Microservices)',
-        company: 'FinCore Systems',
-        location: 'Warszawa / Zdalnie',
-        salary: '21 000 - 27 000 PLN (B2B)',
-        type: 'Zdalna',
-        category: 'IT / Software',
-        tags: ['Java 21', 'Spring Boot', 'Kafka', 'PostgreSQL'],
-        description: 'Tworzenie modułów transakcyjnych dla systemów bankowości elektronicznej z zachowaniem rygorystycznych standardów bezpieczeństwa.',
-        requirements: ['Bardzo dobra znajomość Java 17+, Spring Boot, Hibernate', 'Doświadczenie z Apache Kafka i architekturą event-driven', 'Znajomość zagadnień bezpieczeństwa aplikacji (OWASP)'],
-        source: 'Zweryfikowany Pracodawca',
-        sourceUrl: '#',
-        featured: true,
-        createdAt: new Date(Date.now() - 36000000).toISOString()
-    },
-    {
-        id: 'job-12',
-        title: 'Quality Assurance Automation Engineer (Cypress / Playwright)',
-        company: 'QualiTest Hub',
-        location: 'Wrocław / Zdalnie',
-        salary: '14 000 - 18 500 PLN (B2B)',
-        type: 'Zdalna',
-        category: 'IT / Software',
-        tags: ['Playwright', 'TypeScript', 'Cypress', 'CI/CD'],
-        description: 'Projektowanie i utrzymanie frameworku do automatyzacji testów E2E oraz testów integracyjnych API.',
-        requirements: ['Praktyczna znajomość Playwright lub Cypress w TypeScript', 'Doświadczenie w integracji testów z GitLab CI / GitHub Actions', 'Dbałość o jakość i szczegóły'],
-        source: 'Jooble API Live',
-        sourceUrl: 'https://pl.jooble.org',
-        featured: false,
-        createdAt: new Date(Date.now() - 39600000).toISOString()
-    },
-    {
-        id: 'job-13',
-        title: 'Kierownik Robót Budowlanych / Inżynier Budowy',
-        company: 'BudInvest Grupa',
-        location: 'Białystok / Stacjonarnie',
-        salary: '10 000 - 14 000 PLN (UoP + Samochód)',
-        type: 'Pełny etat',
-        category: 'Budownictwo / Inżynieria',
-        tags: ['Uprawnienia budowlane', 'AutoCAD', 'Nadzór budowlany'],
-        description: 'Nadzór nad realizacją inwestycji mieszkaniowych, koordynacja pracy podwykonawców i kontrola kosztów budowy.',
-        requirements: ['Uprawnienia budowlane bez ograniczeń w specjalności konstrukcyjno-budowlanej', 'Min. 3 lata doświadczenia na budowie', 'Prawo jazdy kat. B'],
-        source: 'Zweryfikowany Pracodawca',
-        sourceUrl: '#',
-        featured: false,
-        createdAt: new Date(Date.now() - 43200000).toISOString()
-    },
-    {
-        id: 'job-14',
-        title: 'Key Account Manager (B2B SaaS)',
-        company: 'SaaSify Global',
-        location: 'Warszawa / Hybrydowo',
-        salary: '10 000 - 15 000 PLN + Prowizja (B2B)',
-        type: 'Pełny etat',
-        category: 'Sprzedaż / Marketing',
-        tags: ['B2B Sales', 'CRM', 'Negocjacje', 'SaaS'],
-        description: 'Pozyskiwanie i obsługa klientów korporacyjnych w segmencie oprogramowania biznesowego w modelu subskrypcyjnym.',
-        requirements: ['Udokumentowane sukcesy w sprzedaży B2B w sektorze technologicznym', 'Wysokie umiejętności prezentacyjne i negocjacyjne', 'Znajomość HubSpot / Salesforce'],
-        source: 'Jooble API Live',
-        sourceUrl: 'https://pl.jooble.org',
-        featured: false,
-        createdAt: new Date(Date.now() - 46800000).toISOString()
-    }
-];
+const JOOBLE_API_KEY = "5be594f9-f5e0-41f5-a41a-9c1ea12566be";
 
-const JobService = {
-    DEMO_JOBS: DEMO_JOBS,
+// Job Service - Handle job data loading and display
 
-    detectJobType(title = '', description = '') {
-        const text = `${title} ${description}`.toLowerCase();
-        if (text.includes('remote') || text.includes('zdaln') || text.includes('work from home')) return 'Zdalna';
-        if (text.includes('intern') || text.includes('staż') || text.includes('staz') || text.includes('praktyk')) return 'Staż';
-        if (text.includes('contract') || text.includes('kontrakt') || text.includes('b2b') || text.includes('zlecenie')) return 'Kontrakt';
-        if (text.includes('część') || text.includes('part-time') || text.includes('pół etatu')) return 'Część etatu';
-        return 'Pełny etat';
-    },
+let lastJobsTotal = 0
 
-    normalizeJoobleJob(item, index) {
-        if (!item) return null;
-        const title = item.title ? item.title.replace(/<\/?[^>]+(>|$)/g, '').trim() : 'Oferta Pracy';
-        const snippet = item.snippet ? item.snippet.replace(/<\/?[^>]+(>|$)/g, '').trim() : '';
-        const location = item.location || 'Polska / Zdalnie';
-        const salary = item.salary && item.salary.trim() ? item.salary.trim() : 'Do uzgodnienia';
-        const company = item.company || 'Pracodawca zweryfikowany';
-        const sourceUrl = item.link || item.source_url || 'https://pl.jooble.org';
-        const type = item.type || this.detectJobType(title, snippet);
-
-        return {
-            id: `jooble-${item.id || index || Date.now()}`,
-            title: title,
-            company: company,
-            location: location,
-            salary: salary,
-            type: type,
-            category: this.detectCategory(title, snippet),
-            tags: this.extractTags(title, snippet),
-            description: snippet || 'Szczegółowy opis stanowiska dostępny u źródła ogłoszenia.',
-            requirements: ['Doświadczenie na podobnym stanowisku', 'Motywacja i zaangażowanie'],
-            source: 'Jooble Live API',
-            sourceUrl: sourceUrl,
-            featured: false,
-            createdAt: item.updated || new Date().toISOString()
-        };
-    },
-
-    detectCategory(title, desc) {
-        const text = `${title} ${desc}`.toLowerCase();
-        if (text.includes('react') || text.includes('javascript') || text.includes('python') || text.includes('developer') || text.includes('programista') || text.includes('frontend') || text.includes('backend') || text.includes('java')) return 'IT / Software';
-        if (text.includes('spawacz') || text.includes('monter') || text.includes('mechanik') || text.includes('elektryk') || text.includes('produkcja')) return 'Praca Fizyczna / Techniczna';
-        if (text.includes('księg') || text.includes('finans') || text.includes('rachunk') || text.includes('analityk')) return 'Finanse / Księgowość';
-        if (text.includes('sprzeda') || text.includes('handlowiec') || text.includes('marketing') || text.includes('obsługa')) return 'Sprzedaż / Marketing';
-        return 'Inne';
-    },
-
-    extractTags(title, desc) {
-        const text = `${title} ${desc}`.toLowerCase();
-        const techList = ['React', 'JavaScript', 'TypeScript', 'Python', 'Java', 'Node.js', 'SQL', 'AWS', 'Docker', 'TIG', 'MIG/MAG', 'Excel', 'B2B', 'Zdalnie', 'Full-time'];
-        const found = [];
-        for (const t of techList) {
-            if (text.includes(t.toLowerCase())) found.push(t);
-        }
-        if (found.length === 0) found.push('Standard');
-        return found.slice(0, 4);
-    },
-
-    async loadJoobleJobs(keywords = '', location = '') {
-        const apiKey = '5be594f9-f5e0-41f5-a41a-9c1ea12566be';
-        const targetUrl = `https://pl.jooble.org/api/${apiKey}`;
-        const bodyObj = {
-            keywords: keywords || 'Polska',
-            location: location || '',
-            page: 1
-        };
-
-        // Try direct and CORS proxy
-        const proxies = [
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-            targetUrl
-        ];
-
-        for (const url of proxies) {
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(bodyObj)
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.jobs && Array.isArray(data.jobs) && data.jobs.length > 0) {
-                        return data.jobs.map((j, idx) => this.normalizeJoobleJob(j, idx)).filter(Boolean);
-                    }
-                }
-            } catch (e) {
-                // Try next
-            }
-        }
-
-        // Return rich default jobs if live API is blocked by CORS
-        return DEMO_JOBS;
-    },
-
-    combineJobs(internalJobs = [], joobleJobs = []) {
-        const seen = new Set();
-        const combined = [];
-
-        for (const j of joobleJobs) {
-            if (!j) continue;
-            const key = `${(j.title || '').toLowerCase().trim()}___${(j.company || '').toLowerCase().trim()}`;
-            if (!seen.has(key)) {
-                seen.add(key);
-                combined.push(j);
-            }
-        }
-
-        for (const j of internalJobs) {
-            if (!j) continue;
-            const key = `${(j.title || '').toLowerCase().trim()}___${(j.company || '').toLowerCase().trim()}`;
-            if (!seen.has(key)) {
-                seen.add(key);
-                combined.push(j);
-            }
-        }
-
-        return combined;
-    },
-
-    filterJobs(jobs = [], filters = {}) {
-        const query = (filters.searchQuery || '').toLowerCase().trim();
-        const locQuery = (filters.locationQuery || '').toLowerCase().trim();
-        const filter = (filters.currentFilter || 'all').toLowerCase();
-        const minSalary = filters.minSalary || 0;
-
-        return jobs.filter(job => {
-            if (!job) return false;
-
-            const title = (job.title || '').toLowerCase();
-            const desc = (job.description || '').toLowerCase();
-            const comp = (job.company || '').toLowerCase();
-            const loc = (job.location || '').toLowerCase();
-            const tags = (job.tags || []).map(t => t.toLowerCase()).join(' ');
-
-            if (query) {
-                const qWords = query.split(/\s+/);
-                const fullText = `${title} ${desc} ${comp} ${tags}`;
-                const matches = qWords.every(w => fullText.includes(w));
-                if (!matches) return false;
-            }
-
-            if (locQuery) {
-                if (!loc.includes(locQuery) && !locQuery.includes(loc)) {
-                    return false;
-                }
-            }
-
-            if (minSalary > 0) {
-                const salText = job.salary || '';
-                const nums = salText.replace(/\s/g, '').match(/\d+/g);
-                if (nums && nums.length > 0) {
-                    const maxVal = Math.max(...nums.map(n => parseInt(n, 10)));
-                    if (maxVal < minSalary) return false;
-                }
-            }
-
-            if (filter !== 'all') {
-                const type = (job.type || '').toLowerCase();
-                const cat = (job.category || '').toLowerCase();
-                const title = (job.title || '').toLowerCase();
-
-                if (filter === 'remote' || filter === 'zdalna') {
-                    if (!type.includes('zdaln') && !loc.includes('zdaln')) return false;
-                } else if (filter === 'intern' || filter === 'staz' || filter === 'staż') {
-                    if (!type.includes('staż') && !type.includes('staz') && !type.includes('intern')) return false;
-                } else if (filter === 'b2b' || filter === 'kontrakt') {
-                    if (!type.includes('b2b') && !type.includes('kontrakt')) return false;
-                } else if (!cat.includes(filter) && !title.includes(filter)) {
-                    return false;
-                }
-            }
-
-            return true;
-        });
-    }
-};
-
-if (typeof window !== 'undefined') {
-    window.JobService = JobService;
+export function getLastJobsTotal() {
+  return lastJobsTotal
 }
 
-export { JobService };
-export default JobService;
+export async function loadJobs(keywords = 'praca', location = 'Polska') {
+  try {
+    const params = new URLSearchParams({ keywords, location })
+    const response = await fetch(`/api/jobs?${params.toString()}`)
+
+    if (response.ok) {
+      const data = await response.json()
+      const joobleJobs = parseJobsData(data.jobs || data)
+      lastJobsTotal = Number(data.totalCount || data.total || data.count || joobleJobs.length) || joobleJobs.length
+      return mergeWithDemoJobs(joobleJobs)
+    }
+
+    console.warn('Jooble API error:', response.status)
+  } catch (error) {
+    console.warn('Nie udało się pobrać ofert z Jooble:', error)
+  }
+
+  return getDemoJobs()
+}
+
+function mergeWithDemoJobs(joobleJobs) {
+  const demoJobs = getDemoJobs()
+  const seen = new Set()
+  const combined = [...joobleJobs, ...demoJobs]
+
+  return combined.filter(job => {
+    const key = `${job.title.toLowerCase()}|${job.company.toLowerCase()}|${job.location.toLowerCase()}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
+// Parse jobs data from API response
+function parseJobsData(data) {
+  if (Array.isArray(data)) {
+    return data.map(job => ({
+      id: job.id || Math.random(),
+      title: job.title || job.name || 'Brak tytułu',
+      company: job.company || job.employer || 'Brak firmy',
+      location: job.location || job.city || 'Brak lokalizacji',
+      description: job.description || job.job_description || '',
+      salary: job.salary || job.salary_min || 'Do negocjacji',
+      salaryMax: job.salary_max || null,
+      type: job.type || job.job_type || 'full-time',
+      category: job.category || job.job_category || 'Inne',
+      posted: job.posted_date || job.created_at || new Date().toISOString(),
+      url: job.url || '#'
+    }))
+  }
+  return []
+}
+
+// Display jobs on page
+export function displayJobs(jobs, containerId = '#jobsList') {
+  const container = document.querySelector(containerId)
+  if (!container) return
+  
+  if (jobs.length === 0) {
+    container.innerHTML = `
+      <div class="no-results">
+        <p>😔 Nie znaleziono ofert pracy</p>
+        <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;">Spróbuj zmienić filtry lub wyszukiwanie</p>
+      </div>
+    `
+    return
+  }
+  
+  container.innerHTML = jobs.map((job, index) => createJobCard(job, index)).join('')
+  
+  // Add event listeners to favorite buttons
+  container.querySelectorAll('.btn-favorite').forEach(btn => {
+    btn.addEventListener('click', toggleFavorite)
+  })
+  
+  // Add event listeners to apply buttons
+  container.querySelectorAll('.btn-apply').forEach(btn => {
+    btn.addEventListener('click', handleApply)
+  })
+}
+
+// Create individual job card HTML
+function createJobCard(job, index) {
+  const animationDelay = index * 0.1
+  const salary = formatSalary(job.salary, job.salaryMax)
+  const daysSincePosted = getDaysSincePosted(job.posted)
+  const type = formatJobType(job.type)
+  
+  return `
+    <div class="job-card" style="animation-delay: ${animationDelay}s;">
+      <div class="job-header">
+        <div>
+          <h3 class="job-title">${escapeHtml(job.title)}</h3>
+          <p class="job-company">${escapeHtml(job.company)}</p>
+        </div>
+        <button class="btn-favorite" data-job-id="${job.id}" title="Dodaj do ulubionych">
+          <span class="heart-icon">♡</span>
+        </button>
+      </div>
+      
+      <div class="job-meta">
+        <span class="job-location">📍 ${escapeHtml(job.location)}</span>
+        <span class="job-type badge badge-primary">${type}</span>
+        <span class="job-posted">🕐 ${daysSincePosted}</span>
+      </div>
+      
+      <p class="job-description">${truncateText(escapeHtml(job.description), 150)}</p>
+      
+      <div class="job-footer">
+        <div class="job-salary">${salary}</div>
+        <button class="btn-apply" data-job-id="${job.id}" data-job-title="${escapeHtml(job.title)}">
+          ✉️ Aplikuj
+        </button>
+      </div>
+    </div>
+  `
+}
+
+// Format salary display
+function formatSalary(min, max) {
+  if (!min) return '💰 Do negocjacji'
+  
+  if (typeof min === 'string') {
+    return `💰 ${min}`
+  }
+  
+  if (max) {
+    return `💰 ${min.toLocaleString('pl-PL')} - ${max.toLocaleString('pl-PL')} PLN`
+  }
+  
+  return `💰 ${min.toLocaleString('pl-PL')} PLN`
+}
+
+// Format job type
+function formatJobType(type) {
+  const types = {
+    'full-time': 'Pełny etat',
+    'part-time': 'Część etatu',
+    'contract': 'Kontrakt',
+    'freelance': 'Freelance',
+    'temporary': 'Tymczasowa'
+  }
+  return types[type] || type || 'Pełny etat'
+}
+
+// Calculate days since posted
+function getDaysSincePosted(date) {
+  try {
+    const posted = new Date(date)
+    const now = new Date()
+    const diffTime = Math.abs(now - posted)
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    
+    if (diffDays === 0) return 'Dzisiaj'
+    if (diffDays === 1) return 'Wczoraj'
+    if (diffDays < 7) return `${diffDays} dni temu`
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} tygodni temu`
+    return `${Math.floor(diffDays / 30)} miesięcy temu`
+  } catch (error) {
+    return 'Niedawno'
+  }
+}
+
+// Truncate text
+function truncateText(text, maxLength) {
+  if (!text) return ''
+  if (text.length <= maxLength) return text
+  return text.substring(0, maxLength) + '...'
+}
+
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+  if (!text) return ''
+  const div = document.createElement('div')
+  div.textContent = text
+  return div.innerHTML
+}
+
+// Toggle favorite
+function toggleFavorite(e) {
+  e.preventDefault()
+  const button = e.currentTarget
+  const jobId = button.dataset.jobId
+  
+  button.classList.toggle('favorited')
+  const icon = button.querySelector('.heart-icon')
+  icon.textContent = button.classList.contains('favorited') ? '❤️' : '♡'
+  
+  // Save to localStorage
+  const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
+  if (button.classList.contains('favorited')) {
+    if (!favorites.includes(jobId)) {
+      favorites.push(jobId)
+    }
+  } else {
+    const index = favorites.indexOf(jobId)
+    if (index > -1) {
+      favorites.splice(index, 1)
+    }
+  }
+  localStorage.setItem('favorites', JSON.stringify(favorites))
+}
+
+// Handle apply
+function handleApply(e) {
+  e.preventDefault()
+  const jobTitle = e.currentTarget.dataset.jobTitle
+  alert(`Dziękujemy! Twoja aplikacja do stanowiska "${jobTitle}" została wysłana.`)
+  // Here you would send the application to a server
+}
+
+// Demo jobs data
+function getDemoJobs() {
+  return [
+    {
+      id: 1,
+      title: 'Senior JavaScript Developer',
+      company: 'TechCorp Sp. z o.o.',
+      location: 'Warszawa',
+      description: 'Szukamy doświadczonego programisty JavaScript do pracy nad nowoczesnymi aplikacjami webowymi. Wymagana znajomość React, Node.js i baz danych SQL.',
+      salary: 12000,
+      salaryMax: 16000,
+      type: 'full-time',
+      category: 'IT',
+      posted: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 2,
+      title: 'Product Manager',
+      company: 'StartupHub',
+      location: 'Kraków',
+      description: 'Dołącz do naszego zespołu jako Product Manager. Będziesz odpowiedzialny za strategię produktu i współpracę z zespołem dev. Wymagane doświadczenie 3+ lat.',
+      salary: 10000,
+      salaryMax: 14000,
+      type: 'full-time',
+      category: 'Zarządzanie',
+      posted: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 3,
+      title: 'UX/UI Designer',
+      company: 'Creative Studio',
+      location: 'Wrocław',
+      description: 'Szukamy kreatywnego designera do projektowania interfejsów użytkownika dla aplikacji mobilnych. Portfolio wymagane.',
+      salary: 7000,
+      salaryMax: 10000,
+      type: 'full-time',
+      category: 'Design',
+      posted: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 4,
+      title: 'Data Scientist',
+      company: 'AI Solutions',
+      location: 'Warszawa',
+      description: 'Poszukujemy Data Scientist\'a do analizy dużych zbiorów danych. Wymagana znajomość Python, SQL i ML frameworks.',
+      salary: 13000,
+      salaryMax: 18000,
+      type: 'full-time',
+      category: 'IT',
+      posted: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 5,
+      title: 'Marketing Specialist',
+      company: 'Digital Agency Pro',
+      location: 'Gdańsk',
+      description: 'Szukamy specjalisty marketingu cyfrowego do pracy nad kampaniami dla naszych klientów. Doświadczenie z Google Ads i Facebook Ads wymagane.',
+      salary: 6000,
+      salaryMax: 9000,
+      type: 'full-time',
+      category: 'Marketing',
+      posted: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 6,
+      title: 'DevOps Engineer',
+      company: 'CloudTech',
+      location: 'Poznań',
+      description: 'Dołącz do naszego zespołu DevOps. Wymagana znajomość Docker, Kubernetes, AWS i CI/CD pipelines.',
+      salary: 11000,
+      salaryMax: 15000,
+      type: 'full-time',
+      category: 'IT',
+      posted: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 7,
+      title: 'HR Manager',
+      company: 'HumanResources Co.',
+      location: 'Warszawa',
+      description: 'Szukamy HR Manager\'a do zarządzania procesami rekrutacji i onboardingu. Doświadczenie w HR min 2 lata.',
+      salary: 7500,
+      salaryMax: 10500,
+      type: 'full-time',
+      category: 'HR',
+      posted: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 8,
+      title: 'Python Developer',
+      company: 'SoftwareLabs',
+      location: 'Wrocław',
+      description: 'Szukamy Python Developer\'a do pracy nad backendem. Wymagana znajomość Django/FastAPI i SQL.',
+      salary: 10000,
+      salaryMax: 13000,
+      type: 'full-time',
+      category: 'IT',
+      posted: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 9,
+      title: 'Content Writer',
+      company: 'Media Group',
+      location: 'Kraków',
+      description: 'Poszukujemy doświadczonego copywritera do tworzenia artykułów i materiałów marketingowych.',
+      salary: 5000,
+      salaryMax: 7500,
+      type: 'full-time',
+      category: 'Marketing',
+      posted: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 10,
+      title: 'QA Tester',
+      company: 'TestQuality',
+      location: 'Gdańsk',
+      description: 'Szukamy QA Engineer\'a do testowania aplikacji webowych i mobilnych. Doświadczenie z Selenium wymagane.',
+      salary: 6500,
+      salaryMax: 8500,
+      type: 'full-time',
+      category: 'IT',
+      posted: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 11,
+      title: 'Business Analyst',
+      company: 'Consulting Pro',
+      location: 'Warszawa',
+      description: 'Poszukujemy Business Analyst\'a do analizy wymagań i dokumentacji procesów biznesowych.',
+      salary: 9000,
+      salaryMax: 12000,
+      type: 'full-time',
+      category: 'Zarządzanie',
+      posted: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 12,
+      title: 'Full Stack Developer',
+      company: 'WebSolutions',
+      location: 'Poznań',
+      description: 'Szukamy Full Stack Developer\'a z doświadczeniem w React i Node.js. Atrakcyjna stawka i benefity.',
+      salary: 11000,
+      salaryMax: 14000,
+      type: 'full-time',
+      category: 'IT',
+      posted: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 13,
+      title: 'Sales Executive',
+      company: 'SalesForce Inc.',
+      location: 'Wrocław',
+      description: 'Dołącz do naszego zespołu sprzedaży. Wymagane doświadczenie w B2B sales i znajomość CRM.',
+      salary: 6000,
+      salaryMax: 11000,
+      type: 'full-time',
+      category: 'Sales',
+      posted: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 14,
+      title: 'Mobile App Developer',
+      company: 'AppStudio',
+      location: 'Gdańsk',
+      description: 'Szukamy Mobile Developer\'a specjalizującego się w React Native i Flutter.',
+      salary: 10000,
+      salaryMax: 13000,
+      type: 'full-time',
+      category: 'IT',
+      posted: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString()
+    }
+  ]
+}
