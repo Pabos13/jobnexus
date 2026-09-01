@@ -1211,22 +1211,27 @@ function initNavbar() {
 // ============================================
 // JOB OFFERS & ADVANCED PAGINATION
 // ============================================
+
 async function loadData() {
     showLoading(true);
 
     try {
-        let loaded = [];
-        if (typeof JobService !== 'undefined' && JobService.loadCSVJobs) {
-            loaded = await JobService.loadCSVJobs();
+        let csvJobs = [];
+        let joobleJobs = [];
+
+        if (typeof JobService !== 'undefined') {
+            csvJobs = await JobService.loadCSVJobs();
+            joobleJobs = await JobService.loadJoobleJobs(state.searchQuery || 'praca', state.locationQuery || 'Polska');
+            state.jobs = JobService.combineJobs(csvJobs || [], joobleJobs || []);
+        } else {
+            state.jobs = [];
         }
 
-        if (!loaded || loaded.length === 0) {
-            loaded = (typeof JobService !== 'undefined' && JobService.DEMO_JOBS) ? [...JobService.DEMO_JOBS] : [];
+        if (!state.jobs || state.jobs.length === 0) {
+            state.jobs = (typeof JobService !== 'undefined' && JobService.DEMO_JOBS) ? [...JobService.DEMO_JOBS] : [];
         }
 
-        state.csvJobs = loaded || [];
-        state.jobs = [...state.csvJobs];
-        state.filteredJobs = [...state.csvJobs];
+        state.filteredJobs = [...state.jobs];
         state.jobsPage = 1;
         state.jobsPerPage = 9;
 
@@ -2382,4 +2387,81 @@ function syncCvPreview() {
 // Ensure initCvBuilder is called on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     initCvBuilder();
+});
+
+// ============================================
+// GLOBAL AUTH MODAL CONTROLLER (LOGIN / REGISTER)
+// ============================================
+window.openAuthModal = function(mode = 'login', role = 'candidate') {
+    const authModal = document.getElementById('authModal');
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const roleGroup = document.getElementById('roleGroup');
+    const authSubmitBtn = document.getElementById('authSubmitBtn');
+
+    if (!authModal) return;
+
+    authModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    if (mode === 'register') {
+        if (tabLogin) {
+            tabLogin.classList.remove('active');
+            tabLogin.style.borderBottom = 'none';
+            tabLogin.style.color = '#94a3b8';
+        }
+        if (tabRegister) {
+            tabRegister.classList.add('active');
+            tabRegister.style.borderBottom = '2px solid #3b82f6';
+            tabRegister.style.color = '#ffffff';
+        }
+        if (roleGroup) roleGroup.classList.remove('hidden');
+        if (authSubmitBtn) authSubmitBtn.textContent = 'Zarejestruj się i utwórz konto';
+
+        const roleRadio = document.querySelector(`input[name="authRole"][value="${role}"]`);
+        if (roleRadio) roleRadio.checked = true;
+    } else {
+        if (tabRegister) {
+            tabRegister.classList.remove('active');
+            tabRegister.style.borderBottom = 'none';
+            tabRegister.style.color = '#94a3b8';
+        }
+        if (tabLogin) {
+            tabLogin.classList.add('active');
+            tabLogin.style.borderBottom = '2px solid #3b82f6';
+            tabLogin.style.color = '#ffffff';
+        }
+        if (roleGroup) roleGroup.classList.add('hidden');
+        if (authSubmitBtn) authSubmitBtn.textContent = 'Zaloguj się';
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const authClose = document.getElementById('authClose');
+    const authModal = document.getElementById('authModal');
+    const authTrigger = document.getElementById('authTrigger');
+
+    if (tabLogin) {
+        tabLogin.addEventListener('click', () => window.openAuthModal('login'));
+    }
+    if (tabRegister) {
+        tabRegister.addEventListener('click', () => window.openAuthModal('register'));
+    }
+    if (authTrigger) {
+        authTrigger.addEventListener('click', () => window.openAuthModal('login'));
+    }
+    if (authClose && authModal) {
+        authClose.addEventListener('click', () => {
+            authModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        });
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) {
+                authModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        });
+    }
 });

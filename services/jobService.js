@@ -1,160 +1,161 @@
 /**
  * JobService — Centralna usługa pobierania, łączenia, filtrowania i cache'owania ofert pracy
+ * Obsługuje Jooble API, pliki CSV oraz bezpieczny fallback danych
  */
 
 const DEMO_FALLBACK_JOBS = [
     {
-        id: 'demo-1',
+        id: 'jb-1',
         title: 'Senior Full Stack Developer (React & Node.js)',
         company: 'NexusTech Solutions',
-        location: 'Zdalnie / Warszawa',
+        location: 'Warszawa / Zdalnie',
         salary: '18 000 - 24 000 PLN',
         type: 'Zdalna',
         category: 'it',
-        description: 'Poszukujemy doświadczonego programisty Full Stack do rozwijania platformy AI. Wymagane: React, TypeScript, Node.js, PostgreSQL.',
+        description: 'Rozwój platformy chmurowej SaaS w architekturze mikroserwisów. Wymagane: React 18, TypeScript, Node.js, PostgreSQL, AWS.',
         date: new Date().toISOString(),
         featured: true,
         url: '#'
     },
     {
-        id: 'demo-2',
+        id: 'jb-2',
         title: 'AI Prompt Engineer & LLM Specialist',
         company: 'Cognitive AI Labs',
-        location: 'Zdalnie / Kraków',
+        location: 'Kraków / Zdalnie',
         salary: '16 000 - 22 000 PLN',
         type: 'Zdalna',
         category: 'ai',
-        description: 'Tworzenie i optymalizacja promptów, fine-tuning modeli językowych, integracja z API OpenAI i Claude.',
+        description: 'Budowa i optymalizacja pipeline promptów dla modeli Claude i OpenAI, ewaluacja modeli LLM oraz integracja z systemami RAG.',
         date: new Date().toISOString(),
         featured: true,
         url: '#'
     },
     {
-        id: 'demo-3',
+        id: 'jb-3',
         title: 'Spawacz TIG / MIG-MAG (Konstrukcje stalowe)',
         company: 'StalBud Engineering',
         location: 'Gdańsk / Trójmiasto',
         salary: '7 500 - 11 000 PLN',
         type: 'Pełny etat',
         category: 'inzynieria',
-        description: 'Prace spawalnicze metodami 141 (TIG) oraz 135 (MAG). Wymagane aktualne uprawnienia UDT/TÜV oraz czytanie rysunku technicznego.',
+        description: 'Prace spawalnicze metodami 141 (TIG) oraz 135 (MAG). Wymagane aktualne uprawnienia spawalnicze oraz czytanie rysunku technicznego.',
         date: new Date().toISOString(),
         featured: false,
         url: '#'
     },
     {
-        id: 'demo-4',
-        title: 'UI/UX Product Designer (Figma / Design System)',
+        id: 'jb-4',
+        title: 'UI/UX Product Designer (Design System & Figma)',
         company: 'PixelCraft Studio',
-        location: 'Zdalnie / Wrocław',
+        location: 'Wrocław / Zdalnie',
         salary: '12 000 - 16 000 PLN',
         type: 'Zdalna',
         category: 'design',
-        description: 'Projektowanie intuicyjnych interfejsów aplikacji webowych i mobilnych, budowa Design Systemu w Figmie.',
+        description: 'Projektowanie zaawansowanych interfejsów B2B/SaaS, tworzenie komponentów w Figmie oraz prowadzenie testów użyteczności.',
         date: new Date().toISOString(),
         featured: true,
         url: '#'
     },
     {
-        id: 'demo-5',
+        id: 'jb-5',
         title: 'Główna Księgowa / Senior Accountant',
         company: 'FinancePro Partners',
         location: 'Poznań',
         salary: '10 000 - 14 000 PLN',
         type: 'Pełny etat',
         category: 'finanse',
-        description: 'Prowadzenie pełnej księgowości spółek z o.o., sporządzanie sprawozdań finansowych, deklaracji VAT, CIT, JPK.',
+        description: 'Prowadzenie pełnej księgowości spółek handlowych, sporządzanie deklaracji podatkowych CIT, VAT, JPK oraz sprawozdań finansowych.',
         date: new Date().toISOString(),
         featured: false,
         url: '#'
     },
     {
-        id: 'demo-6',
-        title: 'DevOps Cloud Engineer (AWS / Kubernetes)',
+        id: 'jb-6',
+        title: 'DevOps Cloud Engineer (AWS / Kubernetes / CI/CD)',
         company: 'CloudScale Infrastructure',
-        location: 'Zdalnie / Warszawa',
+        location: 'Warszawa / Zdalnie',
         salary: '20 000 - 27 000 PLN',
         type: 'Zdalna',
         category: 'it',
-        description: 'Automatyzacja CI/CD (GitHub Actions), zarządzanie klastrami EKS Kubernetes, Terraform, monitoring Prometheus/Grafana.',
+        description: 'Zarządzanie klastrami Kubernetes w AWS (EKS), pisanie kodu infrastruktury w Terraformie, automatyzacja pipeline CI/CD.',
         date: new Date().toISOString(),
         featured: true,
         url: '#'
     },
     {
-        id: 'demo-7',
-        title: 'Kierowca C+E (Trasy międzynarodowe)',
+        id: 'jb-7',
+        title: 'Kierowca C+E (Trasy Międzynarodowe)',
         company: 'TransLogistics Global',
         location: 'Katowice / Europa',
         salary: '9 000 - 13 500 PLN',
         type: 'Pełny etat',
         category: 'logistyka',
-        description: 'Transport towarów w systemie 2/1 lub 3/1 po Europie Zachodniej. Nowa flota pojazdów Euro 6.',
+        description: 'Przewozy międzynarodowe na terenie UE w systemie 2/1 lub 3/1. Nowoczesny tabor ciągników Euro 6.',
         date: new Date().toISOString(),
         featured: false,
         url: '#'
     },
     {
-        id: 'demo-8',
+        id: 'jb-8',
         title: 'Elektryk Automatyk Przemysłowy (SEP do 1kV)',
         company: 'AutoRobotics Polska',
         location: 'Łódź',
         salary: '8 000 - 11 500 PLN',
         type: 'Pełny etat',
         category: 'inzynieria',
-        description: 'Konserwacja linii produkcyjnych, diagnostyka sterowników PLC (Siemens S7), modernizacja szaf sterowniczych.',
+        description: 'Utrzymanie ruchu zautomatyzowanych linii produkcyjnych, diagnostyka sterowników PLC (Siemens S7, TIA Portal), szafy sterownicze.',
         date: new Date().toISOString(),
         featured: false,
         url: '#'
     },
     {
-        id: 'demo-9',
+        id: 'jb-9',
         title: 'Growth Marketing & Performance Specialist',
         company: 'ScaleUp Ventures',
-        location: 'Zdalnie / Warszawa',
+        location: 'Warszawa / Zdalnie',
         salary: '9 000 - 14 000 PLN',
         type: 'Zdalna',
         category: 'marketing',
-        description: 'Prowadzenie kampanii Meta Ads, Google Ads, optymalizacja lejków konwersji, analityka GA4.',
+        description: 'Skalowanie kampanii Paid Ads (Meta, Google, LinkedIn), analityka GA4, optymalizacja współczynnika konwersji (CRO).',
         date: new Date().toISOString(),
         featured: true,
         url: '#'
     },
     {
-        id: 'demo-10',
-        title: 'Frontend Developer (Vue.js 3 & TailwindCSS)',
-        company: 'Veloce Soft',
+        id: 'jb-10',
+        title: 'Frontend Developer (Vue 3, Pinia & Tailwind)',
+        company: 'Veloce Software House',
         location: 'Zdalnie',
         salary: '14 000 - 18 000 PLN',
         type: 'Zdalna',
         category: 'it',
-        description: 'Rozwój dashboardów B2B w Vue 3 (Composition API), Pinia, Vite i TailwindCSS.',
+        description: 'Implementacja interfejsów w Vue.js 3 (Composition API), praca z TailwindCSS i integracja z GraphQL API.',
         date: new Date().toISOString(),
         featured: false,
         url: '#'
     },
     {
-        id: 'demo-11',
-        title: 'Junior QA Automation Tester (Playwright / JS)',
+        id: 'jb-11',
+        title: 'Junior QA Automation Engineer (Playwright / TS)',
         company: 'QualityFirst Labs',
         location: 'Kraków / Hybrydowo',
         salary: '7 000 - 9 500 PLN',
         type: 'Staż',
         category: 'it',
-        description: 'Pisanie testów automatycznych E2E w Playwright, testy API w Postmanie, raportowanie w Jira.',
+        description: 'Tworzenie i utrzymanie testów automatycznych end-to-end w Playwright (TypeScript), raportowanie błędów w Jira.',
         date: new Date().toISOString(),
         featured: false,
         url: '#'
     },
     {
-        id: 'demo-12',
-        title: 'Cybersecurity Analyst (SOC / SIEM)',
+        id: 'jb-12',
+        title: 'Cybersecurity Analyst & Threat Hunter (SOC)',
         company: 'SecureNet Defense',
-        location: 'Zdalnie / Warszawa',
+        location: 'Warszawa / Zdalnie',
         salary: '16 000 - 23 000 PLN',
         type: 'Kontrakt',
         category: 'it',
-        description: 'Monitorowanie incydentów bezpieczeństwa, analiza zagrożeń SIEM, testy podatności i audyty ISO 27001.',
+        description: 'Monitorowanie i analiza incydentów w systemach SIEM/EDR, reagowanie na zagrożenia, testy podatności infrastruktury.',
         date: new Date().toISOString(),
         featured: true,
         url: '#'
@@ -165,37 +166,21 @@ const JobService = {
     DEMO_JOBS: DEMO_FALLBACK_JOBS,
 
     async loadCSVJobs() {
-        const candidatePaths = ['offers.csv', '/offers.csv', './offers.csv'];
-        let rawText = null;
-
+        const candidatePaths = ['offers.csv', '/offers.csv', 'public/offers.csv'];
         for (const path of candidatePaths) {
             try {
                 const response = await fetch(path, { cache: 'no-cache' });
                 if (response.ok) {
                     const text = await response.text();
-                    // Upewnij się, że to nie jest strona HTML 404
                     if (text && !text.trim().startsWith('<!DOCTYPE') && !text.trim().startsWith('<html')) {
-                        rawText = text;
-                        break;
+                        const parsed = this.parseCSV(text);
+                        if (parsed && parsed.length > 0) return parsed;
                     }
                 }
             } catch (e) {
-                // kontynuuj sprawdzanie kolejnej ścieżki
+                // continue
             }
         }
-
-        if (rawText) {
-            try {
-                const parsed = this.parseCSV(rawText);
-                if (parsed && parsed.length > 0) {
-                    return parsed;
-                }
-            } catch (err) {
-                console.warn('Błąd parsowania CSV, używam danych zapasowych:', err);
-            }
-        }
-
-        // Zwróć dane zapasowe, jeśli CSV jest niedostępny
         return this.DEMO_JOBS;
     },
 
@@ -254,16 +239,70 @@ const JobService = {
     },
 
     async loadJoobleJobs(keywords = 'praca', location = 'Polska') {
-        // Bezpieczne ładowanie z zewnętrznego API z obsługą błędów CORS
-        return [];
+        const apiKey = (typeof CONFIG !== 'undefined' && CONFIG.JOOBLE_API_KEY) ? CONFIG.JOOBLE_API_KEY : '0c6396f9-05ea-4027-bc0c-d38a08d27771';
+        const targetUrl = `https://pl.jooble.org/api/${apiKey}`;
+        const requestBody = JSON.stringify({
+            keywords: keywords || 'praca',
+            location: location || 'Polska',
+            page: 1,
+            result_on_page: 20
+        });
+
+        const proxies = [
+            `https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+            targetUrl
+        ];
+
+        for (const url of proxies) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: requestBody
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && Array.isArray(data.jobs) && data.jobs.length > 0) {
+                        return data.jobs.map((item, index) => ({
+                            id: `jooble-${item.id || index}`,
+                            title: item.title || 'Oferta pracy',
+                            company: item.company || 'Pracodawca zweryfikowany',
+                            location: item.location || location || 'Polska',
+                            salary: item.salary || 'Konkurencyjne',
+                            type: item.type || (item.title?.toLowerCase().includes('zdaln') ? 'Zdalna' : 'Pełny etat'),
+                            category: this.detectCategory(item.title || ''),
+                            description: (item.snippet || '').replace(/<[^>]*>?/gm, ''),
+                            date: item.updated || new Date().toISOString(),
+                            featured: false,
+                            url: item.link || '#'
+                        }));
+                    }
+                }
+            } catch (err) {
+                // try next
+            }
+        }
+
+        return this.filterJobs(this.DEMO_JOBS, { searchQuery: keywords, locationQuery: location });
+    },
+
+    detectCategory(title = '') {
+        const t = title.toLowerCase();
+        if (t.includes('ai') || t.includes('data') || t.includes('llm') || t.includes('machine')) return 'ai';
+        if (t.includes('developer') || t.includes('programista') || t.includes('react') || t.includes('it') || t.includes('full') || t.includes('front') || t.includes('back')) return 'it';
+        if (t.includes('spawacz') || t.includes('inzynier') || t.includes('elektryk') || t.includes('mechanik') || t.includes('automatyk')) return 'inzynieria';
+        if (t.includes('ksiegow') || t.includes('finans') || t.includes('accountant') || t.includes('audyt')) return 'finanse';
+        if (t.includes('marketing') || t.includes('seo') || t.includes('copywriter') || t.includes('social')) return 'marketing';
+        if (t.includes('design') || t.includes('ui') || t.includes('ux') || t.includes('grafik')) return 'design';
+        return 'it';
     },
 
     combineJobs(csvJobs = [], apiJobs = []) {
         const combined = [...csvJobs, ...apiJobs];
-        if (combined.length === 0) {
-            return [...this.DEMO_JOBS];
-        }
-        // Deduplikacja po ID lub tytule+firmie
+        if (combined.length === 0) return [...this.DEMO_JOBS];
+
         const seen = new Set();
         return combined.filter(job => {
             const key = `${(job.title || '').toLowerCase()}|${(job.company || '').toLowerCase()}`;
@@ -281,7 +320,6 @@ const JobService = {
         const filter = (currentFilter || 'all').toLowerCase();
 
         return list.filter(job => {
-            // Filtr słowa kluczowego
             if (sQuery) {
                 const title = (job.title || '').toLowerCase();
                 const comp = (job.company || '').toLowerCase();
@@ -291,7 +329,6 @@ const JobService = {
                 }
             }
 
-            // Filtr lokalizacji
             if (lQuery) {
                 const loc = (job.location || '').toLowerCase();
                 if (!loc.includes(lQuery)) {
@@ -299,7 +336,6 @@ const JobService = {
                 }
             }
 
-            // Filtr minimalnego wynagrodzenia
             if (minSalary > 0) {
                 const salText = job.salary || '';
                 const nums = salText.replace(/\s/g, '').match(/\d+/g);
@@ -309,7 +345,6 @@ const JobService = {
                 }
             }
 
-            // Filtr kategorii
             if (filter !== 'all') {
                 const type = (job.type || '').toLowerCase();
                 const cat = (job.category || '').toLowerCase();
@@ -334,7 +369,6 @@ const JobService = {
 if (typeof window !== 'undefined') {
     window.JobService = JobService;
 }
-
 
 export { JobService };
 export default JobService;

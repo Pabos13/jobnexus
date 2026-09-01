@@ -26,15 +26,18 @@
                 <a href="#cennik" class="nav-link">💎 Cennik</a>
             </nav>
 
-            <div class="header-actions">
-                <button type="button" class="btn btn-secondary cv-builder-btn" id="openCvBuilderBtnNav" style="display:inline-flex; align-items:center; gap:0.4rem;">
+                        <div class="header-actions">
+                <button type="button" class="btn btn-secondary cv-builder-btn" id="openCvBuilderBtnNav" onclick="window.openCvBuilderModal()">
                     <span>✨ Kreator CV</span>
                 </button>
-                <button type="button" class="btn btn-secondary" id="navDashboardBtn" style="display:inline-flex; align-items:center; gap:0.4rem;">
+                <button type="button" class="btn btn-secondary" id="navDashboardBtn">
                     <span>📊 Mój Panel</span>
                 </button>
-                <button type="button" class="btn btn-primary" id="authTrigger">
+                <button type="button" class="btn btn-secondary" id="loginBtnNav" onclick="window.openAuthModal('login')">
                     <span>Zaloguj się</span>
+                </button>
+                <button type="button" class="btn btn-primary" id="registerBtnNav" onclick="window.openAuthModal('register')">
+                    <span>Zarejestruj się</span>
                 </button>
             </div>
 
