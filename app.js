@@ -208,6 +208,49 @@ function syncUserHeader(user) {
 
 function initDashboard() {
     const dashModal = document.getElementById('dashboardModal');
+
+    window.activateAndOpenRecruiter = () => {
+        let user = AuthService.getUser();
+        if (!user) {
+            user = {
+                id: 'recruiter_pro',
+                name: 'TechRecruiter Sp. z o.o.',
+                email: 'rekrutacja@techrecruiter.pl',
+                role: 'recruiter',
+                plan: 'pro'
+            };
+            try { localStorage.setItem('jobnexus_user', JSON.stringify(user)); } catch (e) {}
+        } else {
+            user.role = 'recruiter';
+            user.plan = 'pro';
+            try { localStorage.setItem('jobnexus_user', JSON.stringify(user)); } catch (e) {}
+        }
+        currentActiveTab = 'headhunter'; // Open on AI Headhunter & CV Database tab
+        renderDashboard(user);
+        if (dashModal) {
+            dashModal.classList.remove('hidden');
+            dashModal.style.display = 'flex';
+            dashModal.style.visibility = 'visible';
+            dashModal.style.opacity = '1';
+            dashModal.style.pointerEvents = 'auto';
+            dashModal.style.zIndex = '999999';
+        }
+        if (typeof showToast === 'function') {
+            showToast('🚀 Aktywowano Plan PRO! Witaj w Panelu Rekrutera i Bazie CV.', 'success');
+        }
+    };
+    window.openRecruiterPanel = window.activateAndOpenRecruiter;
+
+    window.closeDashboardModal = () => {
+        if (dashModal) {
+            dashModal.classList.add('hidden');
+            dashModal.style.display = 'none';
+            dashModal.style.visibility = 'hidden';
+            dashModal.style.opacity = '0';
+            dashModal.style.pointerEvents = 'none';
+        }
+    };
+    const dashModal = document.getElementById('dashboardModal');
     window.openDashboard = () => {
         const user = AuthService.getUser();
         if (!user) {
@@ -808,53 +851,188 @@ function initDashboard() {
 
         if (tab === 'headhunter') {
             dashContentArea.innerHTML = `
-                <div style="display: flex; flex-direction: column; gap: 14px;">
-                    <div style="padding: 1.25rem; border-radius: 12px; background: linear-gradient(135deg, rgba(30, 27, 75, 0.6), rgba(49, 46, 129, 0.4)); border: 1px solid rgba(99, 102, 241, 0.4);">
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <!-- PRO Hero Banner -->
+                    <div style="padding: 1.25rem 1.5rem; border-radius: 14px; background: linear-gradient(135deg, rgba(30, 27, 75, 0.9), rgba(49, 46, 129, 0.7)); border: 1px solid rgba(99, 102, 241, 0.4); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);">
                         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
                             <div>
-                                <span style="font-size: 11px; font-weight: 700; color: #a5b4fc; text-transform: uppercase;">AI Talent Scout & Direct Outreach</span>
-                                <h3 style="font-size: 1.25rem; font-weight: 800; color: white; margin: 4px 0 0 0;">Baza 4 800+ Aktywnych Kandydatów</h3>
-                                <p style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">Wyszukuj kandydatów po tagach technologicznych i zapraszaj ich do swoich rekrutacji.</p>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 11px; font-weight: 800; color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(99, 102, 241, 0.25); padding: 3px 8px; border-radius: 6px;">⚡ Aktywny Pakiet PRO Rekruter</span>
+                                    <span style="font-size: 11px; color: #34d399; font-weight: 700;">● Baza CV Odblokowana</span>
+                                </div>
+                                <h3 style="font-size: 1.35rem; font-weight: 800; color: white; margin: 6px 0 0 0;">🎯 Baza CV & AI Headhunter Talentów</h3>
+                                <p style="font-size: 13px; color: #cbd5e1; margin-top: 4px;">Dostęp do ponad 4 800 zweryfikowanych profili specjalistów IT, Freelancerów oraz kandydatów z wynikiem ATS > 85%.</p>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="showToast('Wygenerowano raport dopasowania AI dla Twojej branży!', 'success')" style="padding: 8px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer;">
+                                    📊 Raport AI Talentów
+                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Lista Kandydatów w bazie Talentów -->
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 42px; height: 42px; border-radius: 10px; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 15px;">AK</div>
+                    <!-- Search and Filters Bar -->
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; background: rgba(15, 23, 42, 0.8); padding: 12px; border-radius: 12px; border: 1px solid #1e293b;">
+                        <div style="flex: 1; min-width: 220px; position: relative;">
+                            <input type="text" id="cvSearchInput" oninput="window.filterCvCandidates(this.value)" placeholder="🔍 Szukaj w bazie CV (np. React, Python, DevOps, AWS, UI/UX)..." style="width: 100%; padding: 10px 14px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px; outline: none;">
+                        </div>
+                        <select onchange="window.filterCvSeniority(this.value)" style="padding: 10px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-size: 13px; cursor: pointer;">
+                            <option value="all">Wszystkie poziomy</option>
+                            <option value="senior">Senior (5+ lat)</option>
+                            <option value="mid">Regular / Mid (2-4 lata)</option>
+                            <option value="lead">Lead / Principal</option>
+                            <option value="junior">Junior (0-2 lata)</option>
+                        </select>
+                    </div>
+
+                    <!-- Lista Kandydatów w bazie CV -->
+                    <div id="cvCandidatesList" style="display: flex; flex-direction: column; gap: 12px;">
+                        <!-- Kandydat 1 -->
+                        <div class="cv-candidate-card" data-tags="react typescript node frontend fullstack senior warszawa" style="padding: 1.25rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+                            <div style="display: flex; align-items: center; gap: 14px;">
+                                <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px;">AK</div>
                                 <div>
-                                    <div style="display: flex; align-items: center; gap: 8px;">
-                                        <h4 style="font-weight: 700; color: white; font-size: 14px; margin: 0;">Aleksander Kowalczyk</h4>
-                                        <span style="padding: 2px 6px; font-size: 10px; font-weight: bold; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #34d399;">Top 1% Talent</span>
+                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                        <h4 style="font-weight: 700; color: white; font-size: 15px; margin: 0;">Aleksander Kowalczyk</h4>
+                                        <span style="padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #34d399;">ATS Score: 98%</span>
+                                        <span style="padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 4px; background: rgba(59, 130, 246, 0.15); color: #60a5fa;">Dostępny od zaraz</span>
                                     </div>
-                                    <p style="font-size: 12px; color: #94a3b8; margin: 2px 0 0 0;">Senior Fullstack Engineer (React, Node, Go) • 7 lat doświadczenia</p>
+                                    <p style="font-size: 12px; color: #94a3b8; margin: 3px 0 6px 0;">Senior Fullstack Engineer • 7 lat exp • Warszawa / Zdalnie • 20 000 - 26 000 PLN B2B</p>
+                                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">React</span>
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">TypeScript</span>
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">Node.js</span>
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">PostgreSQL</span>
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">AWS</span>
+                                    </div>
                                 </div>
                             </div>
-                            <button onclick="showToast('Wysłano bezpośrednie zaproszenie do aplikacji!', 'success')" style="padding: 8px 14px; background: #4f46e5; color: white; font-size: 12px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer;">
-                                ✉️ Zaproś do Aplikacji
-                            </button>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <button onclick="showToast('Pobrano pełny profil CV kandydata (PDF)!', 'info')" style="padding: 8px 12px; background: #1e293b; border: 1px solid #334155; color: #cbd5e1; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer;">
+                                    📄 Pobierz CV
+                                </button>
+                                <button onclick="showToast('Wysłano bezpośrednie zaproszenie do Twojej rekrutacji!', 'success')" style="padding: 8px 14px; background: #4f46e5; color: white; font-size: 12px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer;">
+                                    ✉️ Zaproś do Aplikacji
+                                </button>
+                            </div>
                         </div>
 
-                        <div style="padding: 1rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 42px; height: 42px; border-radius: 10px; background: #7c3aed; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 15px;">MN</div>
+                        <!-- Kandydat 2 -->
+                        <div class="cv-candidate-card" data-tags="python ai machine learning langchain pytorch krakow remote senior" style="padding: 1.25rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+                            <div style="display: flex; align-items: center; gap: 14px;">
+                                <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #7c3aed, #9333ea); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px;">MN</div>
                                 <div>
-                                    <div style="display: flex; align-items: center; gap: 8px;">
-                                        <h4 style="font-weight: 700; color: white; font-size: 14px; margin: 0;">Marta Nowicka</h4>
-                                        <span style="padding: 2px 6px; font-size: 10px; font-weight: bold; border-radius: 4px; background: rgba(59, 130, 246, 0.2); color: #60a5fa;">AI Specialist</span>
+                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                        <h4 style="font-weight: 700; color: white; font-size: 15px; margin: 0;">Marta Nowicka</h4>
+                                        <span style="padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #34d399;">ATS Score: 95%</span>
+                                        <span style="padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 4px; background: rgba(168, 85, 247, 0.15); color: #c084fc;">AI Specialist</span>
                                     </div>
-                                    <p style="font-size: 12px; color: #94a3b8; margin: 2px 0 0 0;">Machine Learning & Python Engineer (LangChain, PyTorch) • 4 lata</p>
+                                    <p style="font-size: 12px; color: #94a3b8; margin: 3px 0 6px 0;">AI & Python Engineer • 5 lat exp • Kraków / Zdalnie • 22 000 - 30 000 PLN B2B</p>
+                                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">Python</span>
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">FastAPI</span>
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">LangChain</span>
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">PyTorch</span>
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">Docker</span>
+                                    </div>
                                 </div>
                             </div>
-                            <button onclick="showToast('Wysłano bezpośrednie zaproszenie do aplikacji!', 'success')" style="padding: 8px 14px; background: #4f46e5; color: white; font-size: 12px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer;">
-                                ✉️ Zaproś do Aplikacji
-                            </button>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <button onclick="showToast('Pobrano pełny profil CV kandydata (PDF)!', 'info')" style="padding: 8px 12px; background: #1e293b; border: 1px solid #334155; color: #cbd5e1; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer;">
+                                    📄 Pobierz CV
+                                </button>
+                                <button onclick="showToast('Wysłano bezpośrednie zaproszenie do Twojej rekrutacji!', 'success')" style="padding: 8px 14px; background: #4f46e5; color: white; font-size: 12px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer;">
+                                    ✉️ Zaproś do Aplikacji
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Kandydat 3 -->
+                        <div class="cv-candidate-card" data-tags="devops kubernetes terraform aws ci/cd mid wroclaw" style="padding: 1.25rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+                            <div style="display: flex; align-items: center; gap: 14px;">
+                                <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #059669, #10b981); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px;">PW</div>
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                        <h4 style="font-weight: 700; color: white; font-size: 15px; margin: 0;">Piotr Włodarczyk</h4>
+                                        <span style="padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #34d399;">ATS Score: 92%</span>
+                                        <span style="padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #6ee7b7;">Cloud Certified</span>
+                                    </div>
+                                    <p style="font-size: 12px; color: #94a3b8; margin: 3px 0 6px 0;">DevOps & Cloud Engineer • 4 lata exp • Wrocław / Zdalnie • 18 000 - 23 000 PLN</p>
+                                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">Kubernetes</span>
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">Terraform</span>
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">AWS</span>
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">GitLab CI</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <button onclick="showToast('Pobrano pełny profil CV kandydata (PDF)!', 'info')" style="padding: 8px 12px; background: #1e293b; border: 1px solid #334155; color: #cbd5e1; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer;">
+                                    📄 Pobierz CV
+                                </button>
+                                <button onclick="showToast('Wysłano bezpośrednie zaproszenie do Twojej rekrutacji!', 'success')" style="padding: 8px 14px; background: #4f46e5; color: white; font-size: 12px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer;">
+                                    ✉️ Zaproś do Aplikacji
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Kandydat 4 -->
+                        <div class="cv-candidate-card" data-tags="ui/ux product design figma saas mobile senior gdansk" style="padding: 1.25rem; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+                            <div style="display: flex; align-items: center; gap: 14px;">
+                                <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #ec4899, #f43f5e); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px;">EZ</div>
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                        <h4 style="font-weight: 700; color: white; font-size: 15px; margin: 0;">Ewa Zawadzka</h4>
+                                        <span style="padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #34d399;">ATS Score: 96%</span>
+                                        <span style="padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 4px; background: rgba(236, 72, 153, 0.15); color: #f472b6;">Design Lead</span>
+                                    </div>
+                                    <p style="font-size: 12px; color: #94a3b8; margin: 3px 0 6px 0;">Lead UI/UX & Product Designer • 6 lat exp • Gdańsk / Zdalnie • 16 000 - 22 000 PLN</p>
+                                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">Figma</span>
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">Design Systems</span>
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">User Research</span>
+                                        <span style="font-size: 10px; padding: 2px 6px; background: #1e293b; color: #cbd5e1; border-radius: 4px; border: 1px solid #334155;">Prototyping</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <button onclick="showToast('Pobrano pełny profil CV kandydata (PDF)!', 'info')" style="padding: 8px 12px; background: #1e293b; border: 1px solid #334155; color: #cbd5e1; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer;">
+                                    📄 Pobierz CV
+                                </button>
+                                <button onclick="showToast('Wysłano bezpośrednie zaproszenie do Twojej rekrutacji!', 'success')" style="padding: 8px 14px; background: #4f46e5; color: white; font-size: 12px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer;">
+                                    ✉️ Zaproś do Aplikacji
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
+
+            window.filterCvCandidates = function(query) {
+                var q = (query || '').toLowerCase().trim();
+                document.querySelectorAll('#cvCandidatesList .cv-candidate-card').forEach(function(card) {
+                    var tags = (card.getAttribute('data-tags') || '').toLowerCase();
+                    var text = card.textContent.toLowerCase();
+                    if (!q || tags.includes(q) || text.includes(q)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            };
+
+            window.filterCvSeniority = function(level) {
+                var l = (level || '').toLowerCase();
+                document.querySelectorAll('#cvCandidatesList .cv-candidate-card').forEach(function(card) {
+                    var tags = (card.getAttribute('data-tags') || '').toLowerCase();
+                    if (l === 'all' || tags.includes(l)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            };
+
             return;
         }
 

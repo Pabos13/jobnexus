@@ -85,6 +85,34 @@
             }
         };
 
+        
+        window.openRecruiterPanel = function() {
+            if (typeof window.activateAndOpenRecruiter === 'function') {
+                window.activateAndOpenRecruiter();
+            } else {
+                var modal = document.getElementById('dashboardModal');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    modal.style.display = 'flex';
+                    modal.style.visibility = 'visible';
+                    modal.style.opacity = '1';
+                    modal.style.pointerEvents = 'auto';
+                    modal.style.zIndex = '999999';
+                }
+            }
+        };
+
+        window.closeDashboardModal = function() {
+            var modal = document.getElementById('dashboardModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                modal.style.visibility = 'hidden';
+                modal.style.opacity = '0';
+                modal.style.pointerEvents = 'none';
+            }
+        };
+
         window.closeAuthModal = function() {
             var modal = document.getElementById('authModalBackdrop');
             if (modal) {
@@ -317,8 +345,8 @@
                         <li>✓ Panel rekrutera z Kanbanem aplikacji</li>
                         <li>✓ Dedykowany opiekun klienta</li>
                     </ul>
-                    <button type="button" class="btn btn-secondary btn-block" onclick="window.openAddModal('pro')">
-                        Aktywuj Plan PRO (99 zł)
+                    <button type="button" class="btn btn-primary btn-block" onclick="window.openRecruiterPanel()">
+                        🚀 Aktywuj Plan PRO & Otwórz Panel (99 zł)
                     </button>
                 </div>
             </div>
@@ -634,6 +662,41 @@
                     Zaloguj się
                 </button>
             </form>
+        </div>
+    </div>
+
+    
+    <!-- MODAL: PANEL REKRUTERA & BAZA CV PRO -->
+    <div class="modal-backdrop hidden" id="dashboardModal" onclick="if(event.target===this) window.closeDashboardModal()">
+        <div class="modal modal-xl modal-expanded recruiter-dashboard-modal" style="max-width: 1050px; width: 95%;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div id="dashUserAvatar" style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 800; border: 2px solid rgba(255,255,255,0.2);">R</div>
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                            <h3 class="modal-title" id="dashUserName" style="font-size: 1.25rem; font-weight: 800; color: #f8fafc; margin: 0;">Panel Rekrutera PRO</h3>
+                            <span id="dashUserRoleBadge" style="padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4);">Pracodawca / Rekruter (PRO)</span>
+                        </div>
+                        <p id="dashUserEmail" style="font-size: 0.85rem; color: #94a3b8; margin: 0.25rem 0 0 0;">rekrutacja@twojafirma.pl • Pełny Dostęp do Bazy CV i Kanbana</p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <button type="button" class="btn btn-secondary btn-sm" id="dashSwitchRoleBtn" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">
+                        Przełącz na profil Kandydata
+                    </button>
+                    <button type="button" class="modal-close" id="dashboardClose" onclick="window.closeDashboardModal()">&times;</button>
+                </div>
+            </div>
+
+            <!-- TABS -->
+            <div id="dashTabsContainer" style="display: flex; gap: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 0.75rem 0; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                <!-- Dynamically populated by renderRecruiterTabs or renderCandidateTabs -->
+            </div>
+
+            <!-- CONTENT AREA -->
+            <div id="dashContentArea" style="padding: 1.5rem 0; min-height: 400px;">
+                <!-- Injected via renderRecruiterContent / renderCandidateContent -->
+            </div>
         </div>
     </div>
 
