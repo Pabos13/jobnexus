@@ -142,6 +142,7 @@
                 </div>
             </div>
         </div>
+            <div id="jobsPagination" class="pagination-bar" style="margin-top: 2.5rem;"></div>
     </section>
 
     <!-- Filters Bar -->
@@ -502,7 +503,93 @@
     <script type="module" src="./app.js?v=20260901_final"></script>
 
 
-    <!-- DASHBOARD MODAL (PANEL KANDYDATA / REKRUTERA) -->
+    
+    <!-- ==========================================================================
+         SEKCJA ZLECEŃ I PROJEKTÓW FREELANCE (B2B / ZLECENIA)
+         ========================================================================== -->
+    <section class="gigs-section" id="zlecenia" style="padding: 5rem 0; border-top: 1px solid #1e293b; background: linear-gradient(180deg, rgba(15, 23, 42, 0.6) 0%, rgba(11, 17, 32, 0.9) 100%);">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 20px; color: #c084fc; font-size: 12px; font-weight: 700; margin-bottom: 8px;">
+                        ⚡ Projekty B2B & Freelance
+                    </div>
+                    <h2 style="font-size: 2rem; font-weight: 800; color: white; margin: 0 0 6px 0; letter-spacing: -0.02em;">
+                        Zlecenia i Projekty IT
+                    </h2>
+                    <p style="color: #94a3b8; font-size: 0.95rem; margin: 0;">
+                        Krótkoterminowe projekty, zlecenia dla programistów, wdrożenia AI i design z określonym budżetem.
+                    </p>
+                </div>
+                <div>
+                    <button id="postGigBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #a855f7, #ec4899); border: none; padding: 10px 20px; font-weight: 700; font-size: 13px; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);" type="button">
+                        <span>➕</span> <span>Dodaj Zlecenie</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtry Kategorii Zleceń -->
+            <div class="gigs-filter-bar" style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 2rem; -webkit-overflow-scrolling: touch;">
+                <button class="gig-filter-btn active" data-cat="all" style="padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; background: #3b82f6; color: white; border: none; cursor: pointer; white-space: nowrap;">
+                    Wszystkie Zlecenia
+                </button>
+                <button class="gig-filter-btn" data-cat="dev" style="padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; background: #1e293b; color: #94a3b8; border: 1px solid #334155; cursor: pointer; white-space: nowrap;">
+                    💻 Programowanie & Web
+                </button>
+                <button class="gig-filter-btn" data-cat="ai" style="padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; background: #1e293b; color: #94a3b8; border: 1px solid #334155; cursor: pointer; white-space: nowrap;">
+                    🤖 AI & Automatyzacja
+                </button>
+                <button class="gig-filter-btn" data-cat="design" style="padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; background: #1e293b; color: #94a3b8; border: 1px solid #334155; cursor: pointer; white-space: nowrap;">
+                    🎨 UI/UX & Grafika
+                </button>
+                <button class="gig-filter-btn" data-cat="ecommerce" style="padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; background: #1e293b; color: #94a3b8; border: 1px solid #334155; cursor: pointer; white-space: nowrap;">
+                    🛍️ E-commerce & WordPress
+                </button>
+            </div>
+
+            <!-- Siatka Zleceń -->
+            <div id="gigsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem;">
+                <!-- Karty zleceń generowane dynamicznie przez JS -->
+            </div>
+
+            <!-- Profesjonalna Paginacja Zleceń -->
+            <div id="gigsPagination" class="pagination-bar" style="margin-top: 2.5rem;"></div>
+        </div>
+    </section>
+
+    <!-- Modal Składania Oferty na Zlecenie -->
+    <div id="gigProposalModal" class="modal-overlay hidden" style="align-items: flex-start; padding: 1.5rem 0.5rem; overflow-y: auto; z-index: 10001;">
+        <div class="modal-card" style="max-width: 520px; width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 1.25rem; padding: 1.75rem; color: #f8fafc; margin: auto 0; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+                <div>
+                    <h3 id="gigModalTitle" style="font-size: 18px; font-weight: 800; color: white; margin: 0 0 4px 0;">Złóż ofertę na zlecenie</h3>
+                    <p id="gigModalBudget" style="font-size: 13px; color: #34d399; font-weight: 700; margin: 0;"></p>
+                </div>
+                <button id="gigModalClose" style="background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+            </div>
+
+            <form id="gigProposalForm" style="display: flex; flex-direction: column; gap: 12px;">
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">Twoja proponowana stawka (PLN) *</label>
+                    <input type="text" id="proposalRate" placeholder="np. 4 500 PLN za projekt" required style="width: 100%; padding: 10px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">Szacowany czas realizacji *</label>
+                    <input type="text" id="proposalTime" placeholder="np. 10 dni roboczych" required style="width: 100%; padding: 10px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">Wiadomość do klienta / Propozycja podejścia *</label>
+                    <textarea id="proposalMessage" rows="4" placeholder="Krótko opisz swoje doświadczenie, linki do portfolio lub podobne realizacje..." required style="width: 100%; padding: 10px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px; line-height: 1.4; resize: vertical; box-sizing: border-box;"></textarea>
+                </div>
+                <button type="submit" style="width: 100%; padding: 12px; margin-top: 8px; background: linear-gradient(135deg, #a855f7, #3b82f6); color: white; font-weight: 700; font-size: 14px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);">
+                    🚀 Wyślij Ofertę
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+<!-- DASHBOARD MODAL (PANEL KANDYDATA / REKRUTERA) -->
     <div id="dashboardModal" class="modal-overlay hidden" style="align-items: flex-start; padding: 1.5rem 0.5rem; overflow-y: auto; z-index: 10000;">
         <div class="modal-card max-w-4xl w-full flex flex-col p-0 overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl rounded-2xl" style="max-width: 920px; width: 100%; height: 88vh; max-height: 88vh; min-height: 0; display: flex; flex-direction: column; margin: auto 0; background: #0f172a; border: 1px solid #334155; border-radius: 1.25rem; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95);">
             <!-- Header Pulpitu -->

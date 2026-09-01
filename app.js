@@ -70,6 +70,12 @@ document.addEventListener('DOMContentLoaded', () => {
     try { initAuth(); } catch (e) { console.warn('initAuth:', e); }
     try { initDashboard(); } catch (e) { console.warn('initDashboard:', e); }
     try { initInfoPages(); } catch (e) { console.warn('initInfoPages:', e); }
+    try { initSearch(); } catch (e) { console.warn('initSearch:', e); }
+    try { initFilters(); } catch (e) { console.warn('initFilters:', e); }
+    try { initModal(); } catch (e) { console.warn('initModal:', e); }
+    try { initCVUpload(); } catch (e) { console.warn('initCVUpload:', e); }
+    try { loadData(); } catch (e) { console.warn('loadData:', e); }
+    try { initGigs(); } catch (e) { console.warn('initGigs:', e); }
 });
 
 // ============================================
@@ -1201,3 +1207,340 @@ function initNavbar() {
 }
 
 
+
+
+// ==========================================================================
+// FREELANCE GIGS & PROFESSIONAL PAGINATION ENGINE (2026)
+// ==========================================================================
+
+const DEMO_GIGS = [
+    {
+        id: 'gig-1',
+        title: 'Wdrożenie modułu RAG / Chatbota AI dla e-commerce',
+        client: 'RetailTech Sp. z o.o.',
+        category: 'ai',
+        budget: '6 000 - 9 500 PLN',
+        duration: '⏱️ 14 dni',
+        proposals: 8,
+        tags: ['Python', 'LangChain', 'OpenAI', 'Pinecone'],
+        desc: 'Poszukujemy eksperta AI do integracji asystenta zakupowego RAG z bazą produktów Shopify i systemem rekomendacji.'
+    },
+    {
+        id: 'gig-2',
+        title: 'Kompletny Rebranding & Projekt UI/UX Aplikacji SaaS',
+        client: 'CloudFlow Studio',
+        category: 'design',
+        budget: '8 000 - 12 000 PLN',
+        duration: '⏱️ 21 dni',
+        proposals: 14,
+        tags: ['Figma', 'UI/UX Design', 'Design System', 'Prototyping'],
+        desc: 'Przygotowanie nowoczesnego design systemu, 35+ ekranów aplikacji webowej oraz interaktywnych prototypów w Figmie.'
+    },
+    {
+        id: 'gig-3',
+        title: 'Migracja Sklepu WooCommerce do Next.js + Headless',
+        client: 'BioCosmetics Group',
+        category: 'dev',
+        budget: '10 000 - 15 000 PLN',
+        duration: '⏱️ 30 dni',
+        proposals: 5,
+        tags: ['Next.js', 'React', 'TypeScript', 'Tailwind', 'GraphQL'],
+        desc: 'Budowa ultraszybkiego frontendu e-commerce w Next.js 14 z integracją płatności PayU, Stripe oraz InPost Paczkomaty.'
+    },
+    {
+        id: 'gig-4',
+        title: 'Audyt Bezpieczeństwa & Optymalizacja Bazy PostgreSQL',
+        client: 'FinData Analytics',
+        category: 'dev',
+        budget: '4 500 - 7 000 PLN',
+        duration: '⏱️ 7 dni',
+        proposals: 3,
+        tags: ['PostgreSQL', 'Database Tuning', 'Security Audit', 'Docker'],
+        desc: 'Analiza wolnych zapytań SQL, indeksowanie tabel, optymalizacja kosztów na AWS RDS oraz audyt uprawnień i backupów.'
+    },
+    {
+        id: 'gig-5',
+        title: 'Automatyzacja procesów CRM & Make.com / n8n',
+        client: 'Logistics Hub Polska',
+        category: 'ai',
+        budget: '3 500 - 5 500 PLN',
+        duration: '⏱️ 10 dni',
+        proposals: 11,
+        tags: ['Make.com', 'n8n', 'HubSpot', 'Webhooks', 'REST API'],
+        desc: 'Budowa zautomatyzowanych scenariuszy synchronizacji zamówień, leadów B2B oraz powiadomień Slack/SMS.'
+    },
+    {
+        id: 'gig-6',
+        title: 'Aplikacja mobilna MVP (React Native / Flutter)',
+        client: 'FitLife Mobile',
+        category: 'dev',
+        budget: '14 000 - 20 000 PLN',
+        duration: '⏱️ 45 dni',
+        proposals: 9,
+        tags: ['React Native', 'Flutter', 'Firebase', 'iOS & Android'],
+        desc: 'Stworzenie aplikacji treningowej MVP z autoryzacją społecznościową, planerem treningów i płatnościami in-app.'
+    },
+    {
+        id: 'gig-7',
+        title: 'Optymalizacja Core Web Vitals & SEO dla portalu',
+        client: 'MediaPortal Media',
+        category: 'ecommerce',
+        budget: '3 000 - 5 000 PLN',
+        duration: '⏱️ 8 dni',
+        proposals: 7,
+        tags: ['Web Performance', 'SEO', 'Lighthouse', 'JavaScript'],
+        desc: 'Przyspieszenie wskaźników LCP/CLS, minifikacja zasobów i audyt SEO on-page pod kątem Google Search Console.'
+    },
+    {
+        id: 'gig-8',
+        title: 'Projekt 3D & Animacje Produktowe na stronę',
+        client: 'NextGen Gadgets',
+        category: 'design',
+        budget: '5 000 - 8 000 PLN',
+        duration: '⏱️ 14 dni',
+        proposals: 6,
+        tags: ['Blender', 'Spline 3D', 'Three.js', 'Motion Graphics'],
+        desc: 'Przygotowanie interaktywnych modeli 3D w Spline z możliwością obracania na stronie głównej w czasie rzeczywistym.'
+    }
+];
+
+// Helper: Reusable Pagination Renderer
+function renderPaginationBar(containerId, currentPage, totalPages, totalItems, itemsPerPage, onPageChange, onPerPageChange) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (totalItems === 0 || totalPages <= 1) {
+        container.innerHTML = totalItems > 0 ? `
+            <div class="pagination-info" style="width: 100%; text-align: center;">
+                Pokazano wszystkie <strong>${totalItems}</strong> pozycji
+            </div>
+        ` : '';
+        return;
+    }
+
+    const startIdx = (currentPage - 1) * itemsPerPage + 1;
+    const endIdx = Math.min(currentPage * itemsPerPage, totalItems);
+
+    let pagesHtml = '';
+
+    // Previous button
+    pagesHtml += `
+        <button class="page-btn page-prev" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">
+            ‹ Poprzednia
+        </button>
+    `;
+
+    // Smart pagination numbers
+    const delta = 1;
+    const range = [];
+    for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+        range.push(i);
+    }
+
+    // Page 1
+    pagesHtml += `<button class="page-btn ${currentPage === 1 ? 'active' : ''}" data-page="1">1</button>`;
+
+    if (range[0] > 2) {
+        pagesHtml += `<span class="page-dots">...</span>`;
+    }
+
+    range.forEach(p => {
+        pagesHtml += `<button class="page-btn ${currentPage === p ? 'active' : ''}" data-page="${p}">${p}</button>`;
+    });
+
+    if (range[range.length - 1] < totalPages - 1) {
+        pagesHtml += `<span class="page-dots">...</span>`;
+    }
+
+    // Last Page
+    if (totalPages > 1) {
+        pagesHtml += `<button class="page-btn ${currentPage === totalPages ? 'active' : ''}" data-page="${totalPages}">${totalPages}</button>`;
+    }
+
+    // Next button
+    pagesHtml += `
+        <button class="page-btn page-next" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">
+            Następna ›
+        </button>
+    `;
+
+    container.innerHTML = `
+        <div class="pagination-info">
+            Pokazano <strong>${startIdx}-${endIdx}</strong> z <strong>${totalItems}</strong>
+        </div>
+        <div class="pagination-controls">
+            ${pagesHtml}
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 12px; color: #94a3b8;">Na stronę:</span>
+            <select class="per-page-select" id="${containerId}_select">
+                <option value="6" ${itemsPerPage === 6 ? 'selected' : ''}>6</option>
+                <option value="9" ${itemsPerPage === 9 ? 'selected' : ''}>9</option>
+                <option value="12" ${itemsPerPage === 12 ? 'selected' : ''}>12</option>
+                <option value="24" ${itemsPerPage === 24 ? 'selected' : ''}>24</option>
+            </select>
+        </div>
+    `;
+
+    // Attach listeners
+    container.querySelectorAll('.page-btn:not(:disabled)').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const p = parseInt(btn.dataset.page);
+            if (p && p !== currentPage) {
+                onPageChange(p);
+            }
+        });
+    });
+
+    const selectEl = document.getElementById(`${containerId}_select`);
+    selectEl?.addEventListener('change', (e) => {
+        const val = parseInt(e.target.value);
+        if (val) {
+            onPerPageChange(val);
+        }
+    });
+}
+
+// Global Gigs & Jobs Pagination State
+if (!window.state) window.state = {};
+window.state.jobsPage = 1;
+window.state.jobsPerPage = 9;
+
+window.state.gigs = DEMO_GIGS;
+window.state.gigsPage = 1;
+window.state.gigsPerPage = 6;
+window.state.gigsCategory = 'all';
+
+function renderGigs() {
+    const grid = document.getElementById('gigsGrid');
+    if (!grid) return;
+
+    let filtered = window.state.gigs || [];
+    if (window.state.gigsCategory !== 'all') {
+        filtered = filtered.filter(g => g.category === window.state.gigsCategory);
+    }
+
+    const total = filtered.length;
+    const perPage = window.state.gigsPerPage || 6;
+    const totalPages = Math.ceil(total / perPage) || 1;
+
+    if (window.state.gigsPage > totalPages) window.state.gigsPage = totalPages;
+    const current = window.state.gigsPage;
+
+    const start = (current - 1) * perPage;
+    const pageItems = filtered.slice(start, start + perPage);
+
+    if (pageItems.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #94a3b8;">Brak zleceń w wybranej kategorii.</div>';
+    } else {
+        grid.innerHTML = pageItems.map(gig => `
+            <div class="gig-card">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 10px;">
+                        <span style="font-size: 11px; font-weight: 700; color: #c084fc; background: rgba(168, 85, 247, 0.15); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(168, 85, 247, 0.3);">
+                            ${gig.duration}
+                        </span>
+                        <span style="font-size: 11px; color: #94a3b8; font-weight: 600;">
+                            👥 ${gig.proposals} ofert
+                        </span>
+                    </div>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #f8fafc; margin: 0 0 8px 0; line-height: 1.35;">
+                        ${gig.title}
+                    </h3>
+                    <p style="font-size: 13px; color: #64748b; margin: 0 0 12px 0;">
+                        🏢 ${gig.client}
+                    </p>
+                    <p style="font-size: 13px; color: #cbd5e1; line-height: 1.5; margin: 0 0 14px 0;">
+                        ${gig.desc}
+                    </p>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">
+                        ${(gig.tags || []).map(t => `<span style="font-size: 11px; padding: 2px 8px; border-radius: 4px; background: #1e293b; color: #93c5fd; border: 1px solid #334155;">${t}</span>`).join('')}
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #1e293b; padding-top: 14px; margin-top: auto;">
+                    <div>
+                        <span style="display: block; font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Budżet</span>
+                        <span style="font-size: 14px; font-weight: 800; color: #34d399;">${gig.budget}</span>
+                    </div>
+                    <button class="btn btn-sm btn-apply-gig" data-gig-id="${gig.id}" data-title="${gig.title}" data-budget="${gig.budget}" style="background: linear-gradient(135deg, #a855f7, #6366f1); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);">
+                        Złóż ofertę →
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Render Pagination Bar
+    renderPaginationBar('gigsPagination', current, totalPages, total, perPage, (newPage) => {
+        window.state.gigsPage = newPage;
+        renderGigs();
+        document.getElementById('zlecenia')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, (newPerPage) => {
+        window.state.gigsPerPage = newPerPage;
+        window.state.gigsPage = 1;
+        renderGigs();
+    });
+
+    // Wire apply buttons
+    grid.querySelectorAll('.btn-apply-gig').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const title = btn.dataset.title;
+            const budget = btn.dataset.budget;
+            const modal = document.getElementById('gigProposalModal');
+            const titleEl = document.getElementById('gigModalTitle');
+            const budgetEl = document.getElementById('gigModalBudget');
+            if (titleEl) titleEl.textContent = title;
+            if (budgetEl) budgetEl.textContent = `Budżet klienta: ${budget}`;
+            if (modal) modal.classList.remove('hidden');
+        });
+    });
+}
+
+function initGigs() {
+    // Filter buttons
+    document.querySelectorAll('.gig-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.gig-filter-btn').forEach(b => {
+                b.classList.remove('active');
+                b.style.background = '#1e293b';
+                b.style.color = '#94a3b8';
+            });
+            btn.classList.add('active');
+            btn.style.background = '#3b82f6';
+            btn.style.color = 'white';
+
+            window.state.gigsCategory = btn.dataset.cat;
+            window.state.gigsPage = 1;
+            renderGigs();
+        });
+    });
+
+    // Post Gig button
+    document.getElementById('postGigBtn')?.addEventListener('click', () => {
+        const u = AuthService.getUser();
+        if (u && u.role === 'recruiter') {
+            window.openDashboard?.();
+            window.switchRecruiterTab?.('add_job');
+        } else {
+            showToast('Zaloguj się jako Pracodawca / Rekruter, aby dodać zlecenie.', 'info');
+            window.openAuth?.(true);
+        }
+    });
+
+    // Modal close
+    document.getElementById('gigModalClose')?.addEventListener('click', () => {
+        document.getElementById('gigProposalModal')?.classList.add('hidden');
+    });
+
+    // Proposal Form Submit
+    document.getElementById('gigProposalForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const rate = document.getElementById('proposalRate')?.value;
+        const time = document.getElementById('proposalTime')?.value;
+        document.getElementById('gigProposalModal')?.classList.add('hidden');
+        showToast(`🎉 Twoja oferta (${rate}, ${time}) została przesłana do klienta!`, 'success');
+        e.target.reset();
+    });
+
+    renderGigs();
+}
