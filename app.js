@@ -85,12 +85,19 @@ document.addEventListener('DOMContentLoaded', () => {
 // AUTHENTICATION CONTROLLER & SESSION
 // ============================================
 function initAuth() {
-    // Sync initial session on load
+    // Sync initial session on load and auto-open dashboard for logged-in users
     try {
         if (typeof AuthService !== 'undefined' && AuthService.getUser) {
             const currentUser = AuthService.getUser();
             if (typeof window.syncUserHeader === 'function') {
                 window.syncUserHeader(currentUser);
+            }
+            if (currentUser && currentUser.email) {
+                setTimeout(() => {
+                    if (typeof window.openDashboard === 'function') {
+                        window.openDashboard();
+                    }
+                }, 100);
             }
         }
     } catch(e) {
@@ -2972,11 +2979,12 @@ window.handleAuthSubmit = async function(event) {
             alert(welcomeMsg);
         }
 
-        if (user.role === 'recruiter') {
-            setTimeout(function() {
-                if (typeof window.openRecruiterPanel === 'function') window.openRecruiterPanel();
-            }, 300);
-        }
+        // Automatically open the user / recruiter dashboard immediately upon login & registration!
+        setTimeout(function() {
+            if (typeof window.openDashboard === 'function') {
+                window.openDashboard();
+            }
+        }, 100);
     } catch(err) {
         console.error('Auth error:', err);
         if (authError) {
