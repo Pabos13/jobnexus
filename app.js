@@ -1946,7 +1946,7 @@ window.state.jobsPerPage = 9;
 
 window.state.gigs = DEMO_GIGS;
 window.state.gigsPage = 1;
-window.state.gigsPerPage = 6;
+window.state.gigsPerPage = 7;
 window.state.gigsCategory = 'all';
 
 
