@@ -20,15 +20,7 @@
                 <span class="logo-text">Job<span class="logo-accent">Nexus</span></span>
             </a>
 
-            
-
             <div class="header-actions">
-                <button type="button" class="btn btn-secondary cv-builder-btn desktop-only" id="openCvBuilderBtnNav" onclick="window.openCvBuilderModal()">
-                    <span>✨ Kreator</span>
-                </button>
-                <button type="button" class="btn btn-secondary desktop-only" id="navDashboardBtn">
-                    <span>📊 Panel</span>
-                </button>
                 <button type="button" class="btn btn-secondary btn-auth-login" id="loginBtnNav" onclick="window.openAuthModal('login')">
                     <span>Zaloguj się</span>
                 </button>
@@ -72,16 +64,6 @@
                             <span>Szukaj z AI</span>
                         </button>
                     </div>
-                </div>
-
-                <!-- SMART AI PROMPT CHIPS -->
-                <div class="ai-smart-chips">
-                    <span class="ai-chips-label">🤖 Popularne:</span>
-                    <button type="button" class="ai-chip" onclick="window.applySearchPreset('React Developer', 'Zdalnie')">⚡ React</button>
-                    <button type="button" class="ai-chip" onclick="window.applySearchPreset('AI Prompt Engineer', 'Zdalnie')">🧠 AI / LLM</button>
-                    <button type="button" class="ai-chip" onclick="window.applySearchPreset('Spawacz TIG', 'Polska')">🔧 Spawacz TIG</button>
-                    <button type="button" class="ai-chip" onclick="window.applySearchPreset('Księgowa', 'Warszawa')">📊 Księgowość</button>
-                    <button type="button" class="ai-chip" onclick="window.applySearchPreset('DevOps AWS', 'Zdalnie')">☁️ DevOps</button>
                 </div>
 
                 <!-- AI CV UPLOAD & INSTANT MATCHING CARD -->
@@ -129,7 +111,6 @@
         </section>
 
         <!-- SECTION 1: OFERTY PRACY -->
-                <!-- SECTION 1: OFERTY PRACY -->
         <section class="section" id="oferty">
             <div class="section-header">
                 <h2 class="section-title">💼 Oferty Pracy (Live Jooble + Zweryfikowane)</h2>
@@ -185,7 +166,6 @@
         </section>
 
         <!-- SECTION 2: OFERTY ZLECEŃ / FREELANCE -->
-                <!-- SECTION 2: OFERTY ZLECEŃ / FREELANCE -->
         <section class="section" id="zlecenia" style="background: rgba(15, 23, 42, 0.4); border-radius: 1.5rem; padding: 3rem 2rem; margin: 3rem 0; border: 1px solid rgba(255, 255, 255, 0.05);">
             <div class="section-header">
                 <h2 class="section-title">🚀 Oferty Zleceń (Gigs & Freelance)</h2>
@@ -195,17 +175,27 @@
             <!-- ACTION BANNER: DODAJ ZLECENIE -->
             <div class="action-banner-card action-banner-gig">
                 <div class="action-banner-left">
-                    <div class="action-banner-icon">🚀</div>
+                    <div class="action-banner-icon">⚡</div>
                     <div>
-                        <h3 class="action-banner-title">Masz projekt lub zadanie do zlecenia?</h3>
-                        <p class="action-banner-subtitle">Zleć wykonanie zadania sprawdzonym programistom, grafikom i specjalistom AI.</p>
+                        <h3 class="action-banner-title">Masz projekt lub szybkie zadanie do wykonania?</h3>
+                        <p class="action-banner-subtitle">Zleć zadanie freelance i otrzymaj natychmiastowe oferty od doświadczonych wykonawców.</p>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary action-banner-btn" onclick="window.openGigModal()">
-                    ➕ Otwórz Formularz Zlecenia
+                <button type="button" class="btn btn-secondary action-banner-btn" onclick="openAddModal('featured')">
+                    ➕ Dodaj ofertę pracy
                 </button>
             </div>
 
+            <!-- Gigs Filter Bar -->
+            <div class="advanced-filters-bar">
+                <div class="salary-filter-group">
+                    <span class="salary-label">Kategoria zlecenia:</span>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.filterGigs('all')">Wszystkie</button>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.filterGigs('IT')">💻 IT & Web</button>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.filterGigs('Design')">🎨 Grafika</button>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.filterGigs('Teksty')">✍️ Copywriting</button>
+                </div>
+            </div>
 
             <!-- Gigs Grid -->
             <div class="jobs-grid" id="gigsGrid">
@@ -219,61 +209,57 @@
                 <p>Bądź pierwszy i dodaj zlecenie dla społeczności!</p>
             </div>
 
-            <!-- Advanced Pagination for Gigs -->
             <div id="gigsPagination" class="pagination-bar" style="margin-top: 2.5rem;"></div>
         </section>
 
-        <!-- SECTION 3: CENNIK -->
+        <!-- SECTION 3: CENNIK OGŁOSZEŃ -->
         <section class="section" id="cennik">
-            <div class="section-header text-center">
-                <h2 class="section-title">💎 Przejrzysty Cennik</h2>
-                <p class="section-subtitle">Wybierz plan dopasowany do Twoich potrzeb rekrutacyjnych i zawodowych</p>
+            <div class="section-header">
+                <h2 class="section-title">💎 Pakiety i Cennik Ogłoszeń</h2>
+                <p class="section-subtitle">Skuteczna rekrutacja bez ukrytych prowizji i zbędnych formalności</p>
             </div>
 
             <div class="pricing-grid">
                 <div class="pricing-card">
-                    <div class="pricing-badge">Dla Kandydatów</div>
-                    <h3>Konto Kandydata</h3>
-                    <div class="price">0 zł</div>
-                    <p class="price-period">Na zawsze darmowe</p>
+                    <div class="pricing-badge">Standard</div>
+                    <div class="pricing-price">9,99 zł <span class="pricing-period">/ 30 dni</span></div>
                     <ul class="pricing-features">
-                        <li>✓ Nielimitowane aplikowanie na oferty</li>
-                        <li>✓ AI CV Matcher & analiza ATS</li>
-                        <li>✓ Kreator CV z eksportem do PDF</li>
-                        <li>✓ Job Alerty e-mail w czasie rzeczywistym</li>
-                        <li>✓ Symulator pytań rekrutacyjnych AI</li>
+                        <li>✓ Publikacja ogłoszenia na 30 dni</li>
+                        <li>✓ Indeksacja w wyszukiwarce JobNexus</li>
+                        <li>✓ Bezpośredni kontakt z kandydatem</li>
+                        <li>✓ Podstawowy algorytm dopasowania</li>
                     </ul>
-                    <button class="btn btn-secondary btn-block" onclick="window.openAuthModal('register', 'candidate')">Dołącz za darmo</button>
+                    <button type="button" class="btn btn-secondary btn-block" onclick="openAddModal('standard')">
+                        Dodaj ogłoszenie standard
+                    </button>
                 </div>
 
-                <div class="pricing-card featured">
-                    <div class="pricing-badge">Najpopularniejszy</div>
-                    <h3>Wyróżnione Ogłoszenie</h3>
-                    <div class="price">29,99 zł</div>
-                    <p class="price-period">Płatność jednorazowa / 30 dni</p>
+                <div class="pricing-card pricing-card-featured">
+                    <div class="pricing-badge-popular">Polecane • HOT</div>
+                    <div class="pricing-price">29,99 zł <span class="pricing-period">/ 30 dni</span></div>
                     <ul class="pricing-features">
-                        <li>✓ Publikacja oferty na 30 dni</li>
-                        <li>✓ Wyróżnienie na górze listy ofert</li>
-                        <li>✓ Specjalna odznaka "Wyróżnione"</li>
-                        <li>✓ Do 5x więcej zgłoszeń kandydatów</li>
-                        <li>✓ Auto-powiadomienie w Job Alertach</li>
+                        <li>✓ Wszystko z pakietu Standard</li>
+                        <li>✓ <strong>Wyróżnienie kolorem i etykietą HOT</strong></li>
+                        <li>✓ Pierwszeństwo na liście ofert</li>
+                        <li>✓ Powiadomienie e-mail do dopasowanych kandydatów</li>
                     </ul>
-                    <button class="btn btn-primary btn-block" onclick="window.openPaymentModal('Wyróżnione Ogłoszenie', '29,99 zł', 'Płatność jednorazowa')">Wybieram</button>
+                    <button type="button" class="btn btn-primary btn-block" onclick="openAddModal('featured')">
+                        Dodaj ogłoszenie wyróżnione
+                    </button>
                 </div>
 
                 <div class="pricing-card">
-                    <div class="pricing-badge">Dla Firm i HR</div>
-                    <h3>Pakiet Rekrutera PRO</h3>
-                    <div class="price">99,99 zł</div>
-                    <p class="price-period">za miesiąc subskrypcji</p>
+                    <div class="pricing-badge">Abonament PRO</div>
+                    <div class="pricing-price">99 zł <span class="pricing-period">/ miesiąc</span></div>
                     <ul class="pricing-features">
-                        <li>✓ Nielimitowane publikacje ofert pracy</li>
-                        <li>✓ Pełna Tablica Kanban kandydatów</li>
-                        <li>✓ Dostęp do Bazy CV i profili specjalistów</li>
-                        <li>✓ Zaawansowane filtry ATS & dopasowanie AI</li>
-                        <li>✓ Raporty i analityka rekrutacyjna</li>
+                        <li>✓ Nielimitowane oferty pracy i zlecenia</li>
+                        <li>✓ Dostęp do bazy CV i filtrów ATS</li>
+                        <li>✓ Panel rekrutera z Kanbanem aplikacji</li>
+                        <li>✓ Dedykowany opiekun klienta</li>
                     </ul>
-                    <button class="btn btn-secondary btn-block" onclick="window.openPaymentModal('Pakiet Rekrutera PRO', '99,99 zł', 'Miesięczna subskrypcja')">Aktywuj PRO</button>
+                    <button type="button" class="btn btn-secondary btn-block" onclick="openAddModal('featured')">
+                        Aktywuj Plan PRO
+                    </button>
                 </div>
             </div>
         </section>
@@ -294,10 +280,10 @@
 
             <div class="footer-links">
                 <div class="footer-col">
-                    <h4>Kandydaci</h4>
+                    <h4>Nawigacja</h4>
                     <a href="#oferty">Oferty Pracy</a>
-                    <a href="javascript:void(0)" onclick="window.openCvBuilderModal()">Kreator CV AI</a>
-                    <a href="javascript:void(0)" onclick="document.getElementById('navDashboardBtn').click()">Panel Kandydata</a>
+                    <a href="#zlecenia">Zlecenia Freelance</a>
+                    <a href="#cennik">Cennik</a>
                     <a href="javascript:void(0)" onclick="document.getElementById('openJobAlertBtn').click()">Job Alert</a>
                 </div>
 
@@ -310,67 +296,110 @@
                 </div>
 
                 <div class="footer-col">
-                    <h4>O platformie</h4>
-                    <a href="#cennik">Cennik</a>
-                    <a href="javascript:void(0)" onclick="showToast('Regulamin w przygotowaniu', 'info')">Regulamin</a>
-                    <a href="javascript:void(0)" onclick="showToast('Polityka prywatności RODO aktywna', 'info')">Polityka prywatności</a>
+                    <h4>JobNexus</h4>
+                    <a href="javascript:void(0)" onclick="alert('Polityka Prywatności: Wszystkie dane są przetwarzane bezpiecznie zgodnie z RODO.')">Prywatność & RODO</a>
+                    <a href="javascript:void(0)" onclick="alert('Regulamin: Serwis umożliwia bezpieczne przeglądanie i publikowanie ofert.')">Regulamin</a>
+                    <a href="mailto:kontakt@jobnexus.pl">Kontakt Pomoc</a>
                 </div>
             </div>
         </div>
-
         <div class="footer-bottom">
-            <p>&copy; 2026 JobNexus. Wszelkie prawa zastrzeżone.</p>
+            <p>&copy; 2026 JobNexus AI Engine. Wszelkie prawa zastrzeżone.</p>
         </div>
     </footer>
 
-    <!-- MOBILE BOTTOM NAVIGATION BAR -->
-    <nav class="mobile-bottom-bar" id="mobileBottomBar">
-        <a href="#oferty" class="bottom-nav-item active" id="bnavOferty">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="bnav-icon"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
-            <span>Oferty</span>
-        </a>
-        <a href="#zlecenia" class="bottom-nav-item" id="bnavZlecenia">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="bnav-icon"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            <span>Zlecenia</span>
-        </a>
-        <button type="button" class="bottom-nav-item" onclick="window.openCvBuilderModal()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="bnav-icon"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>
-            <span>Kreator</span>
-        </button>
-        <button type="button" class="bottom-nav-item" onclick="document.getElementById('navDashboardBtn').click()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="bnav-icon"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-            <span>Panel</span>
-        </button>
-        <button type="button" class="bottom-nav-item" onclick="window.openAuthModal('login')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="bnav-icon"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span>Konto</span>
-        </button>
-    </nav>
+    <!-- MODAL: DODAJ OGŁOSZENIE / ZLECENIE -->
+    <div class="modal-backdrop hidden" id="addModalBackdrop" onclick="if(event.target===this) closeAddModal()">
+        <div class="modal" id="addModal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="addModalTitle">Dodaj Ogłoszenie</h3>
+                <button type="button" class="modal-close" onclick="closeAddModal()">&times;</button>
+            </div>
 
-    <!-- ================================================================= -->
-    <!-- ALL MODALS                                                        -->
-    <!-- ================================================================= -->
+            <form id="addOfferForm" class="add-offer-form">
+                <div class="form-group">
+                    <label>Typ publikacji</label>
+                    <select id="offerTypeSelect" class="form-input">
+                        <option value="standard">Oferta Pracy Standard (9,99 zł)</option>
+                        <option value="featured">Oferta Pracy Wyróżniona HOT (29,99 zł)</option>
+                        <option value="gig">Zlecenie Freelance / Projekt</option>
+                    </select>
+                </div>
 
-    <!-- 1. DASHBOARD MODAL -->
-    <div class="modal hidden" id="dashboardModal">
-        <div class="modal-content" style="max-width: 1200px; width: 95%; max-height: 90vh; overflow-y: auto;">
-            <button class="modal-close" id="dashboardClose">&times;</button>
+                <div class="form-group">
+                    <label>Tytuł stanowiska / zlecenia *</label>
+                    <input type="text" id="offerTitleInput" required placeholder="np. Senior Frontend Developer / Wykonanie sklepu Shopify" class="form-input">
+                </div>
 
-            <div class="dashboard-header">
-                <div class="dashboard-user-info">
-                    <div class="dashboard-avatar" id="dashAvatar">JN</div>
-                    <div class="dashboard-welcome">
-                        <h2>Witaj, <span id="dashUserName">Użytkowniku</span>! 👋</h2>
-                        <span class="dashboard-role-badge" id="dashRoleBadge">🧑‍💻 Kandydat</span>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Firma / Zleceniodawca *</label>
+                        <input type="text" id="offerCompanyInput" required placeholder="np. Nexus Tech Sp. z o.o." class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Lokalizacja *</label>
+                        <input type="text" id="offerLocationInput" required placeholder="np. Warszawa / Zdalnie" class="form-input">
                     </div>
                 </div>
-                <div class="dashboard-actions">
-                    <button type="button" class="btn-switch-role" id="dashSwitchRoleBtn">
-                        🔄 Przełącz na profil <span id="dashOppositeRoleText">Rekrutera</span>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Wynagrodzenie / Budżet *</label>
+                        <input type="text" id="offerSalaryInput" required placeholder="np. 15 000 - 20 000 PLN / 3 500 PLN za projekt" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Tryb pracy / Kontrakt</label>
+                        <select id="offerWorkTypeSelect" class="form-input">
+                            <option value="Pełny etat">Pełny etat</option>
+                            <option value="Zdalna">Zdalna</option>
+                            <option value="B2B">Kontrakt B2B</option>
+                            <option value="Część etatu">Część etatu</option>
+                            <option value="Staż">Staż / Praktyka</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tagi / Technologie (oddzielone przecinkami)</label>
+                    <input type="text" id="offerTagsInput" placeholder="np. React, TypeScript, Node.js, AWS" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label>Opis i wymagania *</label>
+                    <textarea id="offerDescInput" rows="4" required placeholder="Opisz zakres obowiązków, wymagania techniczne oraz benefity..." class="form-input"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Link do aplikacji lub e-mail rekrutacyjny *</label>
+                    <input type="text" id="offerApplyUrlInput" required placeholder="https://twojafirma.pl/kariera lub rekrutacja@firma.pl" class="form-input">
+                </div>
+
+                <div class="form-actions" style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Anuluj</button>
+                    <button type="submit" class="btn btn-primary" id="btnSubmitOffer">
+                        <span>🚀 Opublikuj natychmiast</span>
                     </button>
-                    <button type="button" class="btn btn-secondary" id="dashLogoutBtn" style="padding: 0.65rem 1rem;">
-                        Wyloguj
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: USER DASHBOARD (PANEL UŻYTKOWNIKA) -->
+    <div class="modal-backdrop hidden" id="dashboardModalBackdrop" onclick="if(event.target===this) window.closeDashboardModal()">
+        <div class="modal modal-xl" id="dashboardModal">
+            <div class="modal-header">
+                <div class="dash-user-badge">
+                    <div class="dash-avatar" id="dashUserAvatar">👤</div>
+                    <div>
+                        <h3 class="modal-title" id="dashUserName">Panel Użytkownika</h3>
+                        <p class="modal-subtitle" id="dashUserRole">Kandydat • Aktywny profil</p>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap: 0.75rem;">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btnSwitchRole" onclick="window.toggleUserRole()">
+                        🔄 Zmień na panel Rekrutera
                     </button>
+                    <button type="button" class="modal-close" onclick="window.closeDashboardModal()">&times;</button>
                 </div>
             </div>
 
@@ -401,76 +430,25 @@
                 </div>
 
                 <div class="dashboard-grid-layout">
-                    <div>
-                        <div class="dash-card">
-                            <div class="dash-card-header">
-                                <h3 class="dash-card-title">🎯 AI CV Matcher & Analiza ATS</h3>
-                                <button type="button" class="btn btn-primary btn-sm cv-builder-btn" onclick="window.openCvBuilderModal()">Otwórz Kreator CV</button>
-                            </div>
-
-                            <div class="ats-score-container">
-                                <div class="ats-score-circle">
-                                    <div class="ats-score-inner">
-                                        <span class="ats-score-num">94</span>
-                                        <span class="ats-score-text">ATS Score</span>
-                                    </div>
-                                </div>
-                                <div class="ats-score-details">
-                                    <h4>Twoje CV jest doskonale zoptymalizowane!</h4>
-                                    <p>Skanery ATS i rekruterzy szybko znajdą Twoje kluczowe technologie.</p>
-                                    <div class="ats-pill-list">
-                                        <span class="ats-pill">✓ React & TypeScript</span>
-                                        <span class="ats-pill">✓ Node.js & REST API</span>
-                                        <span class="ats-pill">✓ AWS Cloud</span>
-                                        <span class="ats-pill missing">+ Dodaj Docker / CI/CD</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="cv-upload-zone" id="cvUploadZone" style="border: 2px dashed rgba(59, 130, 246, 0.4); padding: 2rem; border-radius: 1rem; text-align: center; cursor: pointer; background: rgba(15, 23, 42, 0.5);">
-                                <input type="file" id="cvFileInput" accept=".pdf,.doc,.docx" hidden>
-                                <div class="cv-upload-content">
-                                    <div class="cv-upload-icon" style="font-size: 2.5rem; margin-bottom: 0.5rem;">📁</div>
-                                    <h4 style="color: #fff; margin-bottom: 0.25rem;">Wgraj nowe CV (PDF, DOCX)</h4>
-                                    <p style="color: #94a3b8; font-size: 0.85rem;">AI natychmiast przeliczy Twój wynik ATS i dopasuje oferty</p>
-                                </div>
-                            </div>
+                    <!-- Column 1: Zapisane oferty & Aplikacje -->
+                    <div class="dash-card">
+                        <div class="dash-card-header">
+                            <h4>⭐ Twoje Zapisane Oferty</h4>
+                            <span class="badge-count" id="dashFavBadge">5</span>
                         </div>
-
-                        <div class="dash-card">
-                            <div class="dash-card-header">
-                                <h3 class="dash-card-title">🤖 AI Interview Coach — Trening Rozmów</h3>
-                            </div>
-                            <div class="ai-coach-box">
-                                <div class="ai-question-bubble">
-                                    <strong>Pytanie od AI Rekrutera:</strong>
-                                    "Opisz sytuację, w której musiałeś zoptymalizować wydajność dużej aplikacji webowej. Jakie metryki brałeś pod uwagę?"
-                                </div>
-                                <textarea class="ai-answer-textarea" placeholder="Wpisz swoją odpowiedź..."></textarea>
-                                <button type="button" class="btn btn-primary btn-block" onclick="showToast('✨ AI przeanalizowało odpowiedź: Doskonała struktura STAR! Ocena: 9/10', 'success')">
-                                    Sprawdź odpowiedź przez AI
-                                </button>
-                            </div>
+                        <div class="dash-list" id="dashSavedJobsList">
+                            <!-- Injected by JS -->
                         </div>
                     </div>
 
-                    <div>
-                        <div class="dash-card">
-                            <div class="dash-card-header">
-                                <h3 class="dash-card-title">📋 Moje Aplikacje</h3>
-                            </div>
-                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                                <div style="background: #1e293b; padding: 0.85rem; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.06);">
-                                    <strong style="color: #fff; display: block; font-size: 0.9rem;">Senior Full Stack Developer</strong>
-                                    <span style="color: #94a3b8; font-size: 0.8rem;">NexusTech Solutions</span>
-                                    <span style="display: inline-block; margin-top: 0.35rem; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(59, 130, 246, 0.15); color: #60a5fa;">W trakcie weryfikacji</span>
-                                </div>
-                                <div style="background: #1e293b; padding: 0.85rem; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.06);">
-                                    <strong style="color: #fff; display: block; font-size: 0.9rem;">AI Prompt Engineer</strong>
-                                    <span style="color: #94a3b8; font-size: 0.8rem;">Cognitive AI Labs</span>
-                                    <span style="display: inline-block; margin-top: 0.35rem; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(16, 185, 129, 0.15); color: #34d399;">Zaproszenie na rozmowę</span>
-                                </div>
-                            </div>
+                    <!-- Column 2: Status Aplikacji -->
+                    <div class="dash-card">
+                        <div class="dash-card-header">
+                            <h4>📨 Zgłoszenia i Aplikacje</h4>
+                            <span class="badge-count" id="dashAppBadge">3</span>
+                        </div>
+                        <div class="dash-list" id="dashApplicationsList">
+                            <!-- Injected by JS -->
                         </div>
                     </div>
                 </div>
@@ -504,235 +482,207 @@
 
                 <div class="dash-card">
                     <div class="dash-card-header">
-                        <h3 class="dash-card-title">📊 Tablica Kanban Rekrutacji</h3>
-                        <button type="button" class="btn btn-primary btn-sm" onclick="openAddModal('featured')">➕ Opublikuj Nową Ofertę</button>
+                        <h4>📋 Tablica Rekrutacyjna (Kanban)</h4>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="openAddModal('standard')">+ Nowe ogłoszenie</button>
                     </div>
-
                     <div class="kanban-board">
-                        <div class="kanban-column">
-                            <div class="kanban-column-header">
-                                <span class="kanban-column-title">📥 Nowe Aplikacje</span>
-                                <span class="kanban-counter">2</span>
+                        <div class="kanban-col">
+                            <div class="kanban-col-header">
+                                <span>Nowe zgłoszenia</span>
+                                <span class="kanban-count">12</span>
                             </div>
-                            <div class="kanban-card">
-                                <div class="kanban-candidate-name">Michał Wiśniewski</div>
-                                <div class="kanban-candidate-role">Senior Full Stack Dev</div>
-                                <div class="kanban-card-footer">
-                                    <span class="kanban-match-score">🎯 96% Match</span>
-                                    <span style="color: #94a3b8;">Dziś</span>
+                            <div class="kanban-items">
+                                <div class="kanban-item">
+                                    <div class="kanban-user">Jan Kowalski</div>
+                                    <div class="kanban-role">Senior React Developer</div>
+                                    <div class="kanban-score">ATS: 96%</div>
                                 </div>
-                            </div>
-                            <div class="kanban-card">
-                                <div class="kanban-candidate-name">Aleksandra Dąbrowska</div>
-                                <div class="kanban-candidate-role">AI Prompt Engineer</div>
-                                <div class="kanban-card-footer">
-                                    <span class="kanban-match-score">🎯 91% Match</span>
-                                    <span style="color: #94a3b8;">Wczoraj</span>
+                                <div class="kanban-item">
+                                    <div class="kanban-user">Anna Nowak</div>
+                                    <div class="kanban-role">Fullstack Python</div>
+                                    <div class="kanban-score">ATS: 91%</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="kanban-column">
-                            <div class="kanban-column-header">
-                                <span class="kanban-column-title">🔍 Weryfikacja</span>
-                                <span class="kanban-counter">1</span>
+                        <div class="kanban-col">
+                            <div class="kanban-col-header">
+                                <span>Weryfikacja / Test</span>
+                                <span class="kanban-count">8</span>
                             </div>
-                            <div class="kanban-card">
-                                <div class="kanban-candidate-name">Piotr Zieliński</div>
-                                <div class="kanban-candidate-role">DevOps Cloud Engineer</div>
-                                <div class="kanban-card-footer">
-                                    <span class="kanban-match-score">🎯 88% Match</span>
-                                    <span style="color: #94a3b8;">2 dni temu</span>
+                            <div class="kanban-items">
+                                <div class="kanban-item">
+                                    <div class="kanban-user">Michał Wiśniewski</div>
+                                    <div class="kanban-role">DevOps AWS Engineer</div>
+                                    <div class="kanban-score">ATS: 94%</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="kanban-column">
-                            <div class="kanban-column-header">
-                                <span class="kanban-column-title">🗣️ Rozmowa</span>
-                                <span class="kanban-counter">1</span>
+                        <div class="kanban-col">
+                            <div class="kanban-col-header">
+                                <span>Rozmowa techniczna</span>
+                                <span class="kanban-count">5</span>
                             </div>
-                            <div class="kanban-card">
-                                <div class="kanban-candidate-name">Tomasz Kamiński</div>
-                                <div class="kanban-candidate-role">Spawacz TIG / Konstrukcje</div>
-                                <div class="kanban-card-footer">
-                                    <span class="kanban-match-score">🎯 95% Match</span>
-                                    <span style="color: #38bdf8;">Jutro 14:00</span>
+                            <div class="kanban-items">
+                                <div class="kanban-item">
+                                    <div class="kanban-user">Katarzyna Zielińska</div>
+                                    <div class="kanban-role">UI/UX Designer</div>
+                                    <div class="kanban-score">ATS: 98%</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="kanban-column">
-                            <div class="kanban-column-header">
-                                <span class="kanban-column-title">🎉 Zatrudniony</span>
-                                <span class="kanban-counter">1</span>
+                        <div class="kanban-col">
+                            <div class="kanban-col-header">
+                                <span>Oferta złożona 🎉</span>
+                                <span class="kanban-count">3</span>
                             </div>
-                            <div class="kanban-card">
-                                <div class="kanban-candidate-name">Karolina Nowak</div>
-                                <div class="kanban-candidate-role">UI/UX Designer</div>
-                                <div class="kanban-card-footer">
-                                    <span class="kanban-match-score">🎯 98% Match</span>
-                                    <span style="color: #34d399;">Oferta zaakceptowana</span>
+                            <div class="kanban-items">
+                                <div class="kanban-item accepted">
+                                    <div class="kanban-user">Piotr Lewandowski</div>
+                                    <div class="kanban-role">Backend Go Developer</div>
+                                    <div class="kanban-score">Zaakceptowano</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="modal-footer" style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                <button type="button" class="btn btn-secondary" onclick="window.AuthService && window.AuthService.logout(); location.reload();">
+                    🚪 Wyloguj się
+                </button>
+                <button type="button" class="btn btn-primary" onclick="window.closeDashboardModal()">
+                    Zamknij panel
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- 2. KREATOR CV AI MODAL -->
-    <div class="modal hidden" id="cvBuilderModal">
-        <div class="modal-content" style="max-width: 900px; width: 95%;">
-            <button class="modal-close" id="cvBuilderClose">&times;</button>
+    <!-- MODAL: INTERAKTYWNY KREATOR CV AI -->
+    <div class="modal-backdrop hidden" id="cvBuilderModalBackdrop" onclick="if(event.target===this) window.closeCvBuilderModal()">
+        <div class="modal modal-xl" id="cvBuilderModal">
             <div class="modal-header">
-                <div class="modal-icon" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                <div>
+                    <h3 class="modal-title">✨ Interaktywny Kreator CV z Optymalizacją ATS</h3>
+                    <p class="modal-subtitle">Wypełnij formularz lub wgraj obecne CV — wygenerujemy gotowy dokument z oceną ATS.</p>
                 </div>
-                <h2>Kreator CV AI</h2>
-                <p>Wypełnij formularz, zoptymalizuj treść przez AI i pobierz gotowe CV w standardzie ATS.</p>
+                <button type="button" class="modal-close" onclick="window.closeCvBuilderModal()">&times;</button>
             </div>
 
-            <div class="cv-builder-workspace" style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 1.5rem; margin-top: 1.25rem;">
-                <div class="cv-builder-form-col" style="max-height: 520px; overflow-y: auto; padding-right: 0.5rem;">
+            <div class="cv-builder-grid">
+                <!-- FORM -->
+                <div class="cv-form-pane">
                     <div class="form-group">
-                        <label>Imię i Nazwisko</label>
-                        <input type="text" id="cvName" class="form-input" value="Jan Kowalski">
+                        <label>Imię i Nazwisko *</label>
+                        <input type="text" id="cvName" class="form-input" placeholder="np. Aleksander Nowak" value="Aleksander Nowak">
                     </div>
-                    <div class="form-group">
-                        <label>Docelowe stanowisko</label>
-                        <input type="text" id="cvTitle" class="form-input" value="Senior Frontend Developer">
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                    <div class="form-row">
                         <div class="form-group">
-                            <label>E-mail</label>
-                            <input type="email" id="cvEmail" class="form-input" value="jan.kowalski@example.com">
+                            <label>Docelowe Stanowisko *</label>
+                            <input type="text" id="cvTitle" class="form-input" placeholder="np. Senior Frontend Engineer" value="Senior Frontend Engineer">
                         </div>
                         <div class="form-group">
-                            <label>Telefon</label>
-                            <input type="tel" id="cvPhone" class="form-input" value="+48 500 600 700">
+                            <label>E-mail kontaktowy *</label>
+                            <input type="email" id="cvEmail" class="form-input" placeholder="kontakt@domena.pl" value="aleksander.nowak@email.com">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label style="display: flex; justify-content: space-between;">
-                            <span>Podsumowanie zawodowe</span>
-                            <button type="button" id="cvAiEnhanceBioBtn" style="background: none; border: none; color: #a78bfa; font-size: 0.8rem; font-weight: 600; cursor: pointer;">✨ AI Ulepsz opis</button>
-                        </label>
-                        <textarea id="cvBio" class="form-input" style="min-height: 80px; resize: vertical;">Doświadczony programista z 5-letnim stażem w budowaniu nowoczesnych aplikacji webowych w oparciu o React, TypeScript oraz chmurę AWS.</textarea>
+                        <label>Kluczowe Umiejętności i Technologie (oddziel przecinkami) *</label>
+                        <input type="text" id="cvSkills" class="form-input" placeholder="React, TypeScript, Next.js, Redux, Node.js, GraphQL, Tailwind CSS" value="React, TypeScript, Next.js, Redux, Node.js, Tailwind CSS, Jest, REST API">
                     </div>
                     <div class="form-group">
-                        <label>Doświadczenie zawodowe</label>
-                        <textarea id="cvExperience" class="form-input" style="min-height: 90px; resize: vertical;">• 2022 - obecnie: Senior Frontend Developer w Nexus Labs.
-• 2020 - 2022: Frontend Developer w Digital Studio.</textarea>
+                        <label>Podsumowanie zawodowe (Bio) *</label>
+                        <textarea id="cvSummary" class="form-input" rows="3" placeholder="Doświadczony inżynier oprogramowania z 5-letnim stażem...">Doświadczony Senior Frontend Developer z ponad 5-letnim doświadczeniem w budowaniu skalowalnych aplikacji webowych w ekosystemie React / TypeScript oraz integracji zaawansowanych modeli AI.</textarea>
                     </div>
                     <div class="form-group">
-                        <label>Umiejętności (oddzielone przecinkami)</label>
-                        <input type="text" id="cvSkills" class="form-input" value="React, TypeScript, Node.js, Vite, TailwindCSS, AWS, Docker, Git">
+                        <label>Doświadczenie zawodowe *</label>
+                        <textarea id="cvExperience" class="form-input" rows="4" placeholder="Opisz swoje ostatnie projekty i role...">Tech Lead Frontend @ Nexus Innovations (2022 - obecnie)
+• Przebudowa architektury platformy B2B na Next.js i TypeScript — wzrost wydajności o 42%
+• Zarządzanie 5-osobowym zespołem inżynierów frontendowych
+• Integracja modułów uczenia maszynowego i przetwarzania danych w czasie rzeczywistym</textarea>
                     </div>
                     <div class="form-group">
-                        <label>Edukacja</label>
-                        <input type="text" id="cvEducation" class="form-input" value="Politechnika Warszawska — Informatyka (Inżynier, 2016-2020)">
+                        <label>Edukacja i Certyfikaty</label>
+                        <input type="text" id="cvEducation" class="form-input" placeholder="np. Informatyka — Politechnika Warszawska" value="Informatyka Stosowana — Politechnika Warszawska (Mgr inż.)">
                     </div>
                 </div>
 
-                <div class="cv-builder-preview-col" style="background: #ffffff; color: #1e293b; border-radius: 0.75rem; padding: 1.5rem; max-height: 520px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: 'Inter', system-ui, sans-serif;">
-                    <div id="cvLivePreview">
-                        <div style="border-bottom: 2px solid #2563eb; padding-bottom: 0.75rem; margin-bottom: 1rem;">
-                            <h3 id="prevName" style="color: #0f172a; font-size: 1.4rem; font-weight: 800; margin: 0;">Jan Kowalski</h3>
-                            <p id="prevTitle" style="color: #2563eb; font-size: 0.95rem; font-weight: 600; margin: 0.2rem 0 0.4rem;">Senior Frontend Developer</p>
-                            <div style="font-size: 0.75rem; color: #64748b; display: flex; flex-wrap: wrap; gap: 0.75rem;">
-                                <span id="prevEmail">✉️ jan.kowalski@example.com</span>
-                                <span id="prevPhone">📞 +48 500 600 700</span>
-                            </div>
+                <!-- LIVE ATS PREVIEW & DOWNLOAD -->
+                <div class="cv-preview-pane">
+                    <div class="ats-score-box">
+                        <div class="ats-circle-score">
+                            <span class="score-val">98%</span>
+                            <span class="score-label">ATS Score</span>
                         </div>
-
-                        <div style="margin-bottom: 0.85rem;">
-                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Podsumowanie zawodowe</h4>
-                            <p id="prevBio" style="font-size: 0.8rem; color: #334155; line-height: 1.4; margin: 0;">Doświadczony programista z 5-letnim stażem w budowaniu nowoczesnych aplikacji webowych w oparciu o React, TypeScript oraz chmurę AWS.</p>
-                        </div>
-
-                        <div style="margin-bottom: 0.85rem;">
-                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Doświadczenie zawodowe</h4>
-                            <div id="prevExp" style="font-size: 0.8rem; color: #334155; line-height: 1.4; white-space: pre-line;">• 2022 - obecnie: Senior Frontend Developer w Nexus Labs.
-• 2020 - 2022: Frontend Developer w Digital Studio.</div>
-                        </div>
-
-                        <div style="margin-bottom: 0.85rem;">
-                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Umiejętności</h4>
-                            <div id="prevSkills" style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
-                                <span style="background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">React</span>
-                                <span style="background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">TypeScript</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Edukacja</h4>
-                            <p id="prevEdu" style="font-size: 0.8rem; color: #334155; margin: 0;">Politechnika Warszawska — Informatyka (Inżynier, 2016-2020)</p>
+                        <div class="ats-feedback">
+                            <strong>Znakomite dopasowanie ATS!</strong>
+                            <p>CV zawiera kluczowe słowa wyszukiwane przez rekruterów i systemy rekrutacyjne.</p>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; gap: 0.75rem;">
-                <div style="color: #94a3b8; font-size: 0.85rem;">Format: Standard ATS-friendly</div>
-                <div style="display: flex; gap: 0.75rem;">
-                    <button type="button" class="btn btn-secondary" id="cvSaveProfileBtn">💾 Zapisz w profilu</button>
-                    <button type="button" class="btn btn-primary" id="cvDownloadPdfBtn" style="background: linear-gradient(135deg, #2563eb, #7c3aed);">📥 Pobierz / Drukuj CV (PDF)</button>
+                    <div class="cv-sheet-preview" id="cvSheetPreview">
+                        <h2 id="prevName">Aleksander Nowak</h2>
+                        <h4 id="prevTitle">Senior Frontend Engineer</h4>
+                        <p class="prev-contact" id="prevEmail">aleksander.nowak@email.com • Warszawa / Zdalnie</p>
+                        <hr>
+                        <h5>PODSUMOWANIE</h5>
+                        <p id="prevSummary">Doświadczony Senior Frontend Developer z ponad 5-letnim doświadczeniem...</p>
+                        <h5>UMIEJĘTNOŚCI</h5>
+                        <p id="prevSkills">React, TypeScript, Next.js, Redux, Node.js, Tailwind CSS, Jest, REST API</p>
+                        <h5>DOŚWIADCZENIE</h5>
+                        <pre id="prevExperience" style="font-family:inherit; white-space:pre-wrap; font-size:0.85rem; color:#cbd5e1;">Tech Lead Frontend @ Nexus Innovations (2022 - obecnie)</pre>
+                        <h5>EDUKACJA</h5>
+                        <p id="prevEducation">Informatyka Stosowana — Politechnika Warszawska (Mgr inż.)</p>
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-block" style="margin-top: 1rem;" onclick="window.downloadCvPdf()">
+                        📥 Pobierz gotowe CV (PDF)
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-        <!-- 3. AUTH MODAL (LOGIN & REGISTER) -->
-    <div class="modal hidden" id="authModal">
-        <div class="modal-content" style="max-width: 460px; width: 95%;">
-            <button class="modal-close" id="authClose">&times;</button>
-            <div class="modal-header" style="margin-bottom: 1.25rem;">
-                <div class="modal-icon" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; margin-bottom: 0.5rem;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px;"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                </div>
-                <h2 id="authModalTitle">Logowanie do JobNexus</h2>
-                <p id="authModalSubtitle">Wprowadź dane, aby uzyskać dostęp do panelu i ofert</p>
+    <!-- MODAL: LOGOWANIE / REJESTRACJA -->
+    <div class="modal-backdrop hidden" id="authModalBackdrop" onclick="if(event.target===this) window.closeAuthModal()">
+        <div class="modal modal-sm" id="authModal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="authModalTitle">Zaloguj się do JobNexus</h3>
+                <button type="button" class="modal-close" onclick="window.closeAuthModal()">&times;</button>
             </div>
 
-            <div class="auth-tabs" style="display: flex; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 1.5rem;">
-                <button type="button" class="auth-tab active" id="tabLogin" style="flex:1; padding:0.75rem; background:none; border:none; color:#fff; font-weight:700; border-bottom:2px solid #3b82f6; cursor:pointer;">Logowanie</button>
-                <button type="button" class="auth-tab" id="tabRegister" style="flex:1; padding:0.75rem; background:none; border:none; color:#94a3b8; font-weight:700; cursor:pointer;">Rejestracja</button>
+            <div class="auth-tabs" style="display:flex; gap:0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+                <button type="button" class="btn btn-sm btn-auth-tab active" id="tabLogin" onclick="window.switchAuthTab('login')">Logowanie</button>
+                <button type="button" class="btn btn-sm btn-auth-tab" id="tabRegister" onclick="window.switchAuthTab('register')">Rejestracja</button>
             </div>
 
-            <div class="auth-error-box hidden" id="authError" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.85rem; margin-bottom: 1rem; font-weight: 600;"></div>
-
-            <form id="authForm" class="auth-form">
-                <!-- Registration only: Name input -->
+            <form id="authForm" onsubmit="window.handleAuthSubmit(event)">
                 <div class="form-group hidden" id="nameGroup">
-                    <label>Imię i Nazwisko *</label>
-                    <input type="text" id="authName" placeholder="np. Jan Kowalski" class="form-input">
-                </div>
-
-                <!-- Registration only: Role selection -->
-                <div class="form-group hidden" id="roleGroup">
-                    <label>Wybierz typ profilu *</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.35rem;">
-                        <label style="display: flex; align-items: center; gap: 0.5rem; background: #1e293b; padding: 0.75rem; border-radius: 0.5rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);">
-                            <input type="radio" name="authRole" value="candidate" checked>
-                            <span style="color:#fff; font-size:0.85rem; font-weight:600;">🧑‍💻 Kandydat</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 0.5rem; background: #1e293b; padding: 0.75rem; border-radius: 0.5rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);">
-                            <input type="radio" name="authRole" value="recruiter">
-                            <span style="color:#fff; font-size:0.85rem; font-weight:600;">🏢 Rekruter</span>
-                        </label>
-                    </div>
+                    <label>Imię i Nazwisko / Nazwa Firmy *</label>
+                    <input type="text" id="authName" placeholder="Jan Kowalski" class="form-input">
                 </div>
 
                 <div class="form-group">
                     <label>Adres E-mail *</label>
-                    <input type="email" id="authEmail" required placeholder="twoj@email.com" class="form-input">
+                    <input type="email" id="authEmail" required placeholder="twoj@email.pl" class="form-input">
                 </div>
+
                 <div class="form-group">
                     <label>Hasło (min. 6 znaków) *</label>
                     <input type="password" id="authPassword" required placeholder="••••••••" minlength="6" class="form-input">
                 </div>
+
+                <div class="form-group hidden" id="roleGroup">
+                    <label>Typ konta</label>
+                    <select id="authRole" class="form-input">
+                        <option value="candidate">Kandydat / Freelancer (Szukam pracy)</option>
+                        <option value="recruiter">Pracodawca / Rekruter (Dodaję ogłoszenia)</option>
+                    </select>
+                </div>
+
                 <button type="submit" class="btn btn-primary btn-block" id="authSubmitBtn" style="margin-top: 1rem; padding: 0.85rem; font-size: 0.95rem; font-weight: 700;">
                     Zaloguj się
                 </button>
@@ -740,296 +690,15 @@
         </div>
     </div>
 
-    <!-- 4. EXPANDED ADD JOB ANNOUNCEMENT MODAL -->
-    <div class="modal hidden" id="addModal">
-        <div class="modal-content" style="max-width: 680px; width: 95%;">
-            <button class="modal-close" id="modalClose">&times;</button>
-            <div class="modal-header">
-                <div class="modal-icon" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; margin-bottom: 0.5rem;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px;"><path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                </div>
-                <h2>Rozszerzony Formularz Ogłoszenia Pracy</h2>
-                <p>Opublikuj szczegółową ofertę rekrutacyjną i dotrzyj do zweryfikowanych kandydatów</p>
-            </div>
-
-            <form id="addForm" class="auth-form" style="margin-top: 1.5rem;">
-                <div class="form-group">
-                    <label>Stanowisko / Tytuł oferty *</label>
-                    <input type="text" id="annTitle" required placeholder="np. Senior Full Stack Developer (React & Node.js)" class="form-input">
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="form-group">
-                        <label>Nazwa Firmy / Pracodawcy *</label>
-                        <input type="text" id="annCompany" required placeholder="np. Nexus Tech Sp. z o.o." class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label>Lokalizacja *</label>
-                        <input type="text" id="annLocation" placeholder="np. Warszawa / Zdalnie" value="Warszawa / Zdalnie" class="form-input">
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="form-group">
-                        <label>Kategoria branżowa *</label>
-                        <select id="annCategory" class="form-input" style="background:#0f172a;color:#fff;">
-                            <option value="it" selected>IT & Software</option>
-                            <option value="ai">AI & Data Science</option>
-                            <option value="inzynieria">Inżynieria & Produkcja</option>
-                            <option value="finanse">Finanse & Księgowość</option>
-                            <option value="marketing">Marketing & Sprzedaż</option>
-                            <option value="logistyka">Logistyka & Transport</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Typ umowy / Tryb pracy *</label>
-                        <select id="annType" class="form-input" style="background:#0f172a;color:#fff;">
-                            <option value="Zdalna" selected>Zdalna (B2B / UoP)</option>
-                            <option value="Pełny etat">Pełny etat (Stacjonarnie / Hybrydowo)</option>
-                            <option value="Kontrakt">Kontrakt B2B</option>
-                            <option value="Staż">Staż / Praktyki</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Widełki wynagrodzenia (PLN) *</label>
-                    <input type="text" id="annBudget" required placeholder="np. 18 000 - 24 000 PLN netto B2B" class="form-input">
-                </div>
-
-                <div class="form-group">
-                    <label>Wymagane technologie & umiejętności (oddzielone przecinkami)</label>
-                    <input type="text" id="annSkills" placeholder="np. React, TypeScript, Node.js, AWS, Docker" class="form-input">
-                </div>
-
-                <div class="form-group">
-                    <label>Szczegółowy opis stanowiska, wymagań i benefitów *</label>
-                    <textarea id="annDesc" required class="form-input" style="min-height: 110px; resize: vertical;" placeholder="Opisz zakres projektów, technologie, wymagania doświadczenia oraz benefity (Medicover, Multisport, budżet szkoleniowy)..."></textarea>
-                </div>
-
-                <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 0.75rem; padding: 1rem; margin-bottom: 1.25rem;">
-                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
-                        <input type="checkbox" id="annFeatured" style="width: 18px; height: 18px; accent-color: #3b82f6;">
-                        <div>
-                            <span style="color:#fff; font-weight:700; display:block;">Wyróżnij ogłoszenie na górze listy (+20,00 zł)</span>
-                            <span style="color:#94a3b8; font-size:0.8rem;">Otrzymaj złotą odznakę i do 5x więcej zgłoszeń kandydatów.</span>
-                        </div>
-                    </label>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block" style="padding: 0.9rem; font-size: 1rem; font-weight: 700;">
-                    Opublikuj ogłoszenie pracy (<span id="submitPrice">9,99 zł</span>)
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- 5. EXPANDED ADD GIG MODAL -->
-    <div class="modal hidden" id="gigModal">
-        <div class="modal-content" style="max-width: 680px; width: 95%;">
-            <button class="modal-close" id="gigModalClose">&times;</button>
-            <div class="modal-header">
-                <div class="modal-icon" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; margin-bottom: 0.5rem;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                </div>
-                <h2>Rozszerzony Formularz Zlecenia Freelance</h2>
-                <p>Opublikuj projekt lub zadanie i otrzymaj oferty od najlepszych wykonawców</p>
-            </div>
-
-            <form id="gigForm" class="auth-form" style="margin-top: 1.5rem;">
-                <div class="form-group">
-                    <label>Tytuł zlecenia / projektu *</label>
-                    <input type="text" id="gigTitle" required placeholder="np. Wdrożenie asystenta AI / RAG dla platformy e-commerce" class="form-input">
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="form-group">
-                        <label>Zleceniodawca / Firma *</label>
-                        <input type="text" id="gigClient" required placeholder="np. RetailTech Sp. z o.o." class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label>Kategoria projektu *</label>
-                        <select id="gigCategory" class="form-input" style="background:#0f172a;color:#fff;">
-                            <option value="ai" selected>AI & Automatyzacja</option>
-                            <option value="web">Web & Mobile Development</option>
-                            <option value="design">Design & UI/UX</option>
-                            <option value="ecommerce">E-commerce</option>
-                            <option value="marketing">Marketing & SEO</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="form-group">
-                        <label>Budżet zlecenia (PLN) *</label>
-                        <input type="text" id="gigBudget" required placeholder="np. 6 000 - 9 500 PLN" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label>Szacowany czas realizacji *</label>
-                        <input type="text" id="gigDuration" placeholder="np. ⏱️ 14 dni" value="⏱️ 14 dni" class="form-input">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Wymagany stos technologiczny / tagi</label>
-                    <input type="text" id="gigTags" placeholder="np. Python, LangChain, OpenAI, FastAPI" class="form-input">
-                </div>
-
-                <div class="form-group">
-                    <label>Szczegółowy opis zadania i oczekiwane rezultaty *</label>
-                    <textarea id="gigDesc" required class="form-input" style="min-height: 110px; resize: vertical;" placeholder="Opisz dokładnie cel projektu, wymagane integracje API, stan obecnego kodu oraz kryteria akceptacji..."></textarea>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block" style="padding: 0.9rem; font-size: 1rem; font-weight: 700; background: linear-gradient(135deg, #7c3aed, #2563eb);">
-                    🚀 Opublikuj Zlecenie Projektowe
-                </button>
-            </form>
-        </div>
-    </div>
-
-<!-- 6. GIG PROPOSAL MODAL -->
-    <div class="modal hidden" id="gigProposalModal">
-        <div class="modal-content" style="max-width: 480px;">
-            <button class="modal-close" id="gigProposalClose">&times;</button>
-            <div class="modal-header">
-                <h2>Złóż ofertę wykonania</h2>
-                <p id="propGigTitle">Zlecenie projektowe</p>
-            </div>
-            <form id="gigProposalForm" class="auth-form" style="margin-top: 1.25rem;">
-                <div class="form-group">
-                    <label>Twoja proponowana stawka (PLN)</label>
-                    <input type="text" id="propAmount" required placeholder="np. 2 500 PLN" class="form-input">
-                </div>
-                <div class="form-group">
-                    <label>Szacowany czas realizacji</label>
-                    <input type="text" id="propTime" required placeholder="np. 5 dni roboczych" class="form-input">
-                </div>
-                <div class="form-group">
-                    <label>Wiadomość / Doświadczenie w podobnych projektach</label>
-                    <textarea id="propMessage" required class="form-input" style="min-height: 90px; resize: vertical;" placeholder="Opisz swoje podejście do zadania i podlinkuj portfolio..."></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
-                    Wyślij propozycję wykonawcy
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- 7. JOB ALERT MODAL -->
-    <div class="modal hidden" id="jobAlertModal">
-        <div class="modal-content" style="max-width: 480px;">
-            <button class="modal-close" id="jobAlertClose">&times;</button>
-            <div class="modal-header">
-                <div class="modal-icon" style="background: rgba(234, 179, 8, 0.15); color: #fbbf24;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 01-3.46 0"></path></svg>
-                </div>
-                <h2>Utwórz Job Alert AI</h2>
-                <p>Otrzymuj natychmiast powiadomienia o nowych pasujących ofertach.</p>
-            </div>
-            <form id="jobAlertForm" class="auth-form" style="margin-top: 1.5rem;">
-                <div class="form-group">
-                    <label>Twój adres E-mail</label>
-                    <input type="email" id="alertEmail" required placeholder="np. jan@example.com" class="form-input">
-                </div>
-                <div class="form-group">
-                    <label>Stanowisko / Słowa kluczowe</label>
-                    <input type="text" id="alertKeywords" required placeholder="np. React, Spawacz, Księgowa" class="form-input">
-                </div>
-                <div class="form-group">
-                    <label>Lokalizacja</label>
-                    <input type="text" id="alertLocation" placeholder="np. Zdalnie, Warszawa, Cała Polska" class="form-input">
-                </div>
-                <div class="form-group">
-                    <label>Częstotliwość powiadomień</label>
-                    <select id="alertFreq" class="form-input" style="background:#0f172a;color:#fff;">
-                        <option value="instant">Natychmiast po publikacji</option>
-                        <option value="daily" selected>Podsumowanie dzienne</option>
-                        <option value="weekly">Podsumowanie tygodniowe</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">Aktywuj Alert</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- 8. PAYMENT & CHECKOUT MODAL -->
-    <div class="modal hidden" id="paymentModal">
-        <div class="modal-content" style="max-width: 520px;">
-            <button class="modal-close" id="paymentModalClose">&times;</button>
-            <div class="modal-header">
-                <div class="modal-icon" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                </div>
-                <h2 id="payItemTitle">Bezpieczna płatność</h2>
-                <p id="payItemSubtitle">Wybierz dogodną metodę płatności i aktywuj usługę</p>
-            </div>
-
-            <div style="background: rgba(15, 23, 42, 0.8); padding: 1rem; border-radius: 0.75rem; margin: 1rem 0; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.08);">
-                <div>
-                    <strong style="color:#fff; display:block;" id="payProductName">Wyróżnienie ogłoszenia</strong>
-                    <span style="color:#94a3b8; font-size:0.85rem;" id="payProductPeriod">Płatność jednorazowa</span>
-                </div>
-                <div style="font-size: 1.5rem; font-weight: 800; color: #38bdf8;" id="payAmount">29,99 zł</div>
-            </div>
-
-            <div class="payment-methods">
-                <div class="payment-method-card active" data-method="blik">
-                    <span style="display:block; font-size:1.1rem; color:#f97316; font-weight:900;">BLIK</span>
-                    <span style="font-size:0.75rem;">Szybki kod</span>
-                </div>
-                <div class="payment-method-card" data-method="card">
-                    <span style="display:block; font-size:1.1rem; color:#38bdf8; font-weight:700;">💳 Karta</span>
-                    <span style="font-size:0.75rem;">Visa / MC</span>
-                </div>
-                <div class="payment-method-card" data-method="transfer">
-                    <span style="display:block; font-size:1.1rem; color:#34d399; font-weight:700;">⚡ Przelew</span>
-                    <span style="font-size:0.75rem;">PayU / P24</span>
-                </div>
-            </div>
-
-            <form id="checkoutForm">
-                <div id="blikSection">
-                    <p style="font-size:0.85rem; color:#94a3b8; text-align:center;">Wpisz 6-cyfrowy kod wygenerowany w aplikacji banku:</p>
-                    <div class="blik-input-box">
-                        <input type="text" maxlength="1" class="blik-digit" autofocus>
-                        <input type="text" maxlength="1" class="blik-digit">
-                        <input type="text" maxlength="1" class="blik-digit">
-                        <input type="text" maxlength="1" class="blik-digit">
-                        <input type="text" maxlength="1" class="blik-digit">
-                        <input type="text" maxlength="1" class="blik-digit">
-                    </div>
-                </div>
-
-                <div id="cardSection" class="hidden">
-                    <div class="card-mockup">
-                        <div class="card-chip"></div>
-                        <div style="font-family:monospace; font-size:1.1rem; letter-spacing:2px; margin-bottom:0.75rem;">4242 •••• •••• 4242</div>
-                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; text-transform:uppercase;">
-                            <span>Jan Kowalski</span>
-                            <span>12/28</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Numer karty (Tryb testowy)</label>
-                        <input type="text" class="form-input" placeholder="4242 4242 4242 4242" value="4242 4242 4242 4242">
-                    </div>
-                </div>
-
-                <div id="transferSection" class="hidden" style="text-align:center; padding:1.5rem; color:#94a3b8;">
-                    <p>Zostaniesz bezpiecznie przekierowany do bramki płatności Twojego banku.</p>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block" id="paySubmitBtn" style="margin-top: 1rem; padding: 0.9rem; font-size: 1rem; font-weight: 700;">
-                    Zapłać i aktywuj (<span id="payBtnAmount">29,99 zł</span>)
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- TOAST CONTAINER -->
-    <div id="toastContainer" class="toast-container"></div>
-
-    <!-- SCRIPTS -->
+    <!-- JAVASCRIPT BUNDLE -->
+    <script type="module" src="./config.js"></script>
+    <script type="module" src="./services/storageService.js"></script>
+    <script type="module" src="./services/authService.js"></script>
+    <script type="module" src="./services/favoritesService.js"></script>
+    <script type="module" src="./services/notificationService.js"></script>
+    <script type="module" src="./services/advancedFilters.js"></script>
+    <script type="module" src="./services/analyticsService.js"></script>
+    <script type="module" src="./services/jobService.js"></script>
     <script type="module" src="./app.js"></script>
 </body>
 </html>
