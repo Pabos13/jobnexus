@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="./styles.css">
     <link rel="stylesheet" href="./styles-mobile.css">
 
-    <!-- IMMEDIATE GLOBAL CONTROLLERS (Zero delay, always accessible) -->
+        <!-- IMMEDIATE GLOBAL CONTROLLERS (Zero delay, always accessible) -->
     <script>
         window.openAddModal = function(type) {
             type = type || 'standard';
@@ -22,7 +22,7 @@
             var typeSelect = document.getElementById('offerTypeSelect');
             var priceBadge = document.getElementById('orderPriceBadge');
             var submitBtn = document.getElementById('btnSubmitOffer');
-            
+
             if (type === 'gig' || type === 'gig_featured') {
                 if (titleEl) titleEl.textContent = '🚀 Dodaj Zlecenie / Ogłoszenie Freelance (9,99 zł)';
                 if (subtitleEl) subtitleEl.textContent = 'Zleć wykonanie projektu, zadania dorywczego lub kontraktu dla freelancerów.';
@@ -71,7 +71,88 @@
             }
         };
 
-                        window.openAuthModal = function(mode) {
+        window.openRecruiterPanel = function() {
+            if (typeof window.startProCheckout === 'function') {
+                window.startProCheckout('pro', '99,00 zł', 'Abonament Rekruter PRO (99 zł / miesiąc)');
+            } else if (typeof window.activateAndOpenRecruiter === 'function') {
+                window.activateAndOpenRecruiter();
+            }
+        };
+
+        window.startProCheckout = function(plan, price, title) {
+            plan = plan || 'pro';
+            price = price || '99,00 zł';
+            title = title || 'Abonament Rekruter PRO (99 zł / miesiąc)';
+            var modal = document.getElementById('paymentCheckoutModal');
+            if (!modal) {
+                if (typeof window.activateAndOpenRecruiter === 'function') window.activateAndOpenRecruiter();
+                return;
+            }
+            var titleEl = document.getElementById('checkoutItemTitle');
+            var amountEl = document.getElementById('checkoutAmount');
+            var nameEl = document.getElementById('checkoutItemName');
+            if (titleEl) titleEl.textContent = '💎 ' + title;
+            if (amountEl) amountEl.textContent = price;
+            if (nameEl) nameEl.textContent = title;
+
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1';
+            modal.style.pointerEvents = 'auto';
+            modal.style.zIndex = '999999';
+        };
+
+        window.closePaymentModal = function() {
+            var modal = document.getElementById('paymentCheckoutModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                modal.style.visibility = 'hidden';
+                modal.style.opacity = '0';
+                modal.style.pointerEvents = 'none';
+            }
+        };
+
+        window.togglePaymentMethodFields = function(method) {
+            var blik = document.getElementById('checkoutBlikField');
+            var card = document.getElementById('checkoutCardField');
+            if (blik) blik.style.display = (method === 'blik') ? 'block' : 'none';
+            if (card) card.style.display = (method === 'card') ? 'block' : 'none';
+        };
+
+        window.processCheckoutPayment = function(event) {
+            event.preventDefault();
+            var actionBox = document.getElementById('checkoutActionBox');
+            var processingBox = document.getElementById('checkoutProcessingBox');
+            var stepText = document.getElementById('processingStepText');
+
+            if (actionBox) actionBox.style.display = 'none';
+            if (processingBox) {
+                processingBox.classList.remove('hidden');
+                processingBox.style.display = 'block';
+            }
+
+            if (stepText) stepText.textContent = 'Łączenie z operatorem płatności (BLIK / PayU)...';
+
+            setTimeout(function() {
+                if (stepText) stepText.textContent = 'Autoryzacja w banku... Płatność zaakceptowana!';
+                setTimeout(function() {
+                    window.closePaymentModal();
+                    if (actionBox) actionBox.style.display = 'block';
+                    if (processingBox) {
+                        processingBox.classList.add('hidden');
+                        processingBox.style.display = 'none';
+                    }
+                    if (typeof window.activateAndOpenRecruiter === 'function') {
+                        window.activateAndOpenRecruiter();
+                    }
+                }, 1200);
+            }, 1800);
+        };
+
+        // AUTHENTICATION CONTROLLERS (GLOBAL & 100% RELIABLE)
+        window.openAuthModal = function(mode) {
             mode = mode || 'login';
             var modal = document.getElementById('authModalBackdrop');
             if (!modal) return;
@@ -108,28 +189,63 @@
             if (authError) {
                 authError.classList.add('hidden');
                 authError.style.display = 'none';
+                authError.textContent = '';
             }
 
             if (mode === 'register') {
-                if (tabRegister) { tabRegister.classList.add('active'); tabRegister.style.background = '#4f46e5'; tabRegister.style.color = '#fff'; }
-                if (tabLogin) { tabLogin.classList.remove('active'); tabLogin.style.background = 'transparent'; tabLogin.style.color = '#94a3b8'; }
+                if (tabRegister) {
+                    tabRegister.classList.add('active');
+                    tabRegister.style.background = '#4f46e5';
+                    tabRegister.style.color = '#ffffff';
+                }
+                if (tabLogin) {
+                    tabLogin.classList.remove('active');
+                    tabLogin.style.background = 'transparent';
+                    tabLogin.style.color = '#94a3b8';
+                }
                 if (titleEl) titleEl.textContent = '🚀 Utwórz nowe konto w JobNexus';
-                if (nameGroup) { nameGroup.classList.remove('hidden'); nameGroup.style.display = 'block'; }
-                if (roleGroup) { roleGroup.classList.remove('hidden'); roleGroup.style.display = 'block'; }
+                if (nameGroup) {
+                    nameGroup.classList.remove('hidden');
+                    nameGroup.style.display = 'block';
+                }
+                if (roleGroup) {
+                    roleGroup.classList.remove('hidden');
+                    roleGroup.style.display = 'block';
+                }
                 if (authName) authName.required = true;
                 if (submitBtn) submitBtn.innerHTML = '<span>🚀 Zarejestruj się i utwórz konto</span>';
             } else {
-                if (tabLogin) { tabLogin.classList.add('active'); tabLogin.style.background = '#4f46e5'; tabLogin.style.color = '#fff'; }
-                if (tabRegister) { tabRegister.classList.remove('active'); tabRegister.style.background = 'transparent'; tabRegister.style.color = '#94a3b8'; }
+                if (tabLogin) {
+                    tabLogin.classList.add('active');
+                    tabLogin.style.background = '#4f46e5';
+                    tabLogin.style.color = '#ffffff';
+                }
+                if (tabRegister) {
+                    tabRegister.classList.remove('active');
+                    tabRegister.style.background = 'transparent';
+                    tabRegister.style.color = '#94a3b8';
+                }
                 if (titleEl) titleEl.textContent = '🔑 Zaloguj się do JobNexus';
-                if (nameGroup) { nameGroup.classList.add('hidden'); nameGroup.style.display = 'none'; }
-                if (roleGroup) { roleGroup.classList.add('hidden'); roleGroup.style.display = 'none'; }
+                if (nameGroup) {
+                    nameGroup.classList.add('hidden');
+                    nameGroup.style.display = 'none';
+                }
+                if (roleGroup) {
+                    roleGroup.classList.add('hidden');
+                    roleGroup.style.display = 'none';
+                }
                 if (authName) authName.required = false;
                 if (submitBtn) submitBtn.innerHTML = '<span>🔑 Zaloguj się</span>';
             }
         };
 
         window.syncUserHeader = function(user) {
+            if (!user) {
+                try {
+                    var raw = localStorage.getItem('jobnexus_user');
+                    user = raw ? JSON.parse(raw) : null;
+                } catch(e) {}
+            }
             var loginBtnText = document.getElementById('loginBtnNavText');
             var regBtnText = document.getElementById('registerBtnNavText');
             var regBtn = document.getElementById('registerBtnNav');
@@ -197,7 +313,7 @@
         };
 
         window.handleAuthSubmit = async function(event) {
-            event.preventDefault();
+            if (event) event.preventDefault();
             var tabRegister = document.getElementById('tabRegister');
             var isRegister = tabRegister && tabRegister.classList.contains('active');
             var email = (document.getElementById('authEmail')?.value || '').trim();
@@ -210,6 +326,29 @@
             if (authError) {
                 authError.classList.add('hidden');
                 authError.style.display = 'none';
+                authError.textContent = '';
+            }
+
+            if (!email) {
+                if (authError) {
+                    authError.textContent = 'Proszę podać adres e-mail.';
+                    authError.classList.remove('hidden');
+                    authError.style.display = 'block';
+                }
+                return false;
+            }
+
+            if (!password || password.length < 6) {
+                if (authError) {
+                    authError.textContent = 'Hasło musi mieć co najmniej 6 znaków.';
+                    authError.classList.remove('hidden');
+                    authError.style.display = 'block';
+                }
+                return false;
+            }
+
+            if (isRegister && !name) {
+                name = email.split('@')[0];
             }
 
             if (submitBtn) {
@@ -221,7 +360,7 @@
                 var user;
                 if (isRegister) {
                     if (typeof AuthService !== 'undefined' && AuthService.register) {
-                        user = await AuthService.register(email, password, name || email.split('@')[0], role);
+                        user = await AuthService.register(email, password, name, role);
                     } else {
                         user = {
                             id: 'usr_' + Date.now(),
@@ -230,7 +369,10 @@
                             role: role,
                             createdAt: new Date().toISOString()
                         };
-                        try { localStorage.setItem('jobnexus_user', JSON.stringify(user)); } catch(e){}
+                        try {
+                            localStorage.setItem('jobnexus_user', JSON.stringify(user));
+                            localStorage.setItem('jobnexus_token', 'tok_' + Date.now());
+                        } catch(e) {}
                     }
                 } else {
                     if (typeof AuthService !== 'undefined' && AuthService.login) {
@@ -243,73 +385,57 @@
                             role: 'candidate',
                             createdAt: new Date().toISOString()
                         };
-                        try { localStorage.setItem('jobnexus_user', JSON.stringify(user)); } catch(e){}
+                        try {
+                            localStorage.setItem('jobnexus_user', JSON.stringify(user));
+                            localStorage.setItem('jobnexus_token', 'tok_' + Date.now());
+                        } catch(e) {}
                     }
                 }
 
+                // Close modal
                 window.closeAuthModal();
+
+                // Sync header immediately
                 window.syncUserHeader(user);
 
-                var msg = isRegister ? ('🎉 Witaj, ' + user.name + '! Rejestracja zakończona sukcesem.') : ('👋 Zalogowano pomyślnie jako ' + user.name);
-                if (typeof showToast === 'function') showToast(msg, 'success');
-                else alert(msg);
+                // Feedback
+                var welcomeMsg = isRegister 
+                    ? ('🎉 Witaj, ' + user.name + '! Rejestracja zakończona sukcesem.') 
+                    : ('👋 Zalogowano pomyślnie jako ' + user.name);
 
-                if (user.role === 'recruiter') {
-                    if (typeof window.openRecruiterPanel === 'function') {
-                        setTimeout(function() { window.openRecruiterPanel(); }, 400);
-                    }
+                if (typeof showToast === 'function') {
+                    showToast(welcomeMsg, 'success');
                 }
-            } catch (err) {
+
+                // If recruiter registered, open recruiter panel
+                if (user.role === 'recruiter') {
+                    setTimeout(function() {
+                        if (typeof window.openRecruiterPanel === 'function') window.openRecruiterPanel();
+                    }, 300);
+                }
+            } catch(err) {
+                console.error('Auth error:', err);
                 if (authError) {
                     authError.textContent = err.message || 'Wystąpił błąd autoryzacji.';
                     authError.classList.remove('hidden');
                     authError.style.display = 'block';
                 }
-                if (typeof showToast === 'function') showToast(err.message || 'Błąd autoryzacji', 'error');
-                else alert(err.message || 'Błąd autoryzacji');
+                if (typeof showToast === 'function') {
+                    showToast(err.message || 'Błąd autoryzacji', 'error');
+                }
             } finally {
                 if (submitBtn) {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = isRegister ? '<span>🚀 Zarejestruj się i utwórz konto</span>' : '<span>🔑 Zaloguj się</span>';
                 }
             }
+            return false;
         };
-                        try { localStorage.setItem('jobnexus_user', JSON.stringify(user)); } catch(e){}
-                    }
-                } else {
-                    if (typeof AuthService !== 'undefined' && AuthService.login) {
-                        user = await AuthService.login(email, password);
-                    } else {
-                        user = { id: 'usr_' + Date.now(), email: email, name: email.split('@')[0], role: 'candidate' };
-                        try { localStorage.setItem('jobnexus_user', JSON.stringify(user)); } catch(e){}
-                    }
-                }
 
-                window.closeAuthModal();
-                if (typeof syncUserHeader === 'function') syncUserHeader(user);
-
-                var msg = isRegister ? ('🎉 Witaj, ' + user.name + '! Rejestracja zakończona sukcesem.') : ('👋 Zalogowano pomyślnie jako ' + user.name);
-                if (typeof showToast === 'function') showToast(msg, 'success');
-                else alert(msg);
-
-                if (user.role === 'recruiter') {
-                    if (typeof window.openRecruiterPanel === 'function') window.openRecruiterPanel();
-                }
-            } catch (err) {
-                if (authError) {
-                    authError.textContent = err.message || 'Wystąpił błąd autoryzacji.';
-                    authError.classList.remove('hidden');
-                    authError.style.display = 'block';
-                }
-                if (typeof showToast === 'function') showToast(err.message || 'Błąd autoryzacji', 'error');
-                else alert(err.message || 'Błąd autoryzacji');
-            } finally {
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = isRegister ? '<span>🚀 Zarejestruj się i utwórz konto</span>' : '<span>🔑 Zaloguj się</span>';
-                }
-            }
-        };
+        // Sync header on initial page load
+        document.addEventListener('DOMContentLoaded', function() {
+            window.syncUserHeader();
+        });
     </script>
 </head>
 <body>
