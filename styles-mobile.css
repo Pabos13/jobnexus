@@ -1,0 +1,11 @@
+/* ==========================================================================
+   JOBNEXUS — RESPONSIVE MOBILE UTILITIES
+   ========================================================================== */
+@media (max-width: 768px) {
+    .hide-on-mobile {
+        display: none !important;
+    }
+    .show-on-mobile {
+        display: block !important;
+    }
+}

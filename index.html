@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobNexus — Inteligentna Platforma Pracy i Zleceń AI</title>
+    <meta name="description" content="Nowoczesny portal z ofertami pracy zintegrowany z Jooble API oraz zleceniami freelance. AI CV Matcher i zaawansowana wyszukiwarka.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./styles-mobile.css">
+
+    <!-- IMMEDIATE GLOBAL CONTROLLERS (Zero delay, always accessible) -->
+    <script>
+        window.openAddModal = function(type) {
+            type = type || 'standard';
+            var modal = document.getElementById('addModalBackdrop');
+            if (!modal) return;
+            var titleEl = document.getElementById('addModalTitle');
+            var subtitleEl = document.getElementById('addModalSubtitle');
+            var typeSelect = document.getElementById('offerTypeSelect');
+            var priceBadge = document.getElementById('orderPriceBadge');
+            var submitBtn = document.getElementById('btnSubmitOffer');
+            
+            if (type === 'gig' || type === 'gig_featured') {
+                if (titleEl) titleEl.textContent = '🚀 Dodaj Zlecenie / Ogłoszenie Freelance (9,99 zł)';
+                if (subtitleEl) subtitleEl.textContent = 'Zleć wykonanie projektu, zadania dorywczego lub kontraktu dla freelancerów.';
+                if (priceBadge) priceBadge.textContent = type === 'gig_featured' ? '29,99 zł' : '9,99 zł';
+                if (submitBtn) submitBtn.innerHTML = '<span>🚀 Opłać i Opublikuj Zlecenie</span>';
+                if (typeSelect) {
+                    typeSelect.innerHTML = '<option value="gig">🚀 Zlecenie Standard (9,99 zł / 30 dni)</option><option value="gig_featured">🔥 Zlecenie Wyróżnione HOT (29,99 zł / 30 dni)</option>';
+                    typeSelect.value = type === 'gig_featured' ? 'gig_featured' : 'gig';
+                }
+            } else if (type === 'featured') {
+                if (titleEl) titleEl.textContent = '🔥 Dodaj Ofertę Pracy Wyróżnioną HOT (29,99 zł)';
+                if (subtitleEl) subtitleEl.textContent = 'Maksymalna widoczność na liście ofert i powiadomienia do kandydatów.';
+                if (priceBadge) priceBadge.textContent = '29,99 zł';
+                if (submitBtn) submitBtn.innerHTML = '<span>🚀 Opłać i Opublikuj Ofertę HOT</span>';
+                if (typeSelect) {
+                    typeSelect.innerHTML = '<option value="featured">🔥 Oferta Pracy Wyróżniona HOT (29,99 zł / 30 dni)</option><option value="standard">💼 Oferta Pracy Standard (9,99 zł / 30 dni)</option>';
+                    typeSelect.value = 'featured';
+                }
+            } else {
+                if (titleEl) titleEl.textContent = '💼 Dodaj Ofertę Pracy Standard (9,99 zł)';
+                if (subtitleEl) subtitleEl.textContent = 'Opublikuj ofertę pracy i dotrzyj do zweryfikowanych kandydatów.';
+                if (priceBadge) priceBadge.textContent = '9,99 zł';
+                if (submitBtn) submitBtn.innerHTML = '<span>🚀 Opłać i Opublikuj Ofertę Pracy</span>';
+                if (typeSelect) {
+                    typeSelect.innerHTML = '<option value="standard">💼 Oferta Pracy Standard (9,99 zł / 30 dni)</option><option value="featured">🔥 Oferta Pracy Wyróżniona HOT (29,99 zł / 30 dni)</option>';
+                    typeSelect.value = 'standard';
+                }
+            }
+
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1';
+            modal.style.pointerEvents = 'auto';
+            modal.style.zIndex = '999999';
+        };
+
+        window.closeAddModal = function() {
+            var modal = document.getElementById('addModalBackdrop');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                modal.style.visibility = 'hidden';
+                modal.style.opacity = '0';
+                modal.style.pointerEvents = 'none';
+            }
+        };
+
+                window.openAuthModal = function(mode) {
+            mode = mode || 'login';
+            var modal = document.getElementById('authModalBackdrop');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1';
+            modal.style.pointerEvents = 'auto';
+            modal.style.zIndex = '999999';
+            window.switchAuthTab(mode);
+        };
+
+        window.closeAuthModal = function() {
+            var modal = document.getElementById('authModalBackdrop');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                modal.style.visibility = 'hidden';
+                modal.style.opacity = '0';
+                modal.style.pointerEvents = 'none';
+            }
+        };
+
+        window.switchAuthTab = function(mode) {
+            var tabLogin = document.getElementById('tabLogin');
+            var tabRegister = document.getElementById('tabRegister');
+            var titleEl = document.getElementById('authModalTitle');
+            var nameGroup = document.getElementById('nameGroup');
+            var roleGroup = document.getElementById('roleGroup');
+            var authName = document.getElementById('authName');
+            var submitBtn = document.getElementById('authSubmitBtn');
+            var authError = document.getElementById('authError');
+
+            if (authError) {
+                authError.classList.add('hidden');
+                authError.style.display = 'none';
+            }
+
+            if (mode === 'register') {
+                if (tabRegister) { tabRegister.classList.add('active'); tabRegister.style.background = '#4f46e5'; tabRegister.style.color = '#fff'; }
+                if (tabLogin) { tabLogin.classList.remove('active'); tabLogin.style.background = 'transparent'; tabLogin.style.color = '#94a3b8'; }
+                if (titleEl) titleEl.textContent = '🚀 Utwórz nowe konto w JobNexus';
+                if (nameGroup) { nameGroup.classList.remove('hidden'); nameGroup.style.display = 'block'; }
+                if (roleGroup) { roleGroup.classList.remove('hidden'); roleGroup.style.display = 'block'; }
+                if (authName) authName.required = true;
+                if (submitBtn) submitBtn.innerHTML = '<span>🚀 Zarejestruj się i utwórz konto</span>';
+            } else {
+                if (tabLogin) { tabLogin.classList.add('active'); tabLogin.style.background = '#4f46e5'; tabLogin.style.color = '#fff'; }
+                if (tabRegister) { tabRegister.classList.remove('active'); tabRegister.style.background = 'transparent'; tabRegister.style.color = '#94a3b8'; }
+                if (titleEl) titleEl.textContent = '🔑 Zaloguj się do JobNexus';
+                if (nameGroup) { nameGroup.classList.add('hidden'); nameGroup.style.display = 'none'; }
+                if (roleGroup) { roleGroup.classList.add('hidden'); roleGroup.style.display = 'none'; }
+                if (authName) authName.required = false;
+                if (submitBtn) submitBtn.innerHTML = '<span>🔑 Zaloguj się</span>';
+            }
+        };
+
+        window.handleAuthSubmit = async function(event) {
+            event.preventDefault();
+            var tabRegister = document.getElementById('tabRegister');
+            var isRegister = tabRegister && tabRegister.classList.contains('active');
+            var email = document.getElementById('authEmail')?.value.trim();
+            var password = document.getElementById('authPassword')?.value;
+            var name = document.getElementById('authName')?.value.trim() || '';
+            var role = document.getElementById('authRole')?.value || 'candidate';
+            var submitBtn = document.getElementById('authSubmitBtn');
+            var authError = document.getElementById('authError');
+
+            if (authError) {
+                authError.classList.add('hidden');
+                authError.style.display = 'none';
+            }
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span>Przetwarzanie... ⏳</span>';
+            }
+
+            try {
+                var user;
+                if (isRegister) {
+                    if (typeof AuthService !== 'undefined' && AuthService.register) {
+                        user = await AuthService.register(email, password, name, role);
+                    } else {
+                        user = { id: 'usr_' + Date.now(), email: email, name: name || email.split('@')[0], role: role };
+                        try { localStorage.setItem('jobnexus_user', JSON.stringify(user)); } catch(e){}
+                    }
+                } else {
+                    if (typeof AuthService !== 'undefined' && AuthService.login) {
+                        user = await AuthService.login(email, password);
+                    } else {
+                        user = { id: 'usr_' + Date.now(), email: email, name: email.split('@')[0], role: 'candidate' };
+                        try { localStorage.setItem('jobnexus_user', JSON.stringify(user)); } catch(e){}
+                    }
+                }
+
+                window.closeAuthModal();
+                if (typeof syncUserHeader === 'function') syncUserHeader(user);
+
+                var msg = isRegister ? ('🎉 Witaj, ' + user.name + '! Rejestracja zakończona sukcesem.') : ('👋 Zalogowano pomyślnie jako ' + user.name);
+                if (typeof showToast === 'function') showToast(msg, 'success');
+                else alert(msg);
+
+                if (user.role === 'recruiter') {
+                    if (typeof window.openRecruiterPanel === 'function') window.openRecruiterPanel();
+                }
+            } catch (err) {
+                if (authError) {
+                    authError.textContent = err.message || 'Wystąpił błąd autoryzacji.';
+                    authError.classList.remove('hidden');
+                    authError.style.display = 'block';
+                }
+                if (typeof showToast === 'function') showToast(err.message || 'Błąd autoryzacji', 'error');
+                else alert(err.message || 'Błąd autoryzacji');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = isRegister ? '<span>🚀 Zarejestruj się i utwórz konto</span>' : '<span>🔑 Zaloguj się</span>';
+                }
+            }
+        };
+    </script>
+</head>
+<body>
+    <!-- HEADER / NAVIGATION (PERFECTLY ALIGNED SINGLE ROW) -->
+    <header class="header" id="header">
+        <div class="header-inner">
+            <a href="#" class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Job<span class="logo-accent">Nexus</span></span>
+            </a>
+
+            <div class="header-actions">
+                <button type="button" class="btn btn-secondary btn-auth-login" id="loginBtnNav" onclick="window.openAuthModal('login')">
+                    <span>Zaloguj się</span>
+                </button>
+                <button type="button" class="btn btn-primary btn-auth-register" id="registerBtnNav" onclick="window.openAuthModal('register')">
+                    <span>Zarejestruj się</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        <!-- HERO SECTION WITH FUTURISTIC AI SEARCH -->
+        <section class="hero" id="hero">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    <span>AI Neural Search Engine v2.5</span>
+                </div>
+                <h1 class="hero-title">
+                    Inteligentny Rynek Pracy <br>oraz <span class="text-gradient">Zleceń Nowej Generacji</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Wyszukuj oferty w czasie rzeczywistym z Jooble API, filtruj widełki płacowe i dopasowuj swoje CV przez sztuczną inteligencję.
+                </p>
+
+                <!-- FUTURISTIC AI SEARCH BAR -->
+                <div class="futuristic-search-container">
+                    <div class="futuristic-search-glow"></div>
+                    <div class="search-box">
+                        <div class="search-field">
+                            <span class="search-icon">⚡</span>
+                            <input type="text" id="searchInput" placeholder="Stanowisko, technologia, rola (np. React, Spawacz, Python)..." autocomplete="off">
+                        </div>
+                        <div class="search-divider"></div>
+                        <div class="search-field location-field">
+                            <span class="search-icon">📍</span>
+                            <input type="text" id="locationInput" placeholder="Lokalizacja (np. Warszawa, Zdalnie, Cała Polska)..." autocomplete="off">
+                        </div>
+                        <button class="btn btn-primary search-btn" id="searchBtn">
+                            <span>Szukaj z AI</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AI CV UPLOAD & INSTANT MATCHING CARD -->
+                <div class="ai-cv-matcher-card">
+                    <div class="ai-cv-header">
+                        <div class="ai-cv-icon-badge">🎯 AI CV Matcher & Weryfikacja ATS</div>
+                        <h2 class="ai-cv-title">Wgraj CV — AI zweryfikuje Twoje umiejętności i dopasuje oferty</h2>
+                        <p class="ai-cv-subtitle">Algorytm AI natychmiast przeskanuje technologie, staż i poziom dopasowania ATS do aktualnych ofert pracy.</p>
+                    </div>
+                    <div class="cv-dropzone" id="heroCvDropzone">
+                        <input type="file" id="heroCvInput" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" hidden>
+                        <div class="cv-dropzone-inner" id="heroCvDropzoneInner">
+                            <div class="cv-upload-pulse-icon">📄</div>
+                            <div class="cv-drop-text">
+                                <strong class="cv-drop-title">Przeciągnij i upuść swoje CV lub <span style="color:#38bdf8; text-decoration:underline;">kliknij, aby wybrać plik</span></strong>
+                                <span class="cv-drop-desc">Obsługiwane formaty: PDF, DOCX, DOC, JPG, PNG (maks. 10 MB)</span>
+                            </div>
+                            <button type="button" class="btn btn-primary cv-scan-btn" id="btnPickCv">
+                                ⚡ Skanuj CV i weryfikuj dopasowanie
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PERSONALIZED MATCHED JOBS CONTAINER -->
+                <div class="personalized-matches-container hidden" id="personalizedMatchesSection">
+                    <div class="personalized-matches-header">
+                        <div>
+                            <div class="ats-match-pill">
+                                ✨ Weryfikacja AI zakończona • Wynik ATS: <span id="atsScoreValue" style="font-weight:900; color:#38bdf8;">96%</span>
+                            </div>
+                            <h2 class="personalized-matches-title">🎯 Oferty Spersonalizowane pod Twoje CV</h2>
+                            <p class="personalized-matches-subtitle" id="matchedSkillsText">Dopasowano automatycznie na podstawie Twojego profilu i zweryfikowanych umiejętności.</p>
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="window.resetCvMatches()">
+                            ✕ Zresetuj filtr CV
+                        </button>
+                    </div>
+                    <div class="jobs-grid" id="personalizedJobsGrid">
+                        <!-- Cards injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 1: OFERTY PRACY -->
+        <section class="section" id="oferty">
+            <div class="section-header">
+                <h2 class="section-title">💼 Oferty Pracy (Live Jooble + Zweryfikowane)</h2>
+                <p class="section-subtitle">Aktualne oferty zsynchronizowane z Jooble API oraz bazą sprawdzonych pracodawców</p>
+            </div>
+
+            <!-- ACTION BANNER: DODAJ OGŁOSZENIE PRACY -->
+            <div class="action-banner-card">
+                <div class="action-banner-left">
+                    <div class="action-banner-icon">🏢</div>
+                    <div>
+                        <h3 class="action-banner-title">Rekrutujesz do swojej firmy?</h3>
+                        <p class="action-banner-subtitle">Opublikuj szczegółową ofertę pracy i dotrzyj do zweryfikowanych specjalistów w całej Polsce.</p>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary action-banner-btn" id="heroAddJobBtn" onclick="window.openAddModal('standard')">
+                    ➕ Dodaj ofertę pracy - 9,99 zł
+                </button>
+            </div>
+
+            <!-- Jobs Grid -->
+            <div class="jobs-grid" id="jobsGrid">
+                <!-- Injected via app.js -->
+            </div>
+
+            <div class="loading-state" id="jobsLoading">
+                <div class="spinner"></div>
+                <p>Ładowanie ofert z Jooble API...</p>
+            </div>
+
+            <div class="empty-state hidden" id="jobsEmpty">
+                <div class="empty-icon">🔍</div>
+                <h3>Brak ofert spełniających kryteria</h3>
+                <p>Spróbuj zmienić słowo kluczowe lub zresetować filtry.</p>
+            </div>
+
+            <!-- Advanced Pagination for Job Offers -->
+            <div id="jobsPagination" class="pagination-bar" style="margin-top: 2.5rem;"></div>
+        </section>
+
+        <!-- SECTION 2: OFERTY ZLECEŃ / FREELANCE -->
+        <section class="section" id="zlecenia" style="background: rgba(15, 23, 42, 0.4); border-radius: 1.5rem; padding: 3rem 2rem; margin: 3rem 0; border: 1px solid rgba(255, 255, 255, 0.05);">
+            <div class="section-header">
+                <h2 class="section-title">🚀 Oferty Zleceń (Gigs & Freelance)</h2>
+                <p class="section-subtitle">Zlecenia projektowe, zadania dorywcze i kontrakty dla freelancerów</p>
+            </div>
+
+            <!-- ACTION BANNER: DODAJ ZLECENIE -->
+            <div class="action-banner-card action-banner-gig">
+                <div class="action-banner-left">
+                    <div class="action-banner-icon">⚡</div>
+                    <div>
+                        <h3 class="action-banner-title">Masz projekt lub szybkie zadanie do wykonania?</h3>
+                        <p class="action-banner-subtitle">Zleć zadanie freelance i otrzymaj natychmiastowe oferty od doświadczonych wykonawców.</p>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary action-banner-btn" id="heroAddGigBtn" onclick="window.openAddModal('gig')">
+                    ➕ Dodaj Ogłoszenie / Zlecenie - 9,99 zł
+                </button>
+            </div>
+
+            <!-- Gigs Grid -->
+            <div class="jobs-grid" id="gigsGrid">
+                <!-- Injected via app.js -->
+            </div>
+
+            <!-- Empty state for gigs -->
+            <div class="empty-state hidden" id="gigsEmpty">
+                <div class="empty-icon">📁</div>
+                <h3>Brak zleceń w wybranej kategorii</h3>
+                <p>Bądź pierwszy i dodaj zlecenie dla społeczności!</p>
+            </div>
+
+            <div id="gigsPagination" class="pagination-bar" style="margin-top: 2.5rem;"></div>
+        </section>
+
+        <!-- SECTION 3: CENNIK OGŁOSZEŃ -->
+        <section class="section" id="cennik">
+            <div class="section-header">
+                <h2 class="section-title">💎 Pakiety i Cennik Ogłoszeń</h2>
+                <p class="section-subtitle">Skuteczna rekrutacja bez ukrytych prowizji i zbędnych formalności</p>
+            </div>
+
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-badge">Standard</div>
+                    <div class="pricing-price">9,99 zł <span class="pricing-period">/ 30 dni</span></div>
+                    <ul class="pricing-features">
+                        <li>✓ Publikacja ogłoszenia na 30 dni</li>
+                        <li>✓ Indeksacja w wyszukiwarce JobNexus</li>
+                        <li>✓ Bezpośredni kontakt z kandydatem</li>
+                        <li>✓ Podstawowy algorytm dopasowania</li>
+                    </ul>
+                    <button type="button" class="btn btn-secondary btn-block" onclick="window.openAddModal('standard')">
+                        Dodaj ogłoszenie standard (9,99 zł)
+                    </button>
+                </div>
+
+                <div class="pricing-card pricing-card-featured">
+                    <div class="pricing-badge-popular">Polecane • HOT</div>
+                    <div class="pricing-price">29,99 zł <span class="pricing-period">/ 30 dni</span></div>
+                    <ul class="pricing-features">
+                        <li>✓ Wszystko z pakietu Standard</li>
+                        <li>✓ <strong>Wyróżnienie kolorem i etykietą HOT</strong></li>
+                        <li>✓ Pierwszeństwo na liście ofert</li>
+                        <li>✓ Powiadomienie e-mail do dopasowanych kandydatów</li>
+                    </ul>
+                    <button type="button" class="btn btn-primary btn-block" onclick="window.openAddModal('featured')">
+                        Dodaj ogłoszenie wyróżnione (29,99 zł)
+                    </button>
+                </div>
+
+                <div class="pricing-card">
+                    <div class="pricing-badge">Abonament PRO</div>
+                    <div class="pricing-price">99 zł <span class="pricing-period">/ miesiąc</span></div>
+                    <ul class="pricing-features">
+                        <li>✓ Nielimitowane oferty pracy i zlecenia</li>
+                        <li>✓ Dostęp do bazy CV i filtrów ATS</li>
+                        <li>✓ Panel rekrutera z Kanbanem aplikacji</li>
+                        <li>✓ Dedykowany opiekun klienta</li>
+                    </ul>
+                    <button type="button" class="btn btn-primary btn-block" onclick="window.openRecruiterPanel()">
+                        🚀 Aktywuj Plan PRO & Otwórz Panel (99 zł)
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">Job<span class="logo-accent">Nexus</span></span>
+                </a>
+                <p class="footer-desc">
+                    Inteligentna platforma nowej generacji łącząca kandydatów, freelancerów i rekruterów przy wsparciu algorytmów AI oraz Jooble API.
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>Nawigacja</h4>
+                    <a href="#oferty">Oferty Pracy</a>
+                    <a href="#zlecenia">Zlecenia Freelance</a>
+                    <a href="#cennik">Cennik</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Pracodawcy</h4>
+                    <a href="javascript:void(0)" onclick="window.openAddModal('standard')">Dodaj Ogłoszenie</a>
+                    <a href="#zlecenia">Oferty Zleceń</a>
+                    <a href="javascript:void(0)" onclick="window.openRecruiterPanel()">🏢 Panel Rekrutera & Baza CV (99 zł)</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>JobNexus</h4>
+                    <a href="javascript:void(0)" onclick="alert('Polityka Prywatności: Wszystkie dane są przetwarzane bezpiecznie zgodnie z RODO.')">Prywatność & RODO</a>
+                    <a href="javascript:void(0)" onclick="alert('Regulamin: Serwis umożliwia bezpieczne przeglądanie i publikowanie ofert.')">Regulamin</a>
+                    <a href="mailto:kontakt@jobnexus.pl">Kontakt Pomoc</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 JobNexus AI Engine. Wszelkie prawa zastrzeżone.</p>
+        </div>
+    </footer>
+
+    <!-- MODAL: ROZBUDOWANY FORMULARZ DODAWANIA OGŁOSZENIA / ZLECENIA Z PŁATNOŚCIĄ -->
+    <div class="modal-backdrop hidden" id="addModalBackdrop" onclick="if(event.target===this) window.closeAddModal()">
+        <div class="modal modal-xl modal-expanded" id="addModal">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="addModalTitle">💼 Dodaj Ofertę Pracy / Zlecenie</h3>
+                    <p class="modal-subtitle" id="addModalSubtitle">Uzupełnij szczegółowe dane, widełki finansowe oraz wymagania, aby dotrzeć do najlepszych specjalistów.</p>
+                </div>
+                <button type="button" class="modal-close" onclick="window.closeAddModal()">&times;</button>
+            </div>
+
+            <form id="addOfferForm" class="add-offer-form" onsubmit="window.handleAddOfferSubmit(event)">
+                <!-- SEKCJA 1: TYP I DANE PODSTAWOWE -->
+                <div class="form-section-header">
+                    <span class="form-section-badge">1</span>
+                    <h4>Podstawowe Informacje & Pakiet Publikacji</h4>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Wybierz Pakiet Publikacji *</label>
+                        <select id="offerTypeSelect" class="form-input" required onchange="var b = document.getElementById('orderPriceBadge'); if(b){ b.textContent = (this.value === 'featured' || this.value === 'gig_featured') ? '29,99 zł' : '9,99 zł'; }">
+                            <option value="standard">💼 Oferta Pracy Standard (9,99 zł / 30 dni)</option>
+                            <option value="featured">🔥 Oferta Pracy Wyróżniona HOT (29,99 zł / 30 dni)</option>
+                            <option value="gig">🚀 Zlecenie Freelance / Projekt (9,99 zł / 30 dni)</option>
+                            <option value="gig_featured">🔥 Zlecenie Wyróżnione HOT (29,99 zł / 30 dni)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Kategoria / Branża *</label>
+                        <select id="offerCategorySelect" class="form-input" required>
+                            <option value="IT / Software">💻 IT / Software & Web</option>
+                            <option value="AI & Data Science">🧠 AI & Machine Learning / Data</option>
+                            <option value="Design & Creative">🎨 Grafika, UI/UX & Design</option>
+                            <option value="Marketing & Sales">📈 Marketing, SEO & Sprzedaż</option>
+                            <option value="Finanse / Księgowość">📊 Finanse, Księgowość & Analityka</option>
+                            <option value="Praca Fizyczna / Techniczna">🔧 Praca Techniczna, Inżynieria & Produkcja</option>
+                            <option value="Obsługa Klienta">🎧 Obsługa Klienta / Support</option>
+                            <option value="Inne">🌐 Inna Kategoria</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tytuł Ogłoszenia / Stanowiska / Zlecenia *</label>
+                    <input type="text" id="offerTitleInput" required placeholder="np. Senior React & Node.js Developer / Wykonanie aplikacji mobilnej Flutter" class="form-input">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nazwa Firmy / Zleceniodawcy *</label>
+                        <input type="text" id="offerCompanyInput" required placeholder="np. Nexus Tech Innovations Sp. z o.o." class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Strona WWW / LinkedIn (opcjonalnie)</label>
+                        <input type="url" id="offerCompanyWebsite" placeholder="https://twojafirma.pl" class="form-input">
+                    </div>
+                </div>
+
+                <!-- SEKCJA 2: WARUNKI, WIDEŁKI & TRYB PRACY -->
+                <div class="form-section-header">
+                    <span class="form-section-badge">2</span>
+                    <h4>Warunki Współpracy & Wynagrodzenie</h4>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Lokalizacja *</label>
+                        <input type="text" id="offerLocationInput" required placeholder="np. Warszawa / Cała Polska / Zdalnie" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Tryb Pracy *</label>
+                        <select id="offerWorkTypeSelect" class="form-input" required>
+                            <option value="Zdalna">🏠 Zdalna 100% (Work from home)</option>
+                            <option value="Hybrydowa">🏢 Hybrydowa (częściowo z biura)</option>
+                            <option value="Stacjonarna">📍 Stacjonarna (w biurze / na miejscu)</option>
+                            <option value="Pełny etat">⏱️ Pełny etat</option>
+                            <option value="Część etatu">⌛ Część etatu / Pół etatu</option>
+                            <option value="Staż">🎓 Staż / Praktyka</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Rodzaj Umowy / Rozliczenia *</label>
+                        <select id="offerContractTypeSelect" class="form-input" required>
+                            <option value="B2B">📄 Kontrakt B2B (+ VAT)</option>
+                            <option value="UoP">📝 Umowa o Pracę (UoP)</option>
+                            <option value="UZ / UoD">🤝 Umowa Zlecenie / Umowa o Dzieło</option>
+                            <option value="Projekt">🎯 Rozliczenie za projekt / Milestone</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Poziom Doświadczenia</label>
+                        <select id="offerExpLevelSelect" class="form-input">
+                            <option value="Mid">Regular / Mid (2-4 lata)</option>
+                            <option value="Senior">Senior (5+ lat)</option>
+                            <option value="Junior">Junior / Początkujący (0-2 lata)</option>
+                            <option value="Lead / Manager">Lead / Tech Lead / Manager</option>
+                            <option value="Dowolny">Dowolny poziom</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Wynagrodzenie / Budżet (PLN) *</label>
+                        <input type="text" id="offerSalaryInput" required placeholder="np. 18 000 - 24 000 PLN netto B2B / 4 500 PLN za zlecenie" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Okres Płatności / Budżet</label>
+                        <select id="offerSalaryPeriodSelect" class="form-input">
+                            <option value="miesięcznie">miesięcznie</option>
+                            <option value="za projekt">za całość projektu / zlecenia</option>
+                            <option value="za godzinę">za godzinę (PLN/h)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- SEKCJA 3: WYMAGANIA TECHNICZNE & UMIEJĘTNOŚCI -->
+                <div class="form-section-header">
+                    <span class="form-section-badge">3</span>
+                    <h4>Wymagania, Technologie & Języki</h4>
+                </div>
+
+                <div class="form-group">
+                    <label>Kluczowe Technologie / Narzędzia (oddziel przecinkami) *</label>
+                    <input type="text" id="offerTagsInput" required placeholder="np. React, TypeScript, Node.js, AWS, PostgreSQL, Docker" class="form-input">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Wymagania Główne (Must Have) *</label>
+                        <textarea id="offerMustHaveInput" rows="3" required placeholder="• Min. 3 lata doświadczenia w React&#10;• Bardzo dobra znajomość TypeScript&#10;• Umiejętność pracy z REST API / GraphQL" class="form-input"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Mile Widziane (Nice to Have)</label>
+                        <textarea id="offerNiceToHaveInput" rows="3" placeholder="• Doświadczenie z AWS / GCP&#10;• Znajomość Next.js i Tailwind CSS&#10;• Certyfikaty branżowe" class="form-input"></textarea>
+                    </div>
+                </div>
+
+                <!-- SEKCJA 4: OPIS STANOWISKA & BENEFITY -->
+                <div class="form-section-header">
+                    <span class="form-section-badge">4</span>
+                    <h4>Szczegółowy Opis & Oferowane Benefity</h4>
+                </div>
+
+                <div class="form-group">
+                    <label>Szczegółowy Opis Roli / Zakresu Zlecenia *</label>
+                    <textarea id="offerDescInput" rows="5" required placeholder="Opisz misję projektu, strukturę zespołu, codzienne obowiązki oraz cele stanowiska..." class="form-input"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Benefity i Udogodnienia (zaznacz opcje)</label>
+                    <div class="perks-checkbox-grid">
+                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Prywatna opieka medyczna"> 🏥 Prywatna opieka medyczna</label>
+                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Karta MultiSport"> 🏋️ Karta MultiSport</label>
+                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Budżet szkoleniowy"> 📚 Budżet szkoleniowy</label>
+                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Elastyczne godziny"> ⏰ Elastyczne godziny pracy</label>
+                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Sprzęt Apple / Dell"> 💻 Najnowszy sprzęt (Apple/Dell)</label>
+                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Płatne urlopy na B2B"> 🏖️ Płatne dni wolne na B2B</label>
+                    </div>
+                </div>
+
+                <!-- SEKCJA 5: METODA PŁATNOŚCI & PODSUMOWANIE -->
+                <div class="form-section-header">
+                    <span class="form-section-badge">5</span>
+                    <h4>Podsumowanie Płatności & Metoda</h4>
+                </div>
+
+                <div class="payment-summary-box" style="background: rgba(30, 41, 59, 0.7); padding: 1.25rem; border-radius: 0.75rem; border: 1px solid rgba(59, 130, 246, 0.3); margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <span style="font-weight: 600; color: #e2e8f0;">Kwota do zapłaty brutto:</span>
+                        <span id="orderPriceBadge" style="font-size: 1.35rem; font-weight: 900; color: #38bdf8;">9,99 zł</span>
+                    </div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.5rem;">Wybierz metodę płatności:</label>
+                    <div class="payment-methods-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem;">
+                        <label class="payment-method-card" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(15, 23, 42, 0.8); padding: 0.65rem 0.85rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;">
+                            <input type="radio" name="paymentMethod" value="BLIK" checked>
+                            <span style="font-weight: 700; color: #f8fafc;">⚡ BLIK</span>
+                        </label>
+                        <label class="payment-method-card" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(15, 23, 42, 0.8); padding: 0.65rem 0.85rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;">
+                            <input type="radio" name="paymentMethod" value="Przelew">
+                            <span style="font-weight: 700; color: #f8fafc;">🏦 Szybki Przelew</span>
+                        </label>
+                        <label class="payment-method-card" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(15, 23, 42, 0.8); padding: 0.65rem 0.85rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;">
+                            <input type="radio" name="paymentMethod" value="Karta">
+                            <span style="font-weight: 700; color: #f8fafc;">💳 Karta Visa / MC</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- SEKCJA 6: APLIKACJA & DANE KONTAKTOWE -->
+                <div class="form-section-header">
+                    <span class="form-section-badge">6</span>
+                    <h4>Kontakt & Sposób Aplikacji</h4>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>E-mail do Rekrutacji lub Link do Aplikacji (ATS) *</label>
+                        <input type="text" id="offerApplyUrlInput" required placeholder="rekrutacja@twojafirma.pl lub https://twojafirma.traffit.com/..." class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Telefon Kontaktowy (opcjonalnie)</label>
+                        <input type="tel" id="offerPhoneInput" placeholder="+48 123 456 789" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label" style="display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.85rem; color: #94a3b8; cursor: pointer;">
+                        <input type="checkbox" required style="margin-top: 0.2rem;">
+                        <span>Oświadczam, że zapoznałem się z Regulaminem JobNexus i wyrażam zgodę na publikację ogłoszenia oraz natychmiastowe wystawienie faktury VAT.</span>
+                    </label>
+                </div>
+
+                <div class="form-actions" style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.25rem;">
+                    <button type="button" class="btn btn-secondary" onclick="window.closeAddModal()">Anuluj</button>
+                    <button type="submit" class="btn btn-primary" id="btnSubmitOffer" style="padding: 0.85rem 2rem; font-size: 1rem; font-weight: 700;">
+                        <span>🚀 Opłać i Opublikuj Ogłoszenie</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: LOGOWANIE / REJESTRACJA -->
+    <div class="modal-backdrop hidden" id="authModalBackdrop" onclick="if(event.target===this) window.closeAuthModal()">
+        <div class="modal modal-sm" id="authModal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="authModalTitle">Zaloguj się do JobNexus</h3>
+                <button type="button" class="modal-close" onclick="window.closeAuthModal()">&times;</button>
+            </div>
+
+            <div class="auth-tabs" style="display:flex; gap:0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+                <button type="button" class="btn btn-sm btn-auth-tab active" id="tabLogin" onclick="window.switchAuthTab('login')">Logowanie</button>
+                <button type="button" class="btn btn-sm btn-auth-tab" id="tabRegister" onclick="window.switchAuthTab('register')">Rejestracja</button>
+            </div>
+
+            <div id="authError" class="hidden" style="display:none; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 0.6rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 1rem; text-align: center;"></div>
+            <form id="authForm" onsubmit="window.handleAuthSubmit(event)">
+                <div class="form-group hidden" id="nameGroup">
+                    <label>Imię i Nazwisko / Nazwa Firmy *</label>
+                    <input type="text" id="authName" placeholder="Jan Kowalski" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label>Adres E-mail *</label>
+                    <input type="email" id="authEmail" required placeholder="twoj@email.pl" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label>Hasło (min. 8 znaków) *</label>
+                    <input type="password" id="authPassword" required placeholder="••••••••" minlength="8" class="form-input">
+                </div>
+
+                <div class="form-group hidden" id="roleGroup">
+                    <label>Typ konta</label>
+                    <select id="authRole" class="form-input">
+                        <option value="candidate">Kandydat / Freelancer (Szukam pracy)</option>
+                        <option value="recruiter">Pracodawca / Rekruter (Dodaję ogłoszenia)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" id="authSubmitBtn" style="margin-top: 1rem; padding: 0.85rem; font-size: 0.95rem; font-weight: 700;">
+                    Zaloguj się
+                </button>
+            </form>
+        </div>
+    </div>
+
+    
+    
+    <!-- MODAL: KASA & BRAMKA PŁATNOŚCI PRO (PAYU / STRIPE / BLIK GATEWAY) -->
+    <div class="modal-backdrop hidden" id="paymentCheckoutModal" onclick="if(event.target===this) window.closePaymentModal()">
+        <div class="modal modal-md payment-checkout-modal" style="max-width: 540px; width: 92%;">
+            <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 11px; font-weight: 800; color: #38bdf8; background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 6px; text-transform: uppercase;">Bezpieczna Bramka Płatności</span>
+                        <span style="font-size: 11px; color: #94a3b8;">🔒 SSL 256-bit Encrypted</span>
+                    </div>
+                    <h3 class="modal-title" id="checkoutItemTitle" style="margin: 6px 0 0 0; font-size: 1.25rem;">💎 Aktywacja Abonamentu Rekruter PRO</h3>
+                </div>
+                <button type="button" class="modal-close" onclick="window.closePaymentModal()">&times;</button>
+            </div>
+
+            <!-- Podsumowanie Zamówienia -->
+            <div style="background: rgba(15, 23, 42, 0.7); padding: 1rem 1.25rem; border-radius: 10px; margin: 1rem 0; border: 1px solid rgba(255,255,255,0.08);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="color: #cbd5e1; font-weight: 600;" id="checkoutItemName">Abonament PRO (Baza CV + Nielimitowane Ogłoszenia)</span>
+                    <span style="color: #38bdf8; font-weight: 800; font-size: 1.25rem;" id="checkoutAmount">99,00 zł</span>
+                </div>
+                <p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">Okres: 30 dni • Faktura VAT 23% • Dostęp do Panelu natychmiast po opłaceniu</p>
+            </div>
+
+            <!-- Formularz Płatności -->
+            <form id="checkoutPaymentForm" onsubmit="window.processCheckoutPayment(event)">
+                <!-- Metody płatności -->
+                <div style="margin-bottom: 1.25rem;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.5rem;">Wybierz metodę płatności:</label>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem;">
+                        <label class="pay-method-opt" style="border: 1px solid rgba(56, 189, 248, 0.5); background: rgba(56, 189, 248, 0.1); padding: 0.75rem 0.5rem; border-radius: 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                            <input type="radio" name="checkoutMethod" value="blik" checked onchange="window.togglePaymentMethodFields('blik')">
+                            <span style="font-weight: 800; font-size: 0.95rem; color: #fff;">⚡ BLIK</span>
+                            <span style="font-size: 0.7rem; color: #94a3b8;">Kod z aplikacji</span>
+                        </label>
+                        <label class="pay-method-opt" style="border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(15, 23, 42, 0.8); padding: 0.75rem 0.5rem; border-radius: 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                            <input type="radio" name="checkoutMethod" value="card" onchange="window.togglePaymentMethodFields('card')">
+                            <span style="font-weight: 800; font-size: 0.95rem; color: #fff;">💳 Karta</span>
+                            <span style="font-size: 0.7rem; color: #94a3b8;">Visa / Mastercard</span>
+                        </label>
+                        <label class="pay-method-opt" style="border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(15, 23, 42, 0.8); padding: 0.75rem 0.5rem; border-radius: 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                            <input type="radio" name="checkoutMethod" value="p24" onchange="window.togglePaymentMethodFields('p24')">
+                            <span style="font-weight: 800; font-size: 0.95rem; color: #fff;">🏦 Przelew</span>
+                            <span style="font-size: 0.7rem; color: #94a3b8;">Szybki PayU/P24</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- BLIK FIELD -->
+                <div id="checkoutBlikField" style="margin-bottom: 1rem; background: rgba(15, 23, 42, 0.9); padding: 1rem; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.3);">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.35rem;">Wpisz 6-cyfrowy kod BLIK:</label>
+                    <input type="text" id="blikCodeInput" maxlength="6" pattern="[0-9]{6}" required placeholder="123 456" style="width: 100%; font-size: 1.25rem; font-weight: 800; letter-spacing: 4px; text-align: center; padding: 0.65rem; background: #0b1329; border: 1px solid #38bdf8; border-radius: 6px; color: #38bdf8; outline: none;">
+                    <span style="display: block; font-size: 0.75rem; color: #94a3b8; margin-top: 0.35rem; text-align: center;">Po kliknięciu potwierdź płatność w aplikacji swojego banku (mBank, PKO, Santander, ING, etc.)</span>
+                </div>
+
+                <!-- CARD FIELD (HIDDEN INITIALLY) -->
+                <div id="checkoutCardField" style="display: none; margin-bottom: 1rem; background: rgba(15, 23, 42, 0.9); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.15);">
+                    <div style="margin-bottom: 0.75rem;">
+                        <label style="display: block; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 0.25rem;">Numer karty:</label>
+                        <input type="text" placeholder="4000 1234 5678 9010" class="form-input" style="padding: 0.6rem;">
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <div style="flex: 1;">
+                            <label style="display: block; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 0.25rem;">Ważność (MM/RR):</label>
+                            <input type="text" placeholder="12/28" class="form-input" style="padding: 0.6rem;">
+                        </div>
+                        <div style="width: 90px;">
+                            <label style="display: block; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 0.25rem;">CVC / CVV:</label>
+                            <input type="password" maxlength="4" placeholder="123" class="form-input" style="padding: 0.6rem;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DANE DO FAKTURY -->
+                <div style="margin-bottom: 1.25rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: #cbd5e1;">Dane do Faktury VAT (Firma / NIP):</label>
+                        <span style="font-size: 0.75rem; color: #94a3b8;">Opcjonalne</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <input type="text" id="checkoutNipInput" placeholder="NIP (np. 5252631245)" class="form-input" style="padding: 0.55rem; font-size: 0.85rem;">
+                        <input type="email" id="checkoutEmailInput" placeholder="E-mail do faktury" required value="rekrutacja@twojafirma.pl" class="form-input" style="padding: 0.55rem; font-size: 0.85rem;">
+                    </div>
+                </div>
+
+                <!-- PRZYCISK PŁATNOŚCI -->
+                <div id="checkoutActionBox" style="margin-top: 1rem;">
+                    <button type="submit" class="btn btn-primary btn-block" id="btnConfirmPayment" style="padding: 0.85rem; font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, #2563eb, #38bdf8); border: none;">
+                        <span>🔒 Zapłać 99,00 zł i Aktywuj Panel PRO</span>
+                    </button>
+                </div>
+
+                <div id="checkoutProcessingBox" class="hidden" style="display: none; text-align: center; padding: 1.5rem 0;">
+                    <div class="spinner" style="margin: 0 auto 1rem auto; width: 36px; height: 36px; border-width: 3px;"></div>
+                    <h4 style="color: white; font-size: 1.1rem; margin: 0 0 0.5rem 0;" id="processingStepText">Autoryzacja płatności w banku...</h4>
+                    <p style="color: #94a3b8; font-size: 0.85rem; margin: 0;">Prosimy nie zamykać okna. Potwierdź transakcję w aplikacji bankowej.</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: PANEL REKRUTERA & BAZA CV PRO -->
+    <div class="modal-backdrop hidden" id="dashboardModal" onclick="if(event.target===this) window.closeDashboardModal()">
+        <div class="modal modal-xl modal-expanded recruiter-dashboard-modal" style="max-width: 1050px; width: 95%;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div id="dashUserAvatar" style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 800; border: 2px solid rgba(255,255,255,0.2);">R</div>
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                            <h3 class="modal-title" id="dashUserName" style="font-size: 1.25rem; font-weight: 800; color: #f8fafc; margin: 0;">Panel Rekrutera PRO</h3>
+                            <span id="dashUserRoleBadge" style="padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4);">Pracodawca / Rekruter (PRO)</span>
+                        </div>
+                        <p id="dashUserEmail" style="font-size: 0.85rem; color: #94a3b8; margin: 0.25rem 0 0 0;">rekrutacja@twojafirma.pl • Pełny Dostęp do Bazy CV i Kanbana</p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <button type="button" class="btn btn-secondary btn-sm" id="dashSwitchRoleBtn" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">
+                        Przełącz na profil Kandydata
+                    </button>
+                    <button type="button" class="modal-close" id="dashboardClose" onclick="window.closeDashboardModal()">&times;</button>
+                </div>
+            </div>
+
+            <!-- TABS -->
+            <div id="dashTabsContainer" style="display: flex; gap: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 0.75rem 0; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                <!-- Dynamically populated by renderRecruiterTabs or renderCandidateTabs -->
+            </div>
+
+            <!-- CONTENT AREA -->
+            <div id="dashContentArea" style="padding: 1.5rem 0; min-height: 400px;">
+                <!-- Injected via renderRecruiterContent / renderCandidateContent -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT BUNDLE (Vite bundle with all services & styles included) -->
+    <script type="module" src="./app.js"></script>
+</body>
+</html>
