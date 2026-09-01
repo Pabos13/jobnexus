@@ -2459,3 +2459,160 @@ img {
         font-size: 12px;
     }
 }
+
+
+/* ============================================ */
+/* SALARY FILTER & ADVANCED CONTROLS            */
+/* ============================================ */
+.advanced-filters-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    margin: 1.5rem 0 2rem;
+    padding: 1.25rem 1.5rem;
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1rem;
+}
+
+.salary-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    min-width: 260px;
+}
+
+.salary-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+.salary-val {
+    color: #38bdf8;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.salary-slider {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: #334155;
+    outline: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+.salary-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #3b82f6;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.salary-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.btn-alert-open {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    background: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(245, 158, 11, 0.25));
+    border: 1px solid rgba(234, 179, 8, 0.4);
+    color: #fbbf24;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-alert-open:hover {
+    background: linear-gradient(135deg, rgba(234, 179, 8, 0.25), rgba(245, 158, 11, 0.4));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+}
+
+/* ============================================ */
+/* PAYMENT MODAL & CHECKOUT SIMULATOR          */
+/* ============================================ */
+.payment-methods {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin: 1.25rem 0;
+}
+
+.payment-method-card {
+    padding: 0.85rem 0.5rem;
+    background: #1e293b;
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
+    text-align: center;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #94a3b8;
+    transition: all 0.2s ease;
+}
+
+.payment-method-card.active {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.12);
+    color: #ffffff;
+}
+
+.blik-input-box {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+}
+
+.blik-digit {
+    width: 44px;
+    height: 52px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 0.5rem;
+    color: #ffffff;
+}
+
+.blik-digit:focus {
+    border-color: #f97316;
+    box-shadow: 0 0 10px rgba(249, 115, 22, 0.3);
+    outline: none;
+}
+
+.card-mockup {
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    padding: 1.25rem;
+    border-radius: 1rem;
+    color: #ffffff;
+    margin: 1rem 0;
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.25);
+}
+
+.card-chip {
+    width: 36px;
+    height: 26px;
+    background: #facc15;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}

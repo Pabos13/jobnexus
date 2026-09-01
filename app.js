@@ -1292,7 +1292,8 @@ function filterAndDisplay() {
     const filters = {
         searchQuery: state.searchQuery,
         locationQuery: state.locationQuery,
-        currentFilter: state.currentFilter
+        currentFilter: state.currentFilter,
+        minSalary: state.minSalary || 0
     };
 
     state.filteredJobs = JobService.filterJobs(state.jobs, filters);
@@ -2026,3 +2027,181 @@ function initGigs() {
 
     renderGigs();
 }
+
+
+// ============================================
+// SALARY FILTER, JOB ALERTS & CHECKOUT
+// ============================================
+function initAdvancedFilters() {
+    const salaryRange = document.getElementById('salaryRange');
+    const salaryVal = document.getElementById('salaryVal');
+
+    if (salaryRange && salaryVal) {
+        salaryRange.addEventListener('input', () => {
+            const val = parseInt(salaryRange.value, 10);
+            state.minSalary = val;
+            salaryVal.textContent = val > 0 ? `${val.toLocaleString('pl-PL')} PLN+` : 'Wszystkie';
+            state.jobsPage = 1;
+            filterAndDisplay();
+        });
+    }
+
+    // Job Alert Modal
+    const alertBtn = document.getElementById('openJobAlertBtn');
+    const alertModal = document.getElementById('jobAlertModal');
+    const alertClose = document.getElementById('jobAlertClose');
+    const alertForm = document.getElementById('jobAlertForm');
+
+    if (alertBtn && alertModal) {
+        alertBtn.addEventListener('click', () => {
+            alertModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            if (state.searchQuery && document.getElementById('alertKeywords')) {
+                document.getElementById('alertKeywords').value = state.searchQuery;
+            }
+        });
+    }
+
+    if (alertClose && alertModal) {
+        alertClose.addEventListener('click', () => {
+            alertModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        });
+        alertModal.addEventListener('click', (e) => {
+            if (e.target === alertModal) {
+                alertModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
+    if (alertForm) {
+        alertForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('alertEmail').value;
+            const keywords = document.getElementById('alertKeywords').value;
+            const loc = document.getElementById('alertLocation').value || 'Cała Polska';
+            const freq = document.getElementById('alertFreq').value;
+
+            const alerts = JSON.parse(localStorage.getItem('jobnexus_alerts') || '[]');
+            alerts.push({ email, keywords, loc, freq, date: new Date().toISOString() });
+            localStorage.setItem('jobnexus_alerts', JSON.stringify(alerts));
+
+            alertModal.classList.add('hidden');
+            document.body.style.overflow = '';
+            showToast(`🔔 Job Alert aktywny dla "${keywords}"! Powiadomienia wyślemy na ${email}`, 'success');
+            alertForm.reset();
+        });
+    }
+
+    // Payment Modal Simulator
+    initPaymentModal();
+}
+
+function initPaymentModal() {
+    const payModal = document.getElementById('paymentModal');
+    const payClose = document.getElementById('paymentModalClose');
+    const payForm = document.getElementById('checkoutForm');
+    const methodCards = document.querySelectorAll('.payment-method-card');
+
+    if (payClose && payModal) {
+        payClose.addEventListener('click', () => {
+            payModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        });
+        payModal.addEventListener('click', (e) => {
+            if (e.target === payModal) {
+                payModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
+    methodCards.forEach(card => {
+        card.addEventListener('click', () => {
+            methodCards.forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            const method = card.dataset.method;
+
+            const blikSec = document.getElementById('blikSection');
+            const cardSec = document.getElementById('cardSection');
+            const transSec = document.getElementById('transferSection');
+
+            if (blikSec) blikSec.classList.toggle('hidden', method !== 'blik');
+            if (cardSec) cardSec.classList.toggle('hidden', method !== 'card');
+            if (transSec) transSec.classList.toggle('hidden', method !== 'transfer');
+        });
+    });
+
+    // BLIK Auto Tab
+    const blikDigits = document.querySelectorAll('.blik-digit');
+    blikDigits.forEach((digit, idx) => {
+        digit.addEventListener('input', (e) => {
+            if (e.target.value.length === 1 && idx < blikDigits.length - 1) {
+                blikDigits[idx + 1].focus();
+            }
+        });
+        digit.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+                blikDigits[idx - 1].focus();
+            }
+        });
+    });
+
+    if (payForm) {
+        payForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('paySubmitBtn');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = 'Przetwarzanie płatności... ⏳';
+            }
+
+            setTimeout(() => {
+                if (payModal) payModal.classList.add('hidden');
+                document.body.style.overflow = '';
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Zapłać i aktywuj';
+                }
+                showToast('🎉 Płatność zrealizowana pomyślnie! Usługa została aktywowana.', 'success');
+                payForm.reset();
+            }, 1500);
+        });
+    }
+}
+
+window.openPaymentModal = function(productName = 'Wyróżnienie ogłoszenia', amount = '29,99 zł', period = 'Płatność jednorazowa') {
+    const payModal = document.getElementById('paymentModal');
+    if (!payModal) return;
+
+    const nameEl = document.getElementById('payProductName');
+    const periodEl = document.getElementById('payProductPeriod');
+    const amountEl = document.getElementById('payAmount');
+    const btnAmountEl = document.getElementById('payBtnAmount');
+
+    if (nameEl) nameEl.textContent = productName;
+    if (periodEl) periodEl.textContent = period;
+    if (amountEl) amountEl.textContent = amount;
+    if (btnAmountEl) btnAmountEl.textContent = amount;
+
+    payModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+};
+
+// Wire up pricing cards to payment modal
+document.addEventListener('DOMContentLoaded', () => {
+    initAdvancedFilters();
+
+    // Attach payment modal to pricing buttons
+    const pricingBtns = document.querySelectorAll('#cennik .btn');
+    pricingBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const card = btn.closest('.pricing-card');
+            const title = card ? card.querySelector('h3')?.textContent : 'Pakiet Rekrutera';
+            const price = card ? card.querySelector('.price')?.textContent : '99,99 zł';
+            window.openPaymentModal(title, price, 'Miesięczna subskrypcja');
+        });
+    });
+});

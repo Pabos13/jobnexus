@@ -273,7 +273,7 @@ const JobService = {
         });
     },
 
-    filterJobs(jobs = [], { searchQuery = '', locationQuery = '', currentFilter = 'all' } = {}) {
+    filterJobs(jobs = [], { searchQuery = '', locationQuery = '', currentFilter = 'all', minSalary = 0 } = {}) {
         let list = (jobs && jobs.length) ? jobs : this.DEMO_JOBS;
 
         const sQuery = (searchQuery || '').toLowerCase().trim();
@@ -296,6 +296,16 @@ const JobService = {
                 const loc = (job.location || '').toLowerCase();
                 if (!loc.includes(lQuery)) {
                     return false;
+                }
+            }
+
+            // Filtr minimalnego wynagrodzenia
+            if (minSalary > 0) {
+                const salText = job.salary || '';
+                const nums = salText.replace(/\s/g, '').match(/\d+/g);
+                if (nums && nums.length > 0) {
+                    const maxVal = Math.max(...nums.map(n => parseInt(n, 10)));
+                    if (maxVal < minSalary) return false;
                 }
             }
 
