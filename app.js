@@ -143,14 +143,11 @@ function initDashboard() {
     window.activateAndOpenRecruiter = () => {
         let user = AuthService.getUser();
         if (!user) {
-            user = {
-                id: 'recruiter_pro',
-                name: 'TechRecruiter Sp. z o.o.',
-                email: 'rekrutacja@techrecruiter.pl',
-                role: 'recruiter',
-                plan: 'pro'
-            };
-            try { localStorage.setItem('jobnexus_user', JSON.stringify(user)); } catch (e) {}
+            window.openAuthModal('register');
+            if (typeof showToast === 'function') {
+                showToast('Zarejestruj konto Pracodawcy lub zaloguj się, aby uzyskać dostęp do Panelu.', 'info');
+            }
+            return;
         } else {
             user.role = 'recruiter';
             user.plan = 'pro';
