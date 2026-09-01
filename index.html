@@ -13,56 +13,45 @@
 
     <!-- IMMEDIATE GLOBAL CONTROLLERS (Zero delay, always accessible) -->
     <script>
-        window.setModalOfferMode = function(mode) {
-            var tabJob = document.getElementById('tabTypeJob');
-            var tabGig = document.getElementById('tabTypeGig');
-            var typeSelect = document.getElementById('offerTypeSelect');
-            var titleEl = document.getElementById('addModalTitle');
-            var priceBadge = document.getElementById('orderPriceBadge');
-            
-            if (mode === 'gig') {
-                if (tabGig) tabGig.classList.add('active');
-                if (tabJob) tabJob.classList.remove('active');
-                if (typeSelect) typeSelect.value = 'gig';
-                if (titleEl) titleEl.textContent = '🚀 Dodaj Zlecenie / Ogłoszenie Freelance (9,99 zł)';
-                if (priceBadge) priceBadge.textContent = '9,99 zł';
-            } else {
-                if (tabJob) tabJob.classList.add('active');
-                if (tabGig) tabGig.classList.remove('active');
-                if (typeSelect && typeSelect.value === 'gig') typeSelect.value = 'standard';
-                if (titleEl) titleEl.textContent = '💼 Dodaj Ofertę Pracy Standard (9,99 zł)';
-                if (priceBadge) priceBadge.textContent = '9,99 zł';
-            }
-        };
-
         window.openAddModal = function(type) {
+            type = type || 'standard';
             var modal = document.getElementById('addModalBackdrop');
             if (!modal) return;
             var titleEl = document.getElementById('addModalTitle');
+            var subtitleEl = document.getElementById('addModalSubtitle');
             var typeSelect = document.getElementById('offerTypeSelect');
             var priceBadge = document.getElementById('orderPriceBadge');
+            var submitBtn = document.getElementById('btnSubmitOffer');
             
-            if (type === 'gig') {
+            if (type === 'gig' || type === 'gig_featured') {
                 if (titleEl) titleEl.textContent = '🚀 Dodaj Zlecenie / Ogłoszenie Freelance (9,99 zł)';
-                if (typeSelect) typeSelect.value = 'gig';
-                if (priceBadge) priceBadge.textContent = '9,99 zł';
-                window.setModalOfferMode('gig');
+                if (subtitleEl) subtitleEl.textContent = 'Zleć wykonanie projektu, zadania dorywczego lub kontraktu dla freelancerów.';
+                if (priceBadge) priceBadge.textContent = type === 'gig_featured' ? '29,99 zł' : '9,99 zł';
+                if (submitBtn) submitBtn.innerHTML = '<span>🚀 Opłać i Opublikuj Zlecenie</span>';
+                if (typeSelect) {
+                    typeSelect.innerHTML = '<option value="gig">🚀 Zlecenie Standard (9,99 zł / 30 dni)</option><option value="gig_featured">🔥 Zlecenie Wyróżnione HOT (29,99 zł / 30 dni)</option>';
+                    typeSelect.value = type === 'gig_featured' ? 'gig_featured' : 'gig';
+                }
             } else if (type === 'featured') {
                 if (titleEl) titleEl.textContent = '🔥 Dodaj Ofertę Pracy Wyróżnioną HOT (29,99 zł)';
-                if (typeSelect) typeSelect.value = 'featured';
+                if (subtitleEl) subtitleEl.textContent = 'Maksymalna widoczność na liście ofert i powiadomienia do kandydatów.';
                 if (priceBadge) priceBadge.textContent = '29,99 zł';
-                window.setModalOfferMode('standard');
-            } else if (type === 'pro') {
-                if (titleEl) titleEl.textContent = '💎 Aktywacja Planu Abonamentowego PRO (99 zł/msc)';
-                if (typeSelect) typeSelect.value = 'featured';
-                if (priceBadge) priceBadge.textContent = '99,00 zł / msc';
-                window.setModalOfferMode('standard');
+                if (submitBtn) submitBtn.innerHTML = '<span>🚀 Opłać i Opublikuj Ofertę HOT</span>';
+                if (typeSelect) {
+                    typeSelect.innerHTML = '<option value="featured">🔥 Oferta Pracy Wyróżniona HOT (29,99 zł / 30 dni)</option><option value="standard">💼 Oferta Pracy Standard (9,99 zł / 30 dni)</option>';
+                    typeSelect.value = 'featured';
+                }
             } else {
                 if (titleEl) titleEl.textContent = '💼 Dodaj Ofertę Pracy Standard (9,99 zł)';
-                if (typeSelect) typeSelect.value = 'standard';
+                if (subtitleEl) subtitleEl.textContent = 'Opublikuj ofertę pracy i dotrzyj do zweryfikowanych kandydatów.';
                 if (priceBadge) priceBadge.textContent = '9,99 zł';
-                window.setModalOfferMode('standard');
+                if (submitBtn) submitBtn.innerHTML = '<span>🚀 Opłać i Opublikuj Ofertę Pracy</span>';
+                if (typeSelect) {
+                    typeSelect.innerHTML = '<option value="standard">💼 Oferta Pracy Standard (9,99 zł / 30 dni)</option><option value="featured">🔥 Oferta Pracy Wyróżniona HOT (29,99 zł / 30 dni)</option>';
+                    typeSelect.value = 'standard';
+                }
             }
+
             modal.classList.remove('hidden');
             modal.style.display = 'flex';
             modal.style.visibility = 'visible';
@@ -383,15 +372,9 @@
             <div class="modal-header">
                 <div>
                     <h3 class="modal-title" id="addModalTitle">💼 Dodaj Ofertę Pracy / Zlecenie</h3>
-                    <p class="modal-subtitle">Uzupełnij szczegółowe dane, widełki finansowe oraz wymagania, aby dotrzeć do najlepszych specjalistów.</p>
+                    <p class="modal-subtitle" id="addModalSubtitle">Uzupełnij szczegółowe dane, widełki finansowe oraz wymagania, aby dotrzeć do najlepszych specjalistów.</p>
                 </div>
                 <button type="button" class="modal-close" onclick="window.closeAddModal()">&times;</button>
-            </div>
-
-            <!-- TYPE SWITCHER TABS INSIDE MODAL -->
-            <div class="modal-type-tabs" style="display:flex; gap:0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.75rem;">
-                <button type="button" class="btn btn-sm btn-modal-tab active" id="tabTypeJob" onclick="window.setModalOfferMode('standard')" style="padding:0.5rem 1rem; font-weight:700;">💼 Oferta Pracy</button>
-                <button type="button" class="btn btn-sm btn-modal-tab" id="tabTypeGig" onclick="window.setModalOfferMode('gig')" style="padding:0.5rem 1rem; font-weight:700;">🚀 Zlecenie Freelance / Projekt</button>
             </div>
 
             <form id="addOfferForm" class="add-offer-form" onsubmit="window.handleAddOfferSubmit(event)">
@@ -404,10 +387,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Wybierz Pakiet Publikacji *</label>
-                        <select id="offerTypeSelect" class="form-input" required onchange="var b = document.getElementById('orderPriceBadge'); if(b){ b.textContent = this.value === 'featured' ? '29,99 zł' : '9,99 zł'; }">
+                        <select id="offerTypeSelect" class="form-input" required onchange="var b = document.getElementById('orderPriceBadge'); if(b){ b.textContent = (this.value === 'featured' || this.value === 'gig_featured') ? '29,99 zł' : '9,99 zł'; }">
                             <option value="standard">💼 Oferta Pracy Standard (9,99 zł / 30 dni)</option>
                             <option value="featured">🔥 Oferta Pracy Wyróżniona HOT (29,99 zł / 30 dni)</option>
                             <option value="gig">🚀 Zlecenie Freelance / Projekt (9,99 zł / 30 dni)</option>
+                            <option value="gig_featured">🔥 Zlecenie Wyróżnione HOT (29,99 zł / 30 dni)</option>
                         </select>
                     </div>
                     <div class="form-group">
