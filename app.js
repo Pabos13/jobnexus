@@ -1474,10 +1474,6 @@ function applyJob(id) {
     }
 }
 
-function showLoading(show) {
-    if (els.jobsLoading) els.jobsLoading.classList.toggle('hidden', !show);
-    if (show && els.jobsGrid) els.jobsGrid.innerHTML = '';
-}
 
 // ============================================
 // MODAL — ADD ANNOUNCEMENT / OGLOSZENIE
