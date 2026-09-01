@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ogłoszenia / Zlecenia</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;line-height:1.4}
+    body{max-width:900px;margin:24px auto;padding:0 16px;color:#111}
+    h1{font-size:1.6rem;margin-bottom:8px}
+    .list{display:flex;flex-direction:column;gap:10px;margin:18px 0}
+    .card{border:1px solid #e0e0e0;padding:12px;border-radius:8px;background:#fff;display:flex;flex-direction:column}
+    .card .meta{font-size:0.85rem;color:#666;margin-bottom:6px}
+    .card .title{font-weight:600;margin-bottom:8px}
+    .tags{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+    .tag{background:#f1f5f9;padding:4px 8px;border-radius:999px;font-size:0.75rem;color:#333}
+    .pagination{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:16px}
+    .page-btn{border:1px solid #ddd;padding:6px 10px;border-radius:6px;background:#fff;cursor:pointer}
+    .page-btn[aria-current="true"]{background:#0366d6;color:#fff;border-color:#0366d6}
+    .page-btn[disabled]{opacity:0.5;cursor:not-allowed}
+    @media (max-width:520px){body{padding:12px}}
+  </style>
+</head>
+<body>
+  <h1>Ogłoszenia i zlecenia</h1>
+  <p>Wyświetlane po 7 ogłoszeń na stronę. Stronicowanie poniżej.</p>
+
+  <div id="list" class="list" aria-live="polite"></div>
+
+  <nav id="pagination" class="pagination" aria-label="Strony"></nav>
+
+  <script>
+    const PER_PAGE = 7;
+    let jobs = [];
+    let page = 1;
+
+    async function loadJobs() {
+      try {
+        const res = await fetch('./jobs.json');
+        if (!res.ok) throw new Error('Nie można załadować jobs.json: ' + res.status);
+        jobs = await res.json();
+        render();
+      } catch (e) {
+        document.getElementById('list').innerHTML = '<div style="color:#900">Błąd przy ładowaniu ogłoszeń.</div>';
+        console.error(e);
+      }
+    }
+
+    function render() {
+      const listEl = document.getElementById('list');
+      const paginationEl = document.getElementById('pagination');
+      const total = jobs.length;
+      const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+      if (page > totalPages) page = totalPages;
+
+      const start = (page - 1) * PER_PAGE;
+      const visible = jobs.slice(start, start + PER_PAGE);
+
+      listEl.innerHTML = visible.map(j => renderCard(j)).join('');
+
+      // pagination
+      paginationEl.innerHTML = '';
+
+      const prevBtn = createBtn('Poprzednia', () => { if (page>1){ page--; render(); scrollToTop(); } }, page===1);
+      paginationEl.appendChild(prevBtn);
+
+      // render page numbers (compact if many)
+      const maxButtons = 7;
+      const pages = [];
+
+      if (totalPages <= maxButtons) {
+        for (let i=1;i<=totalPages;i++) pages.push(i);
+      } else {
+        // always show first, last, current +/- 1, and ellipses
+        const range = new Set([1, totalPages, page-1, page, page+1, page-2, page+2]);
+        const arr = [...range].filter(n => n>=1 && n<=totalPages).sort((a,b)=>a-b);
+        // build with ellipses
+        let prev = 0;
+        arr.forEach(n=>{
+          if (prev && n - prev > 1) pages.push('...');
+          pages.push(n);
+          prev = n;
+        });
+      }
+
+      pages.forEach(p=>{
+        if (p === '...') {
+          const span = document.createElement('span');
+          span.textContent = '...';
+          span.style.padding = '6px 8px';
+          paginationEl.appendChild(span);
+        } else {
+          const btn = createBtn(String(p), ()=>{ page = p; render(); scrollToTop(); }, false, p===page);
+          paginationEl.appendChild(btn);
+        }
+      });
+
+      const nextBtn = createBtn('Następna', () => { if (page<totalPages){ page++; render(); scrollToTop(); } }, page===totalPages);
+      paginationEl.appendChild(nextBtn);
+    }
+
+    function renderCard(j) {
+      const tags = (j.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('');
+      return `
+        <article class="card" aria-labelledby="title-${j.id}">
+          <div class="meta">${escapeHtml(j.company)} • ${escapeHtml(j.location)} • ${escapeHtml(j.type)} • ${escapeHtml(j.date_posted)}</div>
+          <div id="title-${j.id}" class="title">${escapeHtml(j.title)}</div>
+          <div class="desc">${escapeHtml(j.description)}</div>
+          <div class="tags">${tags}</div>
+          <div style="margin-top:8px;font-size:0.85rem;color:#444">Kontakt: <a href="mailto:${encodeURIComponent(j.contact)}">${escapeHtml(j.contact)}</a></div>
+        </article>
+      `;
+    }
+
+    function createBtn(text, onClick, disabled=false, current=false) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'page-btn';
+      btn.textContent = text;
+      if (disabled) btn.disabled = true;
+      if (current) btn.setAttribute('aria-current', 'true');
+      btn.addEventListener('click', onClick);
+      return btn;
+    }
+
+    function escapeHtml(s) {
+      if (s === undefined || s === null) return '';
+      return String(s).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; });
+    }
+
+    function scrollToTop() {
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    loadJobs();
+  </script>
+</body>
+</html>

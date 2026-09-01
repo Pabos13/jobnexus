@@ -751,3 +751,153 @@ html, body {
     width: 100% !important;
     box-sizing: border-box !important;
 }
+
+
+/* ==========================================================================
+   ADDITIONAL: Main page typographic refinements, content containers & animations
+   - formats headings, paragraphs and adds reusable content containers
+   - includes typewriter, shimmer, slide-in and callout styles
+   ========================================================================== */
+
+/* Main centered container for page content */
+.main-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+/* Kicker/label above headings */
+.kicker {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(37,99,235,0.12), rgba(124,58,237,0.08));
+  color: var(--primary);
+  font-weight: 800;
+  font-size: 0.85rem;
+  box-shadow: 0 6px 18px rgba(37,99,235,0.06);
+}
+
+/* Lead paragraph style */
+.lead {
+  font-size: 1.125rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  line-height: 1.7;
+}
+
+/* Generic content container, used across the main page */
+.content-container {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.03);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 12px 34px rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px) saturate(1.02);
+  margin: 1.25rem 0;
+  overflow: hidden;
+}
+.content-container--sm { padding: 14px; border-radius: 12px }
+.content-container--lg { padding: 32px; border-radius: 20px }
+
+/* Callout / note */
+.callout {
+  border-left: 4px solid rgba(37,99,235,0.9);
+  padding: 12px 16px;
+  background: linear-gradient(180deg, rgba(37,99,235,0.02), rgba(255,255,255,0.01));
+  color: var(--text-main);
+  border-radius: 8px;
+  margin: 12px 0;
+}
+
+/* Blockquote styling */
+blockquote {
+  border-left: 4px solid rgba(255,255,255,0.06);
+  padding: 12px 16px;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.01);
+  border-radius: 8px;
+  font-style: italic;
+}
+
+/* Lists with custom bullets */
+ul.fancy li {
+  margin-bottom: 0.6rem;
+  padding-left: 1.4rem;
+  position: relative;
+}
+ul.fancy li:before {
+  content: "\2022";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-size: 1.1rem;
+  line-height: 1;
+  top: 0.05rem;
+}
+
+/* Text utilities */
+.text-center { text-align: center }
+.text-left { text-align: left }
+.muted { color: var(--text-muted) }
+.kicker + .lead { display:block }
+
+/* Typewriter animation for small hero lines */
+.typewriter {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid rgba(255,255,255,0.12);
+  max-width: 100%;
+}
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+@keyframes blinkCaret {
+  50% { border-color: transparent }
+}
+.typewriter.animate { animation: typing 3.2s steps(40,end) 0s 1 forwards, blinkCaret 0.8s step-end infinite }
+
+/* Shimmer effect for hero badges or highlights */
+.shimmer { position: relative; overflow: hidden }
+.shimmer:before {
+  content: '';
+  position: absolute;
+  left: -120%; top: 0; width: 40%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+  transform: skewX(-20deg);
+  filter: blur(6px);
+  animation: shimmer 2.2s linear infinite;
+}
+@keyframes shimmer { 100% { left: 220% } }
+
+/* Slide-in variations (works well with .in-view from ux.js) */
+.slide-in-left { opacity: 0; transform: translateX(-18px); transition: transform 520ms var(--delay,0ms) cubic-bezier(.2,.9,.2,1), opacity 520ms var(--delay,0ms) ease-out }
+.slide-in-right { opacity: 0; transform: translateX(18px); transition: transform 520ms var(--delay,0ms) cubic-bezier(.2,.9,.2,1), opacity 520ms var(--delay,0ms) ease-out }
+.slide-in-up { opacity: 0; transform: translateY(16px); transition: transform 520ms var(--delay,0ms) cubic-bezier(.2,.9,.2,1), opacity 520ms var(--delay,0ms) ease-out }
+.reveal-on-scroll.in-view.slide-in-left, .reveal-on-scroll.in-view.slide-in-right, .reveal-on-scroll.in-view.slide-in-up { transform: none; opacity: 1 }
+
+/* Small floating accent */
+.float-slow { animation: floatY 6s ease-in-out infinite }
+@keyframes floatY { 0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)} }
+
+/* Emphasized button shimmer */
+.btn-primary.shine { position: relative; overflow: hidden }
+.btn-primary.shine:after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.06), rgba(255,255,255,0.02)); mix-blend-mode: screen }
+
+/* Ensure readable paragraphs */
+.section p, .content-container p { font-size: 1rem; color: var(--text-main); line-height: 1.7; margin: 0.75rem 0 }
+
+/* Responsive typography */
+@media (max-width: 768px) {
+  .lead { font-size: 1rem }
+  .hero-title { font-size: 1.9rem }
+  .main-container { padding: 16px }
+}
+
+/* Accessibility: respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .typewriter.animate, .shimmer:before, .float-slow, .btn-primary.shine:after { animation: none !important }
+  .slide-in-left, .slide-in-right, .slide-in-up, .reveal-on-scroll { transition: none !important; transform: none !important; opacity: 1 !important }
+}

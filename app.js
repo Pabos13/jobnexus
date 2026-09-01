@@ -346,12 +346,12 @@ window.handleSearch = function() {
   // Filter jobs locally
   filteredJobs = allJobs.filter(job => {
     const matchesKeyword = !currentSearchQuery || 
-      job.title.toLowerCase().includes(currentSearchQuery.toLowerCase()) ||
-      job.description.toLowerCase().includes(currentSearchQuery.toLowerCase()) ||
+      (job.title && job.title.toLowerCase().includes(currentSearchQuery.toLowerCase())) ||
+      (job.description && job.description.toLowerCase().includes(currentSearchQuery.toLowerCase())) ||
       (job.tags || []).some(tag => tag.toLowerCase().includes(currentSearchQuery.toLowerCase()));
     
     const matchesLocation = !currentLocation ||
-      job.location.toLowerCase().includes(currentLocation.toLowerCase());
+      (job.location && job.location.toLowerCase().includes(currentLocation.toLowerCase()));
     
     return matchesKeyword && matchesLocation;
   });
@@ -385,30 +385,216 @@ function showJobsError(message) {
   }
 }
 
-// Auth handlers (placeholder)
+// Auth handlers (implemented)
 function setupAuthHandlers() {
-  // Login/Register functionality would go here
+  // Login/Register modal openers
   window.handleNavLoginClick = () => {
-    document.getElementById('authModalBackdrop')?.classList.remove('hidden');
-    document.getElementById('authModalBackdrop').style.display = 'flex';
+    const backdrop = document.getElementById('authModalBackdrop');
+    if (backdrop) {
+      backdrop.classList.remove('hidden');
+      backdrop.style.display = 'flex';
+      window.switchAuthTab('login');
+    }
   };
   
   window.handleNavRegisterClick = () => {
-    document.getElementById('authModalBackdrop')?.classList.remove('hidden');
-    document.getElementById('authModalBackdrop').style.display = 'flex';
+    const backdrop = document.getElementById('authModalBackdrop');
+    if (backdrop) {
+      backdrop.classList.remove('hidden');
+      backdrop.style.display = 'flex';
+      window.switchAuthTab('register');
+    }
   };
   
   window.closeAuthModal = () => {
-    document.getElementById('authModalBackdrop')?.classList.add('hidden');
-    document.getElementById('authModalBackdrop').style.display = 'none';
+    const backdrop = document.getElementById('authModalBackdrop');
+    if (backdrop) {
+      backdrop.classList.add('hidden');
+      backdrop.style.display = 'none';
+    }
   };
   
-  window.handleAuthSubmit = (event) => {
+  // Switch between login and register tabs
+  window.switchAuthTab = (tab) => {
+    const loginTab = document.getElementById('tabLogin');
+    const registerTab = document.getElementById('tabRegister');
+    const nameGroup = document.getElementById('nameGroup');
+    const authModalTitle = document.getElementById('authModalTitle');
+    const authSubmitBtn = document.getElementById('authSubmitBtn');
+
+    if (!authSubmitBtn || !authModalTitle) return;
+
+    if (tab === 'register') {
+      nameGroup?.classList.remove('hidden');
+      if (nameGroup) nameGroup.style.display = 'block';
+      authModalTitle.textContent = 'Zarejestruj się';
+      authSubmitBtn.textContent = 'Zarejestruj się';
+      loginTab?.classList.remove('active');
+      registerTab?.classList.add('active');
+    } else {
+      nameGroup?.classList.add('hidden');
+      if (nameGroup) nameGroup.style.display = 'none';
+      authModalTitle.textContent = 'Zaloguj się do JobNexus';
+      authSubmitBtn.textContent = 'Zaloguj się';
+      registerTab?.classList.remove('active');
+      loginTab?.classList.add('active');
+    }
+  };
+  
+  // Handle auth form submission (login or register)
+  window.handleAuthSubmit = async (event) => {
     event.preventDefault();
-    alert('Auth submission - integrate with backend');
-    window.closeAuthModal();
+    const authErrorEl = document.getElementById('authError');
+    if (authErrorEl) { authErrorEl.style.display = 'none'; }
+
+    const name = document.getElementById('authName')?.value?.trim();
+    const email = document.getElementById('authEmail')?.value?.trim();
+    const password = document.getElementById('authPassword')?.value;
+    const isRegister = !document.getElementById('nameGroup')?.classList.contains('hidden');
+
+    if (!email || !password) {
+      showAuthError('Proszę podać adres e-mail i hasło.');
+      return;
+    }
+
+    try {
+      if (isRegister) {
+        if (!name) return showAuthError('Proszę podać imię i nazwisko lub nazwę firmy.');
+        // Use AuthService if available
+        if (window.AuthService && typeof window.AuthService.register === 'function') {
+          const user = await window.AuthService.register(email, password, name, 'candidate');
+          afterLogin(user);
+        } else {
+          // Fallback: simulate register
+          const user = { id: 'usr_local_' + Date.now(), email, name, role: 'candidate' };
+          window.localStorage.setItem('jobnexus_user', JSON.stringify(user));
+          afterLogin(user);
+        }
+      } else {
+        // Login
+        if (window.AuthService && typeof window.AuthService.login === 'function') {
+          const user = await window.AuthService.login(email, password);
+          afterLogin(user);
+        } else {
+          // Fallback: local users
+          const users = JSON.parse(localStorage.getItem('jobnexus_local_registered_users') || '[]');
+          const found = users.find(u => u.email === email && u.password === password);
+          if (!found) return showAuthError('Nieprawidłowe dane logowania.');
+          const safeUser = { id: found.id, email: found.email, name: found.name, role: found.role || 'candidate' };
+          window.localStorage.setItem('jobnexus_user', JSON.stringify(safeUser));
+          afterLogin(safeUser);
+        }
+      }
+    } catch (err) {
+      console.error('Auth error:', err);
+      showAuthError(err?.message || 'Błąd logowania/rejestracji');
+    }
   };
 }
+
+function showAuthError(msg) {
+  const authErrorEl = document.getElementById('authError');
+  if (!authErrorEl) {
+    alert(msg);
+    return;
+  }
+  authErrorEl.style.display = 'block';
+  authErrorEl.textContent = msg;
+}
+
+// After successful login/register
+function afterLogin(user) {
+  if (!user) return;
+  // Close auth modal
+  window.closeAuthModal();
+
+  try {
+    // Render header to show user info
+    renderLoggedInHeader(user);
+
+    // Populate dashboard/profile UI
+    fillUserPortal(user);
+
+    // Open dashboard/modal or navigate to profile section
+    // If recruiter, open recruiter panel, else open dashboard modal
+    if (user.role === 'recruiter') {
+      // open recruiter panel (if implemented)
+      window.openRecruiterPanel?.();
+    }
+
+    // Show dashboard modal (profile)
+    window.openDashboardModal();
+  } catch (e) {
+    console.error('afterLogin error', e);
+  }
+}
+
+function renderLoggedInHeader(user) {
+  const headerActions = document.getElementById('headerAuthActions');
+  if (!headerActions) return;
+
+  headerActions.innerHTML = '';
+
+  const nameBtn = document.createElement('button');
+  nameBtn.type = 'button';
+  nameBtn.className = 'btn btn-secondary';
+  nameBtn.textContent = user.name || user.email || 'Moje konto';
+  nameBtn.onclick = () => window.openDashboardModal();
+
+  const logoutBtn = document.createElement('button');
+  logoutBtn.type = 'button';
+  logoutBtn.className = 'btn btn-primary';
+  logoutBtn.textContent = 'Wyloguj';
+  logoutBtn.onclick = async () => {
+    if (window.AuthService && typeof window.AuthService.logout === 'function') {
+      await window.AuthService.logout();
+    } else {
+      localStorage.removeItem('jobnexus_user');
+    }
+    // reload header
+    location.reload();
+  };
+
+  headerActions.appendChild(nameBtn);
+  headerActions.appendChild(logoutBtn);
+}
+
+function fillUserPortal(user) {
+  try {
+    const portalUserName = document.getElementById('portalUserName');
+    const portalUserEmail = document.getElementById('portalUserEmail');
+    const portalUserRoleBadge = document.getElementById('portalUserRoleBadge');
+    if (portalUserName) portalUserName.textContent = user.name || 'Panel Użytkownika';
+    if (portalUserEmail) portalUserEmail.textContent = user.email || '';
+    if (portalUserRoleBadge) portalUserRoleBadge.textContent = (user.role || 'candidate').toUpperCase();
+
+    const dashUserName = document.getElementById('dashUserName');
+    const dashUserEmail = document.getElementById('dashUserEmail');
+    const dashUserRoleBadge = document.getElementById('dashUserRoleBadge');
+    if (dashUserName) dashUserName.textContent = user.name || 'Panel Użytkownika';
+    if (dashUserEmail) dashUserEmail.textContent = user.email || '';
+    if (dashUserRoleBadge) dashUserRoleBadge.textContent = (user.role || 'candidate').toUpperCase();
+  } catch (e) {
+    console.warn('fillUserPortal error', e);
+  }
+}
+
+// Dashboard modal controls
+window.openDashboardModal = function() {
+  const modal = document.getElementById('dashboardModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+  }
+};
+
+window.closeDashboardModal = function() {
+  const modal = document.getElementById('dashboardModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+  }
+};
 
 // Add offer modal handlers
 window.openAddModal = (type) => {
@@ -443,8 +629,6 @@ window.processCheckoutPayment = (event) => {
   alert('Payment processing - integrate with gateway');
 };
 window.togglePaymentMethodFields = () => {};
-window.closeDashboardModal = () => {};
-window.switchAuthTab = () => {};
 
 function setupEventListeners() {
   // Add any additional event listeners here
