@@ -2860,6 +2860,9 @@ window.handleNavRegisterClick = function() {
         if (typeof AuthService !== 'undefined' && AuthService.logout) {
             AuthService.logout();
         }
+        if (typeof window.closeDashboardModal === 'function') {
+            window.closeDashboardModal();
+        }
         window.syncUserHeader(null);
         if (typeof showToast === 'function') showToast('Wylogowano pomyślnie.', 'info');
         else alert('Wylogowano pomyślnie.');
