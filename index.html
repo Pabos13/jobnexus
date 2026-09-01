@@ -71,7 +71,8 @@
             }
         };
 
-        window.openAuthModal = function(mode) {
+                window.openAuthModal = function(mode) {
+            mode = mode || 'login';
             var modal = document.getElementById('authModalBackdrop');
             if (!modal) return;
             modal.classList.remove('hidden');
@@ -80,101 +81,7 @@
             modal.style.opacity = '1';
             modal.style.pointerEvents = 'auto';
             modal.style.zIndex = '999999';
-            if (typeof window.switchAuthTab === 'function') {
-                window.switchAuthTab(mode);
-            }
-        };
-
-        
-                window.openRecruiterPanel = function() {
-            if (typeof window.startProCheckout === 'function') {
-                window.startProCheckout('pro', '99,00 zł', 'Abonament Rekruter PRO (99 zł / miesiąc)');
-            } else if (typeof window.activateAndOpenRecruiter === 'function') {
-                window.activateAndOpenRecruiter();
-            }
-        };
-
-        window.startProCheckout = function(plan, price, title) {
-            plan = plan || 'pro';
-            price = price || '99,00 zł';
-            title = title || 'Abonament Rekruter PRO (99 zł / miesiąc)';
-            var modal = document.getElementById('paymentCheckoutModal');
-            if (!modal) {
-                if (typeof window.activateAndOpenRecruiter === 'function') window.activateAndOpenRecruiter();
-                return;
-            }
-            var titleEl = document.getElementById('checkoutItemTitle');
-            var amountEl = document.getElementById('checkoutAmount');
-            var nameEl = document.getElementById('checkoutItemName');
-            if (titleEl) titleEl.textContent = '💎 ' + title;
-            if (amountEl) amountEl.textContent = price;
-            if (nameEl) nameEl.textContent = title;
-
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-            modal.style.visibility = 'visible';
-            modal.style.opacity = '1';
-            modal.style.pointerEvents = 'auto';
-            modal.style.zIndex = '999999';
-        };
-
-        window.closePaymentModal = function() {
-            var modal = document.getElementById('paymentCheckoutModal');
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.style.display = 'none';
-                modal.style.visibility = 'hidden';
-                modal.style.opacity = '0';
-                modal.style.pointerEvents = 'none';
-            }
-        };
-
-        window.togglePaymentMethodFields = function(method) {
-            var blik = document.getElementById('checkoutBlikField');
-            var card = document.getElementById('checkoutCardField');
-            if (blik) blik.style.display = (method === 'blik') ? 'block' : 'none';
-            if (card) card.style.display = (method === 'card') ? 'block' : 'none';
-        };
-
-        window.processCheckoutPayment = function(event) {
-            event.preventDefault();
-            var actionBox = document.getElementById('checkoutActionBox');
-            var processingBox = document.getElementById('checkoutProcessingBox');
-            var stepText = document.getElementById('processingStepText');
-
-            if (actionBox) actionBox.style.display = 'none';
-            if (processingBox) {
-                processingBox.classList.remove('hidden');
-                processingBox.style.display = 'block';
-            }
-
-            if (stepText) stepText.textContent = 'Łączenie z operatorem płatności (BLIK / PayU)...';
-
-            setTimeout(function() {
-                if (stepText) stepText.textContent = 'Autoryzacja w banku... Płatność zaakceptowana!';
-                setTimeout(function() {
-                    window.closePaymentModal();
-                    if (actionBox) actionBox.style.display = 'block';
-                    if (processingBox) {
-                        processingBox.classList.add('hidden');
-                        processingBox.style.display = 'none';
-                    }
-                    if (typeof window.activateAndOpenRecruiter === 'function') {
-                        window.activateAndOpenRecruiter();
-                    }
-                }, 1200);
-            }, 1800);
-        };
-
-        window.closeDashboardModal = function() {
-            var modal = document.getElementById('dashboardModal');
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.style.display = 'none';
-                modal.style.visibility = 'hidden';
-                modal.style.opacity = '0';
-                modal.style.pointerEvents = 'none';
-            }
+            window.switchAuthTab(mode);
         };
 
         window.closeAuthModal = function() {
@@ -185,6 +92,105 @@
                 modal.style.visibility = 'hidden';
                 modal.style.opacity = '0';
                 modal.style.pointerEvents = 'none';
+            }
+        };
+
+        window.switchAuthTab = function(mode) {
+            var tabLogin = document.getElementById('tabLogin');
+            var tabRegister = document.getElementById('tabRegister');
+            var titleEl = document.getElementById('authModalTitle');
+            var nameGroup = document.getElementById('nameGroup');
+            var roleGroup = document.getElementById('roleGroup');
+            var authName = document.getElementById('authName');
+            var submitBtn = document.getElementById('authSubmitBtn');
+            var authError = document.getElementById('authError');
+
+            if (authError) {
+                authError.classList.add('hidden');
+                authError.style.display = 'none';
+            }
+
+            if (mode === 'register') {
+                if (tabRegister) { tabRegister.classList.add('active'); tabRegister.style.background = '#4f46e5'; tabRegister.style.color = '#fff'; }
+                if (tabLogin) { tabLogin.classList.remove('active'); tabLogin.style.background = 'transparent'; tabLogin.style.color = '#94a3b8'; }
+                if (titleEl) titleEl.textContent = '🚀 Utwórz nowe konto w JobNexus';
+                if (nameGroup) { nameGroup.classList.remove('hidden'); nameGroup.style.display = 'block'; }
+                if (roleGroup) { roleGroup.classList.remove('hidden'); roleGroup.style.display = 'block'; }
+                if (authName) authName.required = true;
+                if (submitBtn) submitBtn.innerHTML = '<span>🚀 Zarejestruj się i utwórz konto</span>';
+            } else {
+                if (tabLogin) { tabLogin.classList.add('active'); tabLogin.style.background = '#4f46e5'; tabLogin.style.color = '#fff'; }
+                if (tabRegister) { tabRegister.classList.remove('active'); tabRegister.style.background = 'transparent'; tabRegister.style.color = '#94a3b8'; }
+                if (titleEl) titleEl.textContent = '🔑 Zaloguj się do JobNexus';
+                if (nameGroup) { nameGroup.classList.add('hidden'); nameGroup.style.display = 'none'; }
+                if (roleGroup) { roleGroup.classList.add('hidden'); roleGroup.style.display = 'none'; }
+                if (authName) authName.required = false;
+                if (submitBtn) submitBtn.innerHTML = '<span>🔑 Zaloguj się</span>';
+            }
+        };
+
+        window.handleAuthSubmit = async function(event) {
+            event.preventDefault();
+            var tabRegister = document.getElementById('tabRegister');
+            var isRegister = tabRegister && tabRegister.classList.contains('active');
+            var email = document.getElementById('authEmail')?.value.trim();
+            var password = document.getElementById('authPassword')?.value;
+            var name = document.getElementById('authName')?.value.trim() || '';
+            var role = document.getElementById('authRole')?.value || 'candidate';
+            var submitBtn = document.getElementById('authSubmitBtn');
+            var authError = document.getElementById('authError');
+
+            if (authError) {
+                authError.classList.add('hidden');
+                authError.style.display = 'none';
+            }
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span>Przetwarzanie... ⏳</span>';
+            }
+
+            try {
+                var user;
+                if (isRegister) {
+                    if (typeof AuthService !== 'undefined' && AuthService.register) {
+                        user = await AuthService.register(email, password, name, role);
+                    } else {
+                        user = { id: 'usr_' + Date.now(), email: email, name: name || email.split('@')[0], role: role };
+                        try { localStorage.setItem('jobnexus_user', JSON.stringify(user)); } catch(e){}
+                    }
+                } else {
+                    if (typeof AuthService !== 'undefined' && AuthService.login) {
+                        user = await AuthService.login(email, password);
+                    } else {
+                        user = { id: 'usr_' + Date.now(), email: email, name: email.split('@')[0], role: 'candidate' };
+                        try { localStorage.setItem('jobnexus_user', JSON.stringify(user)); } catch(e){}
+                    }
+                }
+
+                window.closeAuthModal();
+                if (typeof syncUserHeader === 'function') syncUserHeader(user);
+
+                var msg = isRegister ? ('🎉 Witaj, ' + user.name + '! Rejestracja zakończona sukcesem.') : ('👋 Zalogowano pomyślnie jako ' + user.name);
+                if (typeof showToast === 'function') showToast(msg, 'success');
+                else alert(msg);
+
+                if (user.role === 'recruiter') {
+                    if (typeof window.openRecruiterPanel === 'function') window.openRecruiterPanel();
+                }
+            } catch (err) {
+                if (authError) {
+                    authError.textContent = err.message || 'Wystąpił błąd autoryzacji.';
+                    authError.classList.remove('hidden');
+                    authError.style.display = 'block';
+                }
+                if (typeof showToast === 'function') showToast(err.message || 'Błąd autoryzacji', 'error');
+                else alert(err.message || 'Błąd autoryzacji');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = isRegister ? '<span>🚀 Zarejestruj się i utwórz konto</span>' : '<span>🔑 Zaloguj się</span>';
+                }
             }
         };
     </script>
@@ -698,6 +704,7 @@
                 <button type="button" class="btn btn-sm btn-auth-tab" id="tabRegister" onclick="window.switchAuthTab('register')">Rejestracja</button>
             </div>
 
+            <div id="authError" class="hidden" style="display:none; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 0.6rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 1rem; text-align: center;"></div>
             <form id="authForm" onsubmit="window.handleAuthSubmit(event)">
                 <div class="form-group hidden" id="nameGroup">
                     <label>Imię i Nazwisko / Nazwa Firmy *</label>
@@ -710,8 +717,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Hasło (min. 6 znaków) *</label>
-                    <input type="password" id="authPassword" required placeholder="••••••••" minlength="6" class="form-input">
+                    <label>Hasło (min. 8 znaków) *</label>
+                    <input type="password" id="authPassword" required placeholder="••••••••" minlength="8" class="form-input">
                 </div>
 
                 <div class="form-group hidden" id="roleGroup">
