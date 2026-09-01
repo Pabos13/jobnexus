@@ -2,645 +2,797 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JobNexus — Przyszłość Pracy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobNexus — Platforma Ofert Pracy i Zleceń AI</title>
+    <meta name="description" content="Nowoczesny portal z ofertami pracy i zleceniami freelance. Dopasowanie AI, kalkulator widełek i zaawansowana wyszukiwarka.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20260901_final">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles-mobile.css">
 </head>
 <body>
-    <!-- Animated Background -->
-    <div class="bg-mesh" id="bgMesh"></div>
-    <div class="bg-particles" id="bgParticles"></div>
-    
-    <!-- Navigation -->
-    <nav class="nav" id="navbar">
-        <div class="nav-container">
+    <!-- HEADER / NAVIGATION -->
+    <header class="header" id="header">
+        <div class="header-inner">
             <a href="#" class="logo">
-                <span class="logo-icon">
-                    <svg viewBox="0 0 40 40" fill="none">
-                        <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2"/>
-                        <path d="M12 20C12 15.58 15.58 12 20 12C24.42 12 28 15.58 28 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <circle cx="20" cy="20" r="4" fill="currentColor"/>
-                        <path d="M20 24V32" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </span>
+                <span class="logo-icon">⚡</span>
                 <span class="logo-text">Job<span class="logo-accent">Nexus</span></span>
             </a>
-            
-            <!-- Direct Dashboard Access Button (Always visible on mobile/desktop when logged in) -->
-            <button id="navDashboardBtn" class="btn btn-sm hidden" style="margin-left: auto; margin-right: 12px; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; border-radius: 8px; padding: 6px 14px; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: all 0.2s;" type="button">
-                <span>👤</span> <span id="navDashboardBtnText">Mój Panel</span>
+
+            <nav class="nav">
+                <a href="#oferty" class="nav-link active">💼 Oferty Pracy</a>
+                <a href="#zlecenia" class="nav-link">🚀 Zlecenia</a>
+                <a href="#cennik" class="nav-link">💎 Cennik</a>
+            </nav>
+
+            <div class="header-actions">
+                <button type="button" class="btn btn-secondary cv-builder-btn" id="openCvBuilderBtnNav" style="display:inline-flex; align-items:center; gap:0.4rem;">
+                    <span>✨ Kreator CV</span>
+                </button>
+                <button type="button" class="btn btn-secondary" id="navDashboardBtn" style="display:inline-flex; align-items:center; gap:0.4rem;">
+                    <span>📊 Mój Panel</span>
+                </button>
+                <button type="button" class="btn btn-primary" id="authTrigger">
+                    <span>Zaloguj się</span>
+                </button>
+            </div>
+
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Menu mobilne">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
+        </div>
+    </header>
 
-            <button class="nav-toggle" id="navToggle" type="button" aria-label="Menu" aria-controls="navMenu" aria-expanded="false">
-                <span></span><span></span><span></span>
-            </button>
-            
-            <div class="nav-menu" id="navMenu">
-                <a href="#oferty" class="nav-link">Oferty Pracy</a>
-                <a href="#ogloszenia" class="nav-link">Ogłoszenia</a>
-                <a href="#zlecenia" class="nav-link">Zlecenia</a>
-                <a href="#cv" class="nav-link">Moje CV</a>
-                <a href="#dodaj" class="nav-link nav-cta">Dodaj Ogłoszenie</a>
-                <button class="nav-link hidden" id="dashboardTrigger" type="button" style="color: #60a5fa; font-weight: 600;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline; margin-right:4px; vertical-align:text-bottom;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <span>Mój Panel</span>
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        <!-- HERO SECTION -->
+        <section class="hero" id="hero">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    <span>Inteligentny Rynek Pracy & Zleceń AI</span>
+                </div>
+                <h1 class="hero-title">
+                    Znajdź pracę marzeń <br>lub <span class="text-gradient">zleć projekt</span> ekspertom
+                </h1>
+                <p class="hero-subtitle">
+                    Tysiące zweryfikowanych ofert pracy i zleceń freelance. Dopasowanie kompetencji przez AI oraz bezpośredni kontakt.
+                </p>
+
+                <!-- UNIFIED SEARCH BAR -->
+                <div class="search-box">
+                    <div class="search-field">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="searchInput" placeholder="Stanowisko, technologia, słowo kluczowe..." autocomplete="off">
+                    </div>
+                    <div class="search-divider"></div>
+                    <div class="search-field location-field">
+                        <span class="search-icon">📍</span>
+                        <input type="text" id="locationInput" placeholder="Lokalizacja (np. Warszawa, Zdalnie)" autocomplete="off">
+                    </div>
+                    <button class="btn btn-primary search-btn" id="searchBtn">
+                        <span>Szukaj</span>
+                    </button>
+                </div>
+
+                <!-- HERO QUICK ACTIONS -->
+                <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+                    <a href="#oferty" class="btn btn-secondary" style="padding: 0.65rem 1.25rem; font-size: 0.9rem;">
+                        🔍 Przeglądaj Oferty Pracy
+                    </a>
+                    <a href="#zlecenia" class="btn btn-secondary" style="padding: 0.65rem 1.25rem; font-size: 0.9rem;">
+                        🚀 Przeglądaj Zlecenia Freelance
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 1: OFERTY PRACY -->
+        <section class="section" id="oferty">
+            <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                <div>
+                    <h2 class="section-title">💼 Oferty Pracy</h2>
+                    <p class="section-subtitle">Aktualne oferty od sprawdzonych pracodawców w Polsce i za granicą</p>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="openAddModal('standard')">
+                    ➕ Dodaj Ogłoszenie Pracy
                 </button>
-                <button class="nav-link auth-trigger" id="authTrigger" type="button">Zaloguj się</button>
+            </div>
+
+            <!-- Category Filter Chips -->
+            <div class="filter-chips">
+                <button class="chip active" data-filter="all">Wszystkie</button>
+                <button class="chip" data-filter="remote">Zdalna</button>
+                <button class="chip" data-filter="intern">Staż</button>
+                <button class="chip" data-filter="b2b">Kontrakt B2B</button>
+                <button class="chip" data-filter="it">IT & Tech</button>
+                <button class="chip" data-filter="inzynieria">Inżynieria</button>
+                <button class="chip" data-filter="finanse">Finanse</button>
+            </div>
+
+            <!-- Advanced Salary Slider & Alert Bar -->
+            <div class="advanced-filters-bar">
+                <div class="salary-filter-group">
+                    <span class="salary-label">Min. wynagrodzenie:</span>
+                    <input type="range" id="salaryRange" class="salary-slider" min="0" max="30000" step="1000" value="0">
+                    <span class="salary-val" id="salaryVal">Wszystkie</span>
+                </div>
+                <button type="button" class="btn-alert-open" id="openJobAlertBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 01-3.46 0"></path></svg>
+                    Ustaw Job Alert
+                </button>
+            </div>
+
+            <!-- Jobs Grid -->
+            <div class="jobs-grid" id="jobsGrid">
+                <!-- Injected via app.js -->
+            </div>
+
+            <div class="loading-state" id="jobsLoading">
+                <div class="spinner"></div>
+                <p>Ładowanie ofert...</p>
+            </div>
+
+            <div class="empty-state hidden" id="jobsEmpty">
+                <div class="empty-icon">🔍</div>
+                <h3>Brak ofert spełniających kryteria</h3>
+                <p>Spróbuj zmienić parametry wyszukiwania lub filtry.</p>
+            </div>
+
+            <!-- Advanced Pagination for Job Offers -->
+            <div id="jobsPagination" class="pagination-bar" style="margin-top: 2.5rem;"></div>
+        </section>
+
+        <!-- SECTION 2: OFERTY ZLECEŃ / FREELANCE -->
+        <section class="section" id="zlecenia" style="background: rgba(15, 23, 42, 0.4); border-radius: 1.5rem; padding: 3rem 2rem; margin: 3rem 0; border: 1px solid rgba(255, 255, 255, 0.05);">
+            <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                <div>
+                    <h2 class="section-title">🚀 Oferty Zleceń (Gigs & Freelance)</h2>
+                    <p class="section-subtitle">Zlecenia projektowe, zadania dorywcze i kontrakty dla freelancerów</p>
+                </div>
+                <button type="button" class="btn btn-primary" id="postGigBtn">
+                    ➕ Dodaj Zlecenie
+                </button>
+            </div>
+
+            <!-- Gigs Category Filter Chips -->
+            <div class="gigs-filter-bar" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem;">
+                <button class="chip active gig-filter-btn" data-category="all">Wszystkie zlecenia</button>
+                <button class="chip gig-filter-btn" data-category="ai">AI & Automatyzacja</button>
+                <button class="chip gig-filter-btn" data-category="web">Web & Mobile</button>
+                <button class="chip gig-filter-btn" data-category="design">Design & UI/UX</button>
+                <button class="chip gig-filter-btn" data-category="ecommerce">E-commerce</button>
+                <button class="chip gig-filter-btn" data-category="marketing">Marketing & SEO</button>
+            </div>
+
+            <!-- Gigs Grid -->
+            <div class="jobs-grid" id="gigsGrid">
+                <!-- Injected via app.js -->
+            </div>
+
+            <!-- Empty state for gigs -->
+            <div class="empty-state hidden" id="gigsEmpty">
+                <div class="empty-icon">📁</div>
+                <h3>Brak zleceń w wybranej kategorii</h3>
+                <p>Bądź pierwszy i dodaj zlecenie dla społeczności!</p>
+            </div>
+
+            <!-- Advanced Pagination for Gigs -->
+            <div id="gigsPagination" class="pagination-bar" style="margin-top: 2.5rem;"></div>
+        </section>
+
+        <!-- SECTION 3: CENNIK -->
+        <section class="section" id="cennik">
+            <div class="section-header text-center">
+                <h2 class="section-title">💎 Przejrzysty Cennik</h2>
+                <p class="section-subtitle">Wybierz plan dopasowany do Twoich potrzeb rekrutacyjnych i zawodowych</p>
+            </div>
+
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-badge">Dla Kandydatów</div>
+                    <h3>Konto Kandydata</h3>
+                    <div class="price">0 zł</div>
+                    <p class="price-period">Na zawsze darmowe</p>
+                    <ul class="pricing-features">
+                        <li>✓ Nielimitowane aplikowanie</li>
+                        <li>✓ AI CV Matcher & analiza ATS</li>
+                        <li>✓ Kreator CV z eksportem PDF</li>
+                        <li>✓ Job Alerty e-mail w czasie rzeczywistym</li>
+                        <li>✓ Symulator pytań rekrutacyjnych AI</li>
+                    </ul>
+                    <button class="btn btn-secondary btn-block" onclick="document.getElementById('authTrigger').click()">Dołącz za darmo</button>
+                </div>
+
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Najpopularniejszy</div>
+                    <h3>Wyróżnione Ogłoszenie</h3>
+                    <div class="price">29,99 zł</div>
+                    <p class="price-period">Płatność jednorazowa / 30 dni</p>
+                    <ul class="pricing-features">
+                        <li>✓ Publikacja oferty na 30 dni</li>
+                        <li>✓ Wyróżnienie na górze listy ofert</li>
+                        <li>✓ Specjalna odznaka "Wyróżnione"</li>
+                        <li>✓ Do 5x więcej zgłoszeń kandydatów</li>
+                        <li>✓ Auto-powiadomienie w Job Alertach</li>
+                    </ul>
+                    <button class="btn btn-primary btn-block" onclick="window.openPaymentModal('Wyróżnione Ogłoszenie', '29,99 zł', 'Płatność jednorazowa')">Wybieram</button>
+                </div>
+
+                <div class="pricing-card">
+                    <div class="pricing-badge">Dla Firm i HR</div>
+                    <h3>Pakiet Rekrutera PRO</h3>
+                    <div class="price">99,99 zł</div>
+                    <p class="price-period">za miesiąc subskrypcji</p>
+                    <ul class="pricing-features">
+                        <li>✓ Nielimitowane publikacje ofert pracy</li>
+                        <li>✓ Pełna Tablica Kanban kandydatów</li>
+                        <li>✓ Dostęp do Bazy CV i profili specjalistów</li>
+                        <li>✓ Zaawansowane filtry ATS & dopasowanie AI</li>
+                        <li>✓ Raporty i analityka rekrutacyjna</li>
+                    </ul>
+                    <button class="btn btn-secondary btn-block" onclick="window.openPaymentModal('Pakiet Rekrutera PRO', '99,99 zł', 'Miesięczna subskrypcja')">Aktywuj PRO</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER (PLACED CLEANLY AT THE VERY BOTTOM) -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">Job<span class="logo-accent">Nexus</span></span>
+                </a>
+                <p class="footer-desc">
+                    Inteligentna platforma nowej generacji łącząca kandydatów, freelancerów i rekruterów przy wsparciu algorytmów AI.
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>Kandydaci</h4>
+                    <a href="#oferty">Oferty Pracy</a>
+                    <a href="javascript:void(0)" onclick="window.openCvBuilderModal()">Kreator CV AI</a>
+                    <a href="javascript:void(0)" onclick="document.getElementById('navDashboardBtn').click()">Panel Kandydata</a>
+                    <a href="javascript:void(0)" onclick="document.getElementById('openJobAlertBtn').click()">Job Alert</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Pracodawcy</h4>
+                    <a href="javascript:void(0)" onclick="openAddModal('standard')">Dodaj Ogłoszenie</a>
+                    <a href="#zlecenia">Oferty Zleceń</a>
+                    <a href="javascript:void(0)" onclick="document.getElementById('navDashboardBtn').click()">Panel Rekrutera (Kanban)</a>
+                    <a href="#cennik">Cennik 99 zł/msc</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>O platformie</h4>
+                    <a href="#cennik">Cennik</a>
+                    <a href="javascript:void(0)" onclick="showToast('Regulamin w przygotowaniu', 'info')">Regulamin</a>
+                    <a href="javascript:void(0)" onclick="showToast('Polityka prywatności RODO aktywna', 'info')">Polityka prywatności</a>
+                </div>
             </div>
         </div>
-    </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <div class="hero-badge">
-                <span class="badge-pulse"></span>
-                <span>AI-Powered Job Matching</span>
-            </div>
-            <h1 class="hero-title">
-                Znajdź <span class="gradient-text">pracę przyszłości</span><br>
-                w jednym miejscu
-            </h1>
-            <p class="hero-subtitle">
-                Tysiące ofert z całego świata. Inteligentne dopasowanie AI. 
-                Ogłoszenia, zlecenia i kariera w Twoich rękach.
-            </p>
-            
-            <div class="search-box" id="searchBox">
-                <div class="search-field">
-                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-                    </svg>
-                    <input type="text" id="searchInput" placeholder="Stanowisko, słowa kluczowe..." autocomplete="off">
-                </div>
-                <div class="search-divider"></div>
-                <div class="search-field">
-                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
-                    </svg>
-                    <input type="text" id="locationInput" placeholder="Lokalizacja..." autocomplete="off">
-                </div>
-                <button class="search-btn" id="searchBtn">
-                    <span>Szukaj</span>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </button>
-            </div>
-            
-            <div class="hero-stats">
-                <div class="stat">
-                    <span class="stat-number" data-target="12483">0</span>
-                    <span class="stat-label">Aktywnych ofert</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-number" data-target="892">0</span>
-                    <span class="stat-label">Pracodawców</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-number" data-target="156">0</span>
-                    <span class="stat-label">Nowych dziennie</span>
-                </div>
-            </div>
-
-            <!-- Szybka Rejestracja / Wybór Profilu -->
-            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 24px;">
-                <button id="heroRegisterCandidate" class="btn btn-primary" style="padding: 10px 22px; font-weight: 700; font-size: 13px; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 18px rgba(37,99,235,0.4); cursor: pointer; transition: all 0.2s;" type="button">
-                    <span>🧑‍💻</span> <span>Dołącz jako Kandydat (AI CV Matcher)</span>
-                </button>
-                <button id="heroRegisterRecruiter" class="btn btn-secondary" style="padding: 10px 22px; font-weight: 700; font-size: 13px; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.4); color: #a5b4fc; cursor: pointer; transition: all 0.2s;" type="button">
-                    <span>🏢</span> <span>Panel Pracodawcy (Dodaj Ofertę)</span>
-                </button>
-            </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 JobNexus. Wszelkie prawa zastrzeżone.</p>
         </div>
-        
-        <div class="hero-visual">
-            <div class="orbit-container">
-                <div class="orbit orbit-1">
-                    <div class="orbit-dot" style="--delay:0s"></div>
+    </footer>
+
+    <!-- ================================================================= -->
+    <!-- ALL MODALS (ENCAPSULATED, CLEAN & DEDICATED)                       -->
+    <!-- ================================================================= -->
+
+    <!-- 1. DASHBOARD MODAL (CANDIDATE & RECRUITER PANELS) -->
+    <div class="modal hidden" id="dashboardModal">
+        <div class="modal-content" style="max-width: 1200px; width: 95%; max-height: 90vh; overflow-y: auto;">
+            <button class="modal-close" id="dashboardClose">&times;</button>
+
+            <!-- Dashboard Header & Switcher -->
+            <div class="dashboard-header">
+                <div class="dashboard-user-info">
+                    <div class="dashboard-avatar" id="dashAvatar">JN</div>
+                    <div class="dashboard-welcome">
+                        <h2>Witaj, <span id="dashUserName">Użytkowniku</span>! 👋</h2>
+                        <span class="dashboard-role-badge" id="dashRoleBadge">🧑‍💻 Kandydat</span>
+                    </div>
                 </div>
-                <div class="orbit orbit-2">
-                    <div class="orbit-dot" style="--delay:1s"></div>
-                </div>
-                <div class="orbit orbit-3">
-                    <div class="orbit-dot" style="--delay:2s"></div>
-                </div>
-                <div class="orbit-center">
-                    <svg viewBox="0 0 60 60" fill="none">
-                        <rect x="10" y="10" width="40" height="40" rx="10" stroke="url(#grad1)" stroke-width="2"/>
-                        <path d="M20 25h20M20 32h14M20 39h8" stroke="url(#grad1)" stroke-width="2" stroke-linecap="round"/>
-                        <defs>
-                            <linearGradient id="grad1" x1="0" y1="0" x2="60" y2="60">
-                                <stop offset="0%" stop-color="#00f5ff"/>
-                                <stop offset="100%" stop-color="#7c3aed"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
+                <div class="dashboard-actions">
+                    <button type="button" class="btn-switch-role" id="dashSwitchRoleBtn">
+                        🔄 Przełącz na profil <span id="dashOppositeRoleText">Rekrutera</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="dashLogoutBtn" style="padding: 0.65rem 1rem;">
+                        Wyloguj
+                    </button>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Filters Bar -->
-    <div class="filters-bar" id="filtersBar">
-        <div class="filters-container">
-            <button class="filter-chip active" data-filter="all">Wszystkie</button>
-            <button class="filter-chip" data-filter="fulltime">Pełny etat</button>
-            <button class="filter-chip" data-filter="parttime">Część etatu</button>
-            <button class="filter-chip" data-filter="remote">Zdalna</button>
-            <button class="filter-chip" data-filter="contract">Kontrakt</button>
-            <button class="filter-chip" data-filter="internship">Staż</button>
+            <!-- CANDIDATE VIEW -->
+            <div id="candidateDashboard">
+                <div class="dashboard-stats-grid">
+                    <div class="dash-stat-card">
+                        <div class="stat-icon-wrapper">📄</div>
+                        <div class="stat-data">
+                            <div class="stat-number" id="dashAtsScore">94%</div>
+                            <div class="stat-desc">Wynik dopasowania ATS</div>
+                        </div>
+                    </div>
+                    <div class="dash-stat-card">
+                        <div class="stat-icon-wrapper green">📨</div>
+                        <div class="stat-data">
+                            <div class="stat-number" id="dashAppsCount">3</div>
+                            <div class="stat-desc">Wysłane aplikacje</div>
+                        </div>
+                    </div>
+                    <div class="dash-stat-card">
+                        <div class="stat-icon-wrapper amber">⭐</div>
+                        <div class="stat-data">
+                            <div class="stat-number" id="dashFavsCount">5</div>
+                            <div class="stat-desc">Zapisane oferty</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid-layout">
+                    <!-- Left Column: CV ATS & Matcher -->
+                    <div>
+                        <div class="dash-card">
+                            <div class="dash-card-header">
+                                <h3 class="dash-card-title">🎯 AI CV Matcher & Analiza ATS</h3>
+                                <button type="button" class="btn btn-primary btn-sm cv-builder-btn" onclick="window.openCvBuilderModal()">Otwórz Kreator CV</button>
+                            </div>
+
+                            <div class="ats-score-container">
+                                <div class="ats-score-circle">
+                                    <div class="ats-score-inner">
+                                        <span class="ats-score-num">94</span>
+                                        <span class="ats-score-text">ATS Score</span>
+                                    </div>
+                                </div>
+                                <div class="ats-score-details">
+                                    <h4>Twoje CV jest doskonale zoptymalizowane!</h4>
+                                    <p>Skanery ATS i rekruterzy szybko znajdą Twoje kluczowe technologie.</p>
+                                    <div class="ats-pill-list">
+                                        <span class="ats-pill">✓ React & TypeScript</span>
+                                        <span class="ats-pill">✓ Node.js & REST API</span>
+                                        <span class="ats-pill">✓ AWS Cloud</span>
+                                        <span class="ats-pill missing">+ Dodaj Docker / CI/CD</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CV Upload Zone inside Candidate Panel -->
+                            <div class="cv-upload-zone" id="cvUploadZone" style="border: 2px dashed rgba(59, 130, 246, 0.4); padding: 2rem; border-radius: 1rem; text-align: center; cursor: pointer; background: rgba(15, 23, 42, 0.5);">
+                                <input type="file" id="cvFileInput" accept=".pdf,.doc,.docx" hidden>
+                                <div class="cv-upload-content">
+                                    <div class="cv-upload-icon" style="font-size: 2.5rem; margin-bottom: 0.5rem;">📁</div>
+                                    <h4 style="color: #fff; margin-bottom: 0.25rem;">Wgraj nowe CV (PDF, DOCX)</h4>
+                                    <p style="color: #94a3b8; font-size: 0.85rem;">AI natychmiast przeliczy Twój wynik ATS i dopasuje oferty</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Interview Coach inside Candidate Panel -->
+                        <div class="dash-card">
+                            <div class="dash-card-header">
+                                <h3 class="dash-card-title">🤖 AI Interview Coach — Trening Rozmów</h3>
+                            </div>
+                            <div class="ai-coach-box">
+                                <div class="ai-question-bubble">
+                                    <strong>Pytanie od AI Rekrutera:</strong>
+                                    "Opisz sytuację, w której musiałeś zoptymalizować wydajność dużej aplikacji webowej. Jakie metryki brałeś pod uwagę?"
+                                </div>
+                                <textarea class="ai-answer-textarea" placeholder="Wpisz swoją odpowiedź lub kliknij, aby AI podpowiedziało idealną strukturę STAR..."></textarea>
+                                <button type="button" class="btn btn-primary btn-block" onclick="showToast('✨ AI przeanalizowało odpowiedź: Doskonała struktura STAR! Ocena: 9/10', 'success')">
+                                    Sprawdź odpowiedź przez AI
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: My Applications & Saved -->
+                    <div>
+                        <div class="dash-card">
+                            <div class="dash-card-header">
+                                <h3 class="dash-card-title">📋 Moje Aplikacje</h3>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <div style="background: #1e293b; padding: 0.85rem; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.06);">
+                                    <strong style="color: #fff; display: block; font-size: 0.9rem;">Senior Full Stack Developer</strong>
+                                    <span style="color: #94a3b8; font-size: 0.8rem;">NexusTech Solutions</span>
+                                    <span style="display: inline-block; margin-top: 0.35rem; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(59, 130, 246, 0.15); color: #60a5fa;">W trakcie weryfikacji</span>
+                                </div>
+                                <div style="background: #1e293b; padding: 0.85rem; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.06);">
+                                    <strong style="color: #fff; display: block; font-size: 0.9rem;">AI Prompt Engineer</strong>
+                                    <span style="color: #94a3b8; font-size: 0.8rem;">Cognitive AI Labs</span>
+                                    <span style="display: inline-block; margin-top: 0.35rem; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(16, 185, 129, 0.15); color: #34d399;">Zaproszenie na rozmowę</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECRUITER VIEW (KANBAN & HR TOOLS) -->
+            <div id="recruiterDashboard" class="hidden">
+                <div class="dashboard-stats-grid">
+                    <div class="dash-stat-card recruiter-stat">
+                        <div class="stat-icon-wrapper purple">👥</div>
+                        <div class="stat-data">
+                            <div class="stat-number">28</div>
+                            <div class="stat-desc">Wszystkich kandydatów</div>
+                        </div>
+                    </div>
+                    <div class="dash-stat-card recruiter-stat">
+                        <div class="stat-icon-wrapper green">📢</div>
+                        <div class="stat-data">
+                            <div class="stat-number">4</div>
+                            <div class="stat-desc">Aktywne ogłoszenia</div>
+                        </div>
+                    </div>
+                    <div class="dash-stat-card recruiter-stat">
+                        <div class="stat-icon-wrapper amber">💎</div>
+                        <div class="stat-data">
+                            <div class="stat-number">PRO</div>
+                            <div class="stat-desc">Plan 99 zł/msc aktywny</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <h3 class="dash-card-title">📊 Tablica Kanban Rekrutacji</h3>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="openAddModal('featured')">➕ Opublikuj Nową Ofertę</button>
+                    </div>
+
+                    <div class="kanban-board">
+                        <!-- Column 1: Nowe Aplikacje -->
+                        <div class="kanban-column">
+                            <div class="kanban-column-header">
+                                <span class="kanban-column-title">📥 Nowe Aplikacje</span>
+                                <span class="kanban-counter">2</span>
+                            </div>
+                            <div class="kanban-card">
+                                <div class="kanban-candidate-name">Michał Wiśniewski</div>
+                                <div class="kanban-candidate-role">Senior Full Stack Dev</div>
+                                <div class="kanban-card-footer">
+                                    <span class="kanban-match-score">🎯 96% Match</span>
+                                    <span style="color: #94a3b8;">Dziś</span>
+                                </div>
+                            </div>
+                            <div class="kanban-card">
+                                <div class="kanban-candidate-name">Aleksandra Dąbrowska</div>
+                                <div class="kanban-candidate-role">AI Prompt Engineer</div>
+                                <div class="kanban-card-footer">
+                                    <span class="kanban-match-score">🎯 91% Match</span>
+                                    <span style="color: #94a3b8;">Wczoraj</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Column 2: Weryfikacja -->
+                        <div class="kanban-column">
+                            <div class="kanban-column-header">
+                                <span class="kanban-column-title">🔍 Weryfikacja</span>
+                                <span class="kanban-counter">1</span>
+                            </div>
+                            <div class="kanban-card">
+                                <div class="kanban-candidate-name">Piotr Zieliński</div>
+                                <div class="kanban-candidate-role">DevOps Cloud Engineer</div>
+                                <div class="kanban-card-footer">
+                                    <span class="kanban-match-score">🎯 88% Match</span>
+                                    <span style="color: #94a3b8;">2 dni temu</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Column 3: Rozmowa -->
+                        <div class="kanban-column">
+                            <div class="kanban-column-header">
+                                <span class="kanban-column-title">🗣️ Rozmowa</span>
+                                <span class="kanban-counter">1</span>
+                            </div>
+                            <div class="kanban-card">
+                                <div class="kanban-candidate-name">Tomasz Kamiński</div>
+                                <div class="kanban-candidate-role">Spawacz TIG / Konstrukcje</div>
+                                <div class="kanban-card-footer">
+                                    <span class="kanban-match-score">🎯 95% Match</span>
+                                    <span style="color: #38bdf8;">Jutro 14:00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Column 4: Zatrudniony -->
+                        <div class="kanban-column">
+                            <div class="kanban-column-header">
+                                <span class="kanban-column-title">🎉 Zatrudniony</span>
+                                <span class="kanban-counter">1</span>
+                            </div>
+                            <div class="kanban-card">
+                                <div class="kanban-candidate-name">Karolina Nowak</div>
+                                <div class="kanban-candidate-role">UI/UX Designer</div>
+                                <div class="kanban-card-footer">
+                                    <span class="kanban-match-score">🎯 98% Match</span>
+                                    <span style="color: #34d399;">Oferta zaakceptowana</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Job Offers Section -->
-    <section class="section" id="oferty">
-        <div class="section-header">
-            <h2 class="section-title">Oferty <span class="gradient-text">Pracy</span></h2>
-            <p class="section-desc">Najnowsze oferty z Jooble i naszej bazy</p>
-        </div>
-        
-        <div class="jobs-grid" id="jobsGrid">
-            <!-- Jobs injected by JS -->
-        </div>
-        
-        <div class="loading-state" id="jobsLoading">
-            <div class="spinner"></div>
-            <p>Ładowanie ofert...</p>
-        </div>
-        
-        <div class="empty-state hidden" id="jobsEmpty">
-            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="8" y="12" width="48" height="40" rx="4"/>
-                <path d="M8 20h48M20 12V8M44 12V8"/>
-                <path d="M24 32h16M24 38h10"/>
-            </svg>
-            <h3>Nie znaleziono ofert</h3>
-            <p>Spróbuj zmienić kryteria wyszukiwania</p>
-        </div>
-        
-        <div id="jobsPagination" class="pagination-bar" style="margin-top: 2.5rem;"></div>
-    </section>
-
-    <!-- Announcements / Zlecenia Section -->
-    <section class="section section-alt" id="ogloszenia">
-        <div class="section-header">
-            <h2 class="section-title">Ogłoszenia & <span class="gradient-text">Zlecenia</span></h2>
-            <p class="section-desc">Praca dorywcza, projekty, zlecenia freelance</p>
-        </div>
-        
-        <div class="announcements-grid" id="announcementsGrid">
-            <!-- Demo announcements -->
-        </div>
-        
-        <div class="pricing-cards">
-            <div class="pricing-card">
-                <div class="pricing-badge">Standard</div>
-                <h3>Standardowe Ogłoszenie</h3>
-                <div class="pricing-price">9,99 <span>zł</span></div>
-                <ul class="pricing-features">
-                    <li>30 dni widoczności</li>
-                    <li>Podstawowa pozycja</li>
-                    <li>Bez wyróżnienia</li>
-                </ul>
-                <button class="pricing-btn" onclick="openAddModal('standard')">Wybieram</button>
-            </div>
-            
-            <div class="pricing-card pricing-featured">
-                <div class="pricing-badge pricing-badge-hot">HOT</div>
-                <h3>Ogłoszenie Wyróżnione</h3>
-                <div class="pricing-price">29,99 <span>zł</span></div>
-                <ul class="pricing-features">
-                    <li>30 dni widoczności</li>
-                    <li>Pozycja premium</li>
-                    <li>Graficzne wyróżnienie</li>
-                    <li>Więcej wyświetleń</li>
-                </ul>
-                <button class="pricing-btn" onclick="openAddModal('featured')">Wybieram</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- CV / AI Section -->
-    <section class="section" id="cv">
-        <div class="section-header">
-            <h2 class="section-title">AI <span class="gradient-text">CV Matcher</span></h2>
-            <p class="section-desc">Wrzuć CV, a AI znajdzie idealne oferty dla Ciebie</p>
-        </div>
-        
-        <div class="cv-upload-zone" id="cvUploadZone">
-            <input type="file" id="cvFileInput" accept=".pdf,.doc,.docx" hidden>
-            <div class="cv-upload-content">
-                <div class="cv-upload-icon">
-                    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M32 8v48M16 32l16-16 16 16"/>
-                        <rect x="8" y="48" width="48" height="8" rx="2"/>
-                    </svg>
+    <!-- 2. KREATOR CV AI MODAL -->
+    <div class="modal hidden" id="cvBuilderModal">
+        <div class="modal-content" style="max-width: 900px; width: 95%;">
+            <button class="modal-close" id="cvBuilderClose">&times;</button>
+            <div class="modal-header">
+                <div class="modal-icon" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
                 </div>
-                <h3>Upuść CV lub kliknij, aby wybrać</h3>
-                <p>PDF, DOC, DOCX — maks. 10 MB</p>
-                <span class="cv-formats">AI automatycznie rozpozna Twoje umiejętności</span>
+                <h2>Kreator CV AI</h2>
+                <p>Wypełnij formularz, zoptymalizuj treść przez AI i pobierz gotowe CV w standardzie ATS.</p>
             </div>
-        </div>
-        
-        <div class="cv-matches hidden" id="cvMatches">
-            <h3>Dopasowane oferty dla Ciebie</h3>
-            <div class="jobs-grid" id="cvMatchesGrid"></div>
-        </div>
-    </section>
 
-    <!-- HR Database Section -->
-    <section class="section section-alt" id="hr">
-        <div class="section-header">
-            <h2 class="section-title">Baza <span class="gradient-text">CV dla HR</span></h2>
-            <p class="section-desc">Przeszukuj bazę kandydatów i znajdź idealnego pracownika</p>
-        </div>
-        
-        <div class="hr-card">
-            <div class="hr-visual">
-                <div class="hr-icon">
-                    <svg viewBox="0 0 80 80" fill="none">
-                        <rect x="10" y="10" width="60" height="60" rx="12" stroke="url(#hrGrad)" stroke-width="2"/>
-                        <circle cx="40" cy="32" r="10" stroke="url(#hrGrad)" stroke-width="2"/>
-                        <path d="M24 56c0-8.8 7.2-16 16-16s16 7.2 16 16" stroke="url(#hrGrad)" stroke-width="2"/>
-                        <defs>
-                            <linearGradient id="hrGrad" x1="0" y1="0" x2="80" y2="80">
-                                <stop offset="0%" stop-color="#00f5ff"/>
-                                <stop offset="100%" stop-color="#7c3aed"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-            </div>
-            <div class="hr-content">
-                <h3>Dostęp do bazy CV kandydatów</h3>
-                <p>Przeszukuj tysiące profili, filtruj według umiejętności, doświadczenia i lokalizacji. Automatyczne powiadomienia o nowych kandydatach.</p>
-                <div class="hr-price">
-                    <span class="hr-price-value">99,99 zł</span>
-                    <span class="hr-price-period">/ miesiąc</span>
-                </div>
-                <button class="hr-btn" onclick="alert('Funkcja wkrótce dostępna!')">Aktywuj dostęp</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- CV Builder Section -->
-    <section class="section" id="cv-builder">
-        <div class="section-header">
-            <h2 class="section-title">Kreator <span class="gradient-text">CV</span></h2>
-            <p class="section-desc">Stwórz profesjonalne CV w 5 minut</p>
-        </div>
-        
-        <div class="cv-builder-card">
-            <div class="cv-builder-preview">
-                <div class="cv-preview-mock">
-                    <div class="cv-mock-header"></div>
-                    <div class="cv-mock-line cv-mock-line-short"></div>
-                    <div class="cv-mock-line"></div>
-                    <div class="cv-mock-line"></div>
-                    <div class="cv-mock-line cv-mock-line-medium"></div>
-                </div>
-            </div>
-            <div class="cv-builder-content">
-                <h3>Profesjonalne CV w kilka kliknięć</h3>
-                <ul class="cv-builder-features">
-                    <li>Nowoczesne szablony</li>
-                    <li>AI optymalizacja treści</li>
-                    <li>Eksport PDF</li>
-                    <li>Przechowywanie w chmurze</li>
-                </ul>
-                <div class="cv-builder-pricing">
-                    <div class="cv-builder-price">
-                        <span class="price-main">9,99 zł</span>
-                        <span class="price-sep">+</span>
-                        <span class="price-sub">9,99 zł/msc</span>
+            <div class="cv-builder-workspace" style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 1.5rem; margin-top: 1.25rem;">
+                <div class="cv-builder-form-col" style="max-height: 520px; overflow-y: auto; padding-right: 0.5rem;">
+                    <div class="form-group">
+                        <label>Imię i Nazwisko</label>
+                        <input type="text" id="cvName" class="form-input" placeholder="np. Jan Kowalski" value="Jan Kowalski">
                     </div>
-                    <span class="price-note">za przechowywanie w bazie</span>
+                    <div class="form-group">
+                        <label>Docelowe stanowisko</label>
+                        <input type="text" id="cvTitle" class="form-input" placeholder="np. Senior Frontend Developer" value="Senior Frontend Developer">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input type="email" id="cvEmail" class="form-input" value="jan.kowalski@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Telefon</label>
+                            <input type="tel" id="cvPhone" class="form-input" value="+48 500 600 700">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: flex; justify-content: space-between;">
+                            <span>Podsumowanie zawodowe</span>
+                            <button type="button" id="cvAiEnhanceBioBtn" style="background: none; border: none; color: #a78bfa; font-size: 0.8rem; font-weight: 600; cursor: pointer;">✨ AI Ulepsz opis</button>
+                        </label>
+                        <textarea id="cvBio" class="form-input" style="min-height: 80px; resize: vertical;">Doświadczony programista z 5-letnim stażem w budowaniu nowoczesnych aplikacji webowych w oparciu o React, TypeScript oraz chmurę AWS.</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Doświadczenie zawodowe</label>
+                        <textarea id="cvExperience" class="form-input" style="min-height: 90px; resize: vertical;">• 2022 - obecnie: Senior Frontend Developer w Nexus Labs.
+• 2020 - 2022: Frontend Developer w Digital Studio.</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Umiejętności (oddzielone przecinkami)</label>
+                        <input type="text" id="cvSkills" class="form-input" value="React, TypeScript, Node.js, Vite, TailwindCSS, AWS, Docker, Git">
+                    </div>
+                    <div class="form-group">
+                        <label>Edukacja</label>
+                        <input type="text" id="cvEducation" class="form-input" value="Politechnika Warszawska — Informatyka (Inżynier, 2016-2020)">
+                    </div>
                 </div>
-                <button class="cv-builder-btn" id="openCvBuilderBtn">Stwórz CV</button>
+
+                <div class="cv-builder-preview-col" style="background: #ffffff; color: #1e293b; border-radius: 0.75rem; padding: 1.5rem; max-height: 520px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: 'Inter', system-ui, sans-serif;">
+                    <div id="cvLivePreview">
+                        <div style="border-bottom: 2px solid #2563eb; padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                            <h3 id="prevName" style="color: #0f172a; font-size: 1.4rem; font-weight: 800; margin: 0;">Jan Kowalski</h3>
+                            <p id="prevTitle" style="color: #2563eb; font-size: 0.95rem; font-weight: 600; margin: 0.2rem 0 0.4rem;">Senior Frontend Developer</p>
+                            <div style="font-size: 0.75rem; color: #64748b; display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                                <span id="prevEmail">✉️ jan.kowalski@example.com</span>
+                                <span id="prevPhone">📞 +48 500 600 700</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 0.85rem;">
+                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Podsumowanie zawodowe</h4>
+                            <p id="prevBio" style="font-size: 0.8rem; color: #334155; line-height: 1.4; margin: 0;">Doświadczony programista z 5-letnim stażem w budowaniu nowoczesnych aplikacji webowych w oparciu o React, TypeScript oraz chmurę AWS.</p>
+                        </div>
+
+                        <div style="margin-bottom: 0.85rem;">
+                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Doświadczenie zawodowe</h4>
+                            <div id="prevExp" style="font-size: 0.8rem; color: #334155; line-height: 1.4; white-space: pre-line;">• 2022 - obecnie: Senior Frontend Developer w Nexus Labs.
+• 2020 - 2022: Frontend Developer w Digital Studio.</div>
+                        </div>
+
+                        <div style="margin-bottom: 0.85rem;">
+                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Umiejętności</h4>
+                            <div id="prevSkills" style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                                <span style="background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">React</span>
+                                <span style="background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">TypeScript</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Edukacja</h4>
+                            <p id="prevEdu" style="font-size: 0.8rem; color: #334155; margin: 0;">Politechnika Warszawska — Informatyka (Inżynier, 2016-2020)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; gap: 0.75rem;">
+                <div style="color: #94a3b8; font-size: 0.85rem;">Format: Standard ATS-friendly</div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <button type="button" class="btn btn-secondary" id="cvSaveProfileBtn">💾 Zapisz w profilu</button>
+                    <button type="button" class="btn btn-primary" id="cvDownloadPdfBtn" style="background: linear-gradient(135deg, #2563eb, #7c3aed);">📥 Pobierz / Drukuj CV (PDF)</button>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Authentication Modal -->
-    <!-- MODAL LOGOWANIA I REJESTRACJI -->
-    <div class="modal-overlay hidden" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle" style="z-index: 10000;">
-        <div class="modal auth-modal" style="max-width: 460px; width: 100%; padding: 1.75rem; background: #0f172a; border: 1px solid #334155; border-radius: 1.25rem; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85); color: #f8fafc;">
-            <button class="modal-close" id="authClose" type="button" aria-label="Zamknij">&times;</button>
-
-            <!-- Tagi przełączania: Logowanie / Rejestracja -->
-            <div style="display: flex; background: #0b1120; padding: 4px; border-radius: 12px; border: 1px solid #1e293b; margin-bottom: 1.25rem;">
-                <button type="button" id="authTabLogin" class="auth-tab active" style="flex: 1; padding: 8px; font-size: 13px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s; background: #2563eb; color: white;">
-                    Zaloguj się
-                </button>
-                <button type="button" id="authTabRegister" class="auth-tab" style="flex: 1; padding: 8px; font-size: 13px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s; background: transparent; color: #94a3b8;">
-                    Zarejestruj się
-                </button>
+    <!-- 3. AUTH MODAL (LOGIN & REGISTER) -->
+    <div class="modal hidden" id="authModal">
+        <div class="modal-content" style="max-width: 440px;">
+            <button class="modal-close" id="authClose">&times;</button>
+            <div class="auth-tabs" style="display: flex; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 1.5rem;">
+                <button type="button" class="auth-tab active" id="tabLogin" style="flex:1; padding:0.75rem; background:none; border:none; color:#fff; font-weight:700; border-bottom:2px solid #3b82f6; cursor:pointer;">Logowanie</button>
+                <button type="button" class="auth-tab" id="tabRegister" style="flex:1; padding:0.75rem; background:none; border:none; color:#94a3b8; font-weight:700; cursor:pointer;">Rejestracja</button>
             </div>
 
-            <div class="modal-header" style="text-align: left; margin-bottom: 1rem;">
-                <h2 class="modal-title" id="authTitle" style="font-size: 1.35rem; font-weight: 800; color: white; margin: 0;">Zaloguj się do konta</h2>
-                <p class="auth-subtitle" id="authSubtitle" style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Wprowadź swoje dane, aby przejść do panelu i ofert.</p>
-            </div>
-
-            <div class="modal-alert hidden" id="authError" style="margin-bottom: 1rem; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 500; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171;"></div>
-
-            <form class="modal-form" id="authForm" novalidate style="display: flex; flex-direction: column; gap: 12px;">
-                <!-- Wybór roli przy rejestracji -->
-                <div id="authRoleGroup" class="hidden" style="display: flex; flex-direction: column; gap: 6px;">
-                    <label style="font-size: 12px; font-weight: 600; color: #cbd5e1;">Wybierz typ konta:</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <label id="roleLabelCandidate" class="role-card active" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 8px; border-radius: 12px; border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.15); cursor: pointer; transition: all 0.2s;">
-                            <input type="radio" name="authRole" value="candidate" checked style="display: none;">
-                            <span style="font-size: 1.35rem;">🧑‍💻</span>
-                            <span style="font-size: 12px; font-weight: 700; color: white;">Kandydat</span>
-                            <span style="font-size: 10px; color: #93c5fd; text-align: center;">Szukam pracy</span>
+            <form id="authForm" class="auth-form">
+                <!-- Role selection for registration -->
+                <div class="form-group hidden" id="roleGroup">
+                    <label>Wybierz typ konta</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.35rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; background: #1e293b; padding: 0.75rem; border-radius: 0.5rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);">
+                            <input type="radio" name="authRole" value="candidate" checked>
+                            <span style="color:#fff; font-size:0.85rem; font-weight:600;">🧑‍💻 Kandydat</span>
                         </label>
-                        <label id="roleLabelRecruiter" class="role-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 8px; border-radius: 12px; border: 2px solid #334155; background: #0b1120; cursor: pointer; transition: all 0.2s;">
-                            <input type="radio" name="authRole" value="recruiter" style="display: none;">
-                            <span style="font-size: 1.35rem;">🏢</span>
-                            <span style="font-size: 12px; font-weight: 700; color: #cbd5e1;">Pracodawca</span>
-                            <span style="font-size: 10px; color: #64748b; text-align: center;">Dodaję oferty</span>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; background: #1e293b; padding: 0.75rem; border-radius: 0.5rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);">
+                            <input type="radio" name="authRole" value="recruiter">
+                            <span style="color:#fff; font-size:0.85rem; font-weight:600;">🏢 Rekruter</span>
                         </label>
                     </div>
                 </div>
 
-                <div class="form-group hidden" id="authNameGroup" style="display: flex; flex-direction: column; gap: 4px;">
-                    <label for="authName" style="font-size: 12px; font-weight: 500; color: #cbd5e1;">Imię i nazwisko / Nazwa firmy</label>
-                    <input id="authName" type="text" autocomplete="name" placeholder="np. Jan Kowalski" style="padding: 10px 12px; background: #0b1120; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px;">
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" id="authEmail" required placeholder="twoj@email.com" class="form-input">
                 </div>
-
-                <div class="form-group" style="display: flex; flex-direction: column; gap: 4px;">
-                    <label for="authEmail" style="font-size: 12px; font-weight: 500; color: #cbd5e1;">Adres e-mail</label>
-                    <input id="authEmail" type="email" autocomplete="email" required placeholder="twoj.email@example.com" style="padding: 10px 12px; background: #0b1120; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px;">
+                <div class="form-group">
+                    <label>Hasło</label>
+                    <input type="password" id="authPassword" required placeholder="••••••••" class="form-input">
                 </div>
-
-                <div class="form-group" style="display: flex; flex-direction: column; gap: 4px;">
-                    <label for="authPassword" style="font-size: 12px; font-weight: 500; color: #cbd5e1;">Hasło (min. 8 znaków)</label>
-                    <input id="authPassword" type="password" minlength="6" autocomplete="current-password" required placeholder="••••••••" style="padding: 10px 12px; background: #0b1120; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px;">
-                </div>
-
-                <button class="modal-submit" type="submit" id="authSubmit" style="padding: 12px; margin-top: 6px; font-size: 13px; font-weight: 700; background: linear-gradient(135deg, #2563eb, #4f46e5); color: white; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); transition: all 0.2s;">
+                <button type="submit" class="btn btn-primary btn-block" id="authSubmitBtn" style="margin-top: 1rem;">
                     Zaloguj się
                 </button>
-
-                <div style="text-align: center; margin-top: 6px;">
-                    <button class="auth-switch" id="authSwitch" type="button" style="background: transparent; border: none; font-size: 12px; color: #60a5fa; cursor: pointer; text-decoration: underline;">
-                        Nie masz konta? Zarejestruj się
-                    </button>
-                </div>
             </form>
         </div>
     </div>
 
-    <!-- Information pages modal -->
-    <div class="modal-overlay hidden" id="infoModal" role="dialog" aria-modal="true"><div class="modal"><button class="modal-close" id="infoClose" type="button" aria-label="Zamknij">&times;</button><h2 class="modal-title" id="infoTitle"></h2><div class="info-content" id="infoContent"></div></div></div>
-
-    <!-- Add Announcement Modal -->
-    <div class="modal-overlay hidden" id="addModal">
-        <div class="modal">
+    <!-- 4. ADD JOB ANNOUNCEMENT MODAL -->
+    <div class="modal hidden" id="addModal">
+        <div class="modal-content" style="max-width: 560px;">
             <button class="modal-close" id="modalClose">&times;</button>
-            <h2 class="modal-title">Dodaj Ogłoszenie</h2>
-            <form class="modal-form" id="addForm">
+            <div class="modal-header">
+                <h2>Dodaj ogłoszenie pracy</h2>
+                <p>Opublikuj ofertę i dotrzyj do tysięcy wykwalifikowanych kandydatów</p>
+            </div>
+            <form id="addForm" class="auth-form" style="margin-top: 1.25rem;">
                 <div class="form-group">
-                    <label>Tytuł ogłoszenia</label>
-                    <input type="text" id="annTitle" placeholder="np. Szukam hydraulika" required>
+                    <label>Stanowisko</label>
+                    <input type="text" id="annTitle" required placeholder="np. Senior React Developer" class="form-input">
                 </div>
-                <div class="form-row">
+                <div class="form-group">
+                    <label>Nazwa Firmy</label>
+                    <input type="text" id="annCompany" required placeholder="np. Nexus Solutions Sp. z o.o." class="form-input">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
                     <div class="form-group">
                         <label>Kategoria</label>
-                        <select id="annCategory">
-                            <option>Budowlanka</option>
-                            <option>IT / Programowanie</option>
-                            <option>Transport</option>
-                            <option>Marketing</option>
-                            <option>Administracja</option>
-                            <option>Inne</option>
+                        <select id="annCategory" class="form-input" style="background:#0f172a;color:#fff;">
+                            <option value="it">IT & Tech</option>
+                            <option value="ai">AI & Data</option>
+                            <option value="inzynieria">Inżynieria</option>
+                            <option value="finanse">Finanse</option>
+                            <option value="marketing">Marketing</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Lokalizacja</label>
-                        <input type="text" id="annLocation" placeholder="Miasto">
+                        <input type="text" id="annLocation" placeholder="np. Warszawa / Zdalnie" class="form-input">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Opis</label>
-                    <textarea id="annDesc" rows="4" placeholder="Opisz czego potrzebujesz..."></textarea>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Budżet (zł)</label>
-                        <input type="number" id="annBudget" placeholder="np. 500">
-                    </div>
-                    <div class="form-group">
-                        <label>Typ</label>
-                        <select id="annType">
-                            <option>Zlecenie</option>
-                            <option>Projekt</option>
-                            <option>Praca dorywcza</option>
-                        </select>
-                    </div>
+                    <label>Wynagrodzenie (Widełki)</label>
+                    <input type="text" id="annBudget" placeholder="np. 15 000 - 22 000 PLN" class="form-input">
                 </div>
                 <div class="form-group">
-                    <label class="checkbox-label">
+                    <label>Opis i Wymagania</label>
+                    <textarea id="annDesc" required class="form-input" style="min-height: 90px; resize: vertical;" placeholder="Opisz zakres obowiązków, technologie i benefity..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                         <input type="checkbox" id="annFeatured">
-                        <span class="checkmark"></span>
-                        <span class="checkbox-text">
-                            Ogłoszenie wyróżnione (+20 zł)
-                            <span class="checkbox-badge">Polecane</span>
-                        </span>
+                        <span style="color:#fff; font-weight:600;">Wyróżnij to ogłoszenie (+20,00 zł)</span>
                     </label>
                 </div>
-                <button type="submit" class="modal-submit">Opublikuj — <span id="submitPrice">9,99 zł</span></button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-grid">
-            <div class="footer-brand">
-                <a href="#" class="logo">
-                    <span class="logo-icon">
-                        <svg viewBox="0 0 40 40" fill="none">
-                            <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2"/>
-                            <path d="M12 20C12 15.58 15.58 12 20 12C24.42 12 28 15.58 28 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <circle cx="20" cy="20" r="4" fill="currentColor"/>
-                        </svg>
-                    </span>
-                    <span class="logo-text">Job<span class="logo-accent">Nexus</span></span>
-                </a>
-                <p>Przyszłość pracy zaczyna się tutaj. AI, ogłoszenia i kariera w jednym miejscu.</p>
-            </div>
-            <div class="footer-links">
-                <h4>Dla Pracowników</h4>
-                <a href="#oferty">Oferty pracy</a>
-                <a href="#cv">AI CV Matcher</a>
-                <a href="#cv-builder">Kreator CV</a>
-            </div>
-            <div class="footer-links">
-                <h4>Dla Pracodawców</h4>
-                <a href="#ogloszenia">Dodaj ogłoszenie</a>
-                <a href="#hr">Baza CV</a>
-                <a href="#">Cennik</a>
-            </div>
-            <div class="footer-links">
-                <h4>Firma</h4>
-                <a href="#">O nas</a>
-                <a href="#">Kontakt</a>
-                <a href="#">Regulamin</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>JobNexus 2026. Wszystkie prawa zastrzeżone.</p>
-        </div>
-    </footer>
-
-    <script type="module" src="./app.js?v=20260901_final"></script>
-
-
-    
-    <!-- ==========================================================================
-         SEKCJA ZLECEŃ I PROJEKTÓW FREELANCE (B2B / ZLECENIA)
-         ========================================================================== -->
-    <section class="gigs-section" id="zlecenia" style="padding: 5rem 0; border-top: 1px solid #1e293b; background: linear-gradient(180deg, rgba(15, 23, 42, 0.6) 0%, rgba(11, 17, 32, 0.9) 100%);">
-        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1.25rem;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
-                <div>
-                    <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 20px; color: #c084fc; font-size: 12px; font-weight: 700; margin-bottom: 8px;">
-                        ⚡ Projekty B2B & Freelance
-                    </div>
-                    <h2 style="font-size: 2rem; font-weight: 800; color: white; margin: 0 0 6px 0; letter-spacing: -0.02em;">
-                        Zlecenia i Projekty IT
-                    </h2>
-                    <p style="color: #94a3b8; font-size: 0.95rem; margin: 0;">
-                        Krótkoterminowe projekty, zlecenia dla programistów, wdrożenia AI i design z określonym budżetem.
-                    </p>
-                </div>
-                <div>
-                    <button id="postGigBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #a855f7, #ec4899); border: none; padding: 10px 20px; font-weight: 700; font-size: 13px; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);" type="button">
-                        <span>➕</span> <span>Dodaj Zlecenie</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Filtry Kategorii Zleceń -->
-            <div class="gigs-filter-bar" style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 2rem; -webkit-overflow-scrolling: touch;">
-                <button class="gig-filter-btn active" data-cat="all" style="padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; background: #3b82f6; color: white; border: none; cursor: pointer; white-space: nowrap;">
-                    Wszystkie Zlecenia
-                </button>
-                <button class="gig-filter-btn" data-cat="dev" style="padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; background: #1e293b; color: #94a3b8; border: 1px solid #334155; cursor: pointer; white-space: nowrap;">
-                    💻 Programowanie & Web
-                </button>
-                <button class="gig-filter-btn" data-cat="ai" style="padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; background: #1e293b; color: #94a3b8; border: 1px solid #334155; cursor: pointer; white-space: nowrap;">
-                    🤖 AI & Automatyzacja
-                </button>
-                <button class="gig-filter-btn" data-cat="design" style="padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; background: #1e293b; color: #94a3b8; border: 1px solid #334155; cursor: pointer; white-space: nowrap;">
-                    🎨 UI/UX & Grafika
-                </button>
-                <button class="gig-filter-btn" data-cat="ecommerce" style="padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; background: #1e293b; color: #94a3b8; border: 1px solid #334155; cursor: pointer; white-space: nowrap;">
-                    🛍️ E-commerce & WordPress
-                </button>
-            </div>
-
-            <!-- Siatka Zleceń -->
-            <div id="gigsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem;">
-                <!-- Karty zleceń generowane dynamicznie przez JS -->
-            </div>
-
-            <!-- Profesjonalna Paginacja Zleceń -->
-            <div id="gigsPagination" class="pagination-bar" style="margin-top: 2.5rem;"></div>
-        </div>
-    </section>
-
-    <!-- Modal Składania Oferty na Zlecenie -->
-    <div id="gigProposalModal" class="modal-overlay hidden" style="align-items: flex-start; padding: 1.5rem 0.5rem; overflow-y: auto; z-index: 10001;">
-        <div class="modal-card" style="max-width: 520px; width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 1.25rem; padding: 1.75rem; color: #f8fafc; margin: auto 0; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
-                <div>
-                    <h3 id="gigModalTitle" style="font-size: 18px; font-weight: 800; color: white; margin: 0 0 4px 0;">Złóż ofertę na zlecenie</h3>
-                    <p id="gigModalBudget" style="font-size: 13px; color: #34d399; font-weight: 700; margin: 0;"></p>
-                </div>
-                <button id="gigModalClose" style="background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
-            </div>
-
-            <form id="gigProposalForm" style="display: flex; flex-direction: column; gap: 12px;">
-                <div>
-                    <label style="display: block; font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">Twoja proponowana stawka (PLN) *</label>
-                    <input type="text" id="proposalRate" placeholder="np. 4 500 PLN za projekt" required style="width: 100%; padding: 10px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px; box-sizing: border-box;">
-                </div>
-                <div>
-                    <label style="display: block; font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">Szacowany czas realizacji *</label>
-                    <input type="text" id="proposalTime" placeholder="np. 10 dni roboczych" required style="width: 100%; padding: 10px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px; box-sizing: border-box;">
-                </div>
-                <div>
-                    <label style="display: block; font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">Wiadomość do klienta / Propozycja podejścia *</label>
-                    <textarea id="proposalMessage" rows="4" placeholder="Krótko opisz swoje doświadczenie, linki do portfolio lub podobne realizacje..." required style="width: 100%; padding: 10px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px; line-height: 1.4; resize: vertical; box-sizing: border-box;"></textarea>
-                </div>
-                <button type="submit" style="width: 100%; padding: 12px; margin-top: 8px; background: linear-gradient(135deg, #a855f7, #3b82f6); color: white; font-weight: 700; font-size: 14px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);">
-                    🚀 Wyślij Ofertę
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
+                    Opublikuj ogłoszenie (<span id="submitPrice">9,99 zł</span>)
                 </button>
             </form>
         </div>
     </div>
 
-
-<!-- DASHBOARD MODAL (PANEL KANDYDATA / REKRUTERA) -->
-    <div id="dashboardModal" class="modal-overlay hidden" style="align-items: flex-start; padding: 1.5rem 0.5rem; overflow-y: auto; z-index: 10000;">
-        <div class="modal-card max-w-4xl w-full flex flex-col p-0 overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl rounded-2xl" style="max-width: 920px; width: 100%; height: 88vh; max-height: 88vh; min-height: 0; display: flex; flex-direction: column; margin: auto 0; background: #0f172a; border: 1px solid #334155; border-radius: 1.25rem; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95);">
-            <!-- Header Pulpitu -->
-            <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid #1e293b; background: rgba(15, 23, 42, 0.8); display: flex; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div id="dashUserAvatar" style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #2563eb, #6366f1); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);">
-                        U
+    <!-- 5. ADD GIG MODAL -->
+    <div class="modal hidden" id="gigModal">
+        <div class="modal-content" style="max-width: 560px;">
+            <button class="modal-close" id="gigModalClose">&times;</button>
+            <div class="modal-header">
+                <h2>Dodaj Zlecenie Freelance</h2>
+                <p>Znajdź freelancera lub wykonawcę do swojego projektu</p>
+            </div>
+            <form id="gigForm" class="auth-form" style="margin-top: 1.25rem;">
+                <div class="form-group">
+                    <label>Tytuł zlecenia</label>
+                    <input type="text" id="gigTitle" required placeholder="np. Wdrożenie integracji Stripe w aplikacji Vue" class="form-input">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                    <div class="form-group">
+                        <label>Kategoria</label>
+                        <select id="gigCategory" class="form-input" style="background:#0f172a;color:#fff;">
+                            <option value="web">Web & Mobile</option>
+                            <option value="ai">AI & Automatyzacja</option>
+                            <option value="design">Design & UI/UX</option>
+                            <option value="ecommerce">E-commerce</option>
+                            <option value="marketing">Marketing</option>
+                        </select>
                     </div>
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <h2 id="dashUserName" style="font-size: 1.15rem; font-weight: 700; color: white; margin: 0;">Użytkownik</h2>
-                            <span id="dashUserRoleBadge" style="padding: 2px 8px; font-size: 11px; font-weight: 600; border-radius: 9999px; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);">
-                                Kandydat
-                            </span>
-                        </div>
-                        <p id="dashUserEmail" style="font-size: 12px; color: #94a3b8; margin: 2px 0 0 0;">twoj.email@example.com</p>
+                    <div class="form-group">
+                        <label>Budżet</label>
+                        <input type="text" id="gigBudget" placeholder="np. 3 000 - 5 000 PLN" class="form-input">
                     </div>
                 </div>
-
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <button id="dashSwitchRoleBtn" style="padding: 6px 12px; font-size: 12px; font-weight: 500; color: #cbd5e1; background: #1e293b; border: 1px solid #334155; border-radius: 8px; cursor: pointer; transition: all 0.2s;" title="Zmień widok roli">
-                        Przełącz na Rekrutera
-                    </button>
-                    <button id="dashboardClose" style="padding: 6px; color: #94a3b8; background: transparent; border: none; cursor: pointer; border-radius: 8px;">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                <div class="form-group">
+                    <label>Opis zlecenia</label>
+                    <textarea id="gigDesc" required class="form-input" style="min-height: 90px; resize: vertical;" placeholder="Szczegóły zadania, wymagane technologie, termin..."></textarea>
                 </div>
-            </div>
-
-            <!-- Zakładki Pulpitu -->
-            <div id="dashTabsContainer" style="display: flex; gap: 8px; padding: 0.75rem 1.5rem 0 1.5rem; border-bottom: 1px solid #1e293b; background: rgba(15, 23, 42, 0.4); overflow-x: auto;">
-                <!-- Generowane dynamicznie -->
-            </div>
-
-            <!-- Zawartość Pulpitu -->
-            <div id="dashContentArea" style="padding: 1.25rem; overflow-y: auto; flex: 1 1 auto; min-height: 0; -webkit-overflow-scrolling: touch;">
-                <!-- Dynamiczny widok -->
-            </div>
-
-            <!-- Footer Pulpitu -->
-            <div style="padding: 0.75rem 1.5rem; border-top: 1px solid #1e293b; background: rgba(15, 23, 42, 0.9); display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #64748b;">
-                <span>JobNexus • Panel Zarządzania</span>
-                <button id="dashLogoutBtn" style="color: #f87171; background: transparent; border: none; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 4px;">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                    Wyloguj się
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
+                    Opublikuj Zlecenie
                 </button>
-            </div>
+            </form>
         </div>
     </div>
 
+    <!-- 6. GIG PROPOSAL MODAL -->
+    <div class="modal hidden" id="gigProposalModal">
+        <div class="modal-content" style="max-width: 480px;">
+            <button class="modal-close" id="gigProposalClose">&times;</button>
+            <div class="modal-header">
+                <h2>Złóż ofertę wykonania</h2>
+                <p id="propGigTitle">Zlecenie projektowe</p>
+            </div>
+            <form id="gigProposalForm" class="auth-form" style="margin-top: 1.25rem;">
+                <div class="form-group">
+                    <label>Twoja proponowana stawka (PLN)</label>
+                    <input type="text" id="propAmount" required placeholder="np. 2 500 PLN" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Szacowany czas realizacji</label>
+                    <input type="text" id="propTime" required placeholder="np. 5 dni roboczych" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Wiadomość / Doświadczenie w podobnych projektach</label>
+                    <textarea id="propMessage" required class="form-input" style="min-height: 90px; resize: vertical;" placeholder="Opisz swoje podejście do zadania i podlinkuj portfolio..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
+                    Wyślij propozycję wykonawcy
+                </button>
+            </form>
+        </div>
+    </div>
 
-    <!-- MODAL: JOB ALERT -->
+    <!-- 7. JOB ALERT MODAL -->
     <div class="modal hidden" id="jobAlertModal">
         <div class="modal-content" style="max-width: 480px;">
             <button class="modal-close" id="jobAlertClose">&times;</button>
@@ -649,7 +801,7 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 01-3.46 0"></path></svg>
                 </div>
                 <h2>Utwórz Job Alert AI</h2>
-                <p>Otrzymuj natychmiast powiadomienia, gdy pojawi się oferta idealna dla Ciebie.</p>
+                <p>Otrzymuj natychmiast powiadomienia o nowych pasujących ofertach.</p>
             </div>
             <form id="jobAlertForm" class="auth-form" style="margin-top: 1.5rem;">
                 <div class="form-group">
@@ -668,7 +820,7 @@
                     <label>Częstotliwość powiadomień</label>
                     <select id="alertFreq" class="form-input" style="background:#0f172a;color:#fff;">
                         <option value="instant">Natychmiast po publikacji</option>
-                        <option value="daily" selected>Podsumowanie dzienne (Domyślnie)</option>
+                        <option value="daily" selected>Podsumowanie dzienne</option>
                         <option value="weekly">Podsumowanie tygodniowe</option>
                     </select>
                 </div>
@@ -677,7 +829,7 @@
         </div>
     </div>
 
-    <!-- MODAL: CHECKOUT & PAYMENT SIMULATOR -->
+    <!-- 8. PAYMENT & CHECKOUT MODAL -->
     <div class="modal hidden" id="paymentModal">
         <div class="modal-content" style="max-width: 520px;">
             <button class="modal-close" id="paymentModalClose">&times;</button>
@@ -751,114 +903,10 @@
         </div>
     </div>
 
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
 
-    <!-- MODAL: KREATOR CV AI -->
-    <div class="modal hidden" id="cvBuilderModal">
-        <div class="modal-content" style="max-width: 900px; width: 95%;">
-            <button class="modal-close" id="cvBuilderClose">&times;</button>
-            <div class="modal-header">
-                <div class="modal-icon" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
-                </div>
-                <h2>Kreator CV AI</h2>
-                <p>Wypełnij formularz, zoptymalizuj treść przez AI i pobierz gotowe, profesjonalne CV zgodne z ATS.</p>
-            </div>
-
-            <div class="cv-builder-workspace" style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 1.5rem; margin-top: 1.25rem;">
-                <!-- Form Column -->
-                <div class="cv-builder-form-col" style="max-height: 520px; overflow-y: auto; padding-right: 0.5rem;">
-                    <div class="form-group">
-                        <label>Imię i Nazwisko</label>
-                        <input type="text" id="cvName" class="form-input" placeholder="np. Jan Kowalski" value="Jan Kowalski">
-                    </div>
-                    <div class="form-group">
-                        <label>Docelowe stanowisko / Tytuł zawodowy</label>
-                        <input type="text" id="cvTitle" class="form-input" placeholder="np. Senior Frontend Developer" value="Senior Frontend Developer">
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                        <div class="form-group">
-                            <label>E-mail</label>
-                            <input type="email" id="cvEmail" class="form-input" placeholder="jan@example.com" value="jan.kowalski@example.com">
-                        </div>
-                        <div class="form-group">
-                            <label>Telefon</label>
-                            <input type="tel" id="cvPhone" class="form-input" placeholder="+48 500 600 700" value="+48 500 600 700">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label style="display: flex; justify-content: space-between;">
-                            <span>Podsumowanie zawodowe</span>
-                            <button type="button" id="cvAiEnhanceBioBtn" style="background: none; border: none; color: #a78bfa; font-size: 0.8rem; font-weight: 600; cursor: pointer;">✨ AI Ulepsz opis</button>
-                        </label>
-                        <textarea id="cvBio" class="form-input" style="min-height: 80px; resize: vertical;" placeholder="Krótkie podsumowanie doświadczenia i celów zawodowych...">Doświadczony programista z 5-letnim stażem w budowaniu nowoczesnych aplikacji webowych w oparciu o React, TypeScript oraz chmurę AWS.</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Doświadczenie zawodowe (Stanowisko, Firma, Lata, Obowiązki)</label>
-                        <textarea id="cvExperience" class="form-input" style="min-height: 90px; resize: vertical;" placeholder="np. 2022 - obecnie: Senior React Developer w TechCorp. Rozwój architektury mikrofrontendów...">• 2022 - obecnie: Senior Frontend Developer w Nexus Labs. Rozwój architektury mikrofrontendów i integracja modeli AI.
-• 2020 - 2022: Frontend Developer w Digital Studio. Tworzenie aplikacji SaaS w React i Next.js.</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Umiejętności & Technologie (oddzielone przecinkami)</label>
-                        <input type="text" id="cvSkills" class="form-input" placeholder="np. React, TypeScript, Node.js, Docker, Git" value="React, TypeScript, Node.js, Vite, TailwindCSS, AWS, Docker, Git, CI/CD">
-                    </div>
-                    <div class="form-group">
-                        <label>Edukacja / Kursy</label>
-                        <input type="text" id="cvEducation" class="form-input" placeholder="np. Politechnika Warszawska — Informatyka (Inżynier)" value="Politechnika Warszawska — Informatyka (Inżynier, 2016-2020)">
-                    </div>
-                </div>
-
-                <!-- Live Preview Column -->
-                <div class="cv-builder-preview-col" style="background: #ffffff; color: #1e293b; border-radius: 0.75rem; padding: 1.5rem; max-height: 520px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: 'Inter', system-ui, sans-serif;">
-                    <div id="cvLivePreview">
-                        <div style="border-bottom: 2px solid #2563eb; padding-bottom: 0.75rem; margin-bottom: 1rem;">
-                            <h3 id="prevName" style="color: #0f172a; font-size: 1.4rem; font-weight: 800; margin: 0;">Jan Kowalski</h3>
-                            <p id="prevTitle" style="color: #2563eb; font-size: 0.95rem; font-weight: 600; margin: 0.2rem 0 0.4rem;">Senior Frontend Developer</p>
-                            <div style="font-size: 0.75rem; color: #64748b; display: flex; flex-wrap: wrap; gap: 0.75rem;">
-                                <span id="prevEmail">✉️ jan.kowalski@example.com</span>
-                                <span id="prevPhone">📞 +48 500 600 700</span>
-                            </div>
-                        </div>
-
-                        <div style="margin-bottom: 0.85rem;">
-                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Podsumowanie zawodowe</h4>
-                            <p id="prevBio" style="font-size: 0.8rem; color: #334155; line-height: 1.4; margin: 0;">Doświadczony programista z 5-letnim stażem w budowaniu nowoczesnych aplikacji webowych w oparciu o React, TypeScript oraz chmurę AWS.</p>
-                        </div>
-
-                        <div style="margin-bottom: 0.85rem;">
-                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Doświadczenie zawodowe</h4>
-                            <div id="prevExp" style="font-size: 0.8rem; color: #334155; line-height: 1.4; white-space: pre-line;">• 2022 - obecnie: Senior Frontend Developer w Nexus Labs.
-• 2020 - 2022: Frontend Developer w Digital Studio.</div>
-                        </div>
-
-                        <div style="margin-bottom: 0.85rem;">
-                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Umiejętności</h4>
-                            <div id="prevSkills" style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
-                                <span style="background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">React</span>
-                                <span style="background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">TypeScript</span>
-                                <span style="background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Node.js</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Edukacja</h4>
-                            <p id="prevEdu" style="font-size: 0.8rem; color: #334155; margin: 0;">Politechnika Warszawska — Informatyka (Inżynier, 2016-2020)</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Actions Footer -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; gap: 0.75rem;">
-                <div style="color: #94a3b8; font-size: 0.85rem;">
-                    <span>Format: Standard ATS-friendly</span>
-                </div>
-                <div style="display: flex; gap: 0.75rem;">
-                    <button type="button" class="btn btn-secondary" id="cvSaveProfileBtn">💾 Zapisz w profilu</button>
-                    <button type="button" class="btn btn-primary" id="cvDownloadPdfBtn" style="background: linear-gradient(135deg, #2563eb, #7c3aed);">📥 Pobierz / Drukuj CV (PDF)</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- SCRIPTS -->
+    <script type="module" src="./app.js"></script>
 </body>
 </html>
