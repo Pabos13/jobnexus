@@ -250,7 +250,6 @@ function initDashboard() {
             dashModal.style.pointerEvents = 'none';
         }
     };
-    const dashModal = document.getElementById('dashboardModal');
     window.openDashboard = () => {
         const user = AuthService.getUser();
         if (!user) {
