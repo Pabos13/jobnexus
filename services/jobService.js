@@ -334,3 +334,7 @@ const JobService = {
 if (typeof window !== 'undefined') {
     window.JobService = JobService;
 }
+
+
+export { JobService };
+export default JobService;
