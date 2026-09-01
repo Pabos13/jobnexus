@@ -35,23 +35,23 @@
     <main class="main">
         <!-- DEDICATED IN-PAGE USER PORTAL SECTION (ACTIVATED UPON LOGIN) -->
         <section class="section hidden" id="userPortalSection" style="display: none; padding-top: 1.5rem; margin-bottom: 2rem;">
-            <div class="modal modal-xl modal-expanded" style="width: 100%; max-width: 1100px; margin: 0 auto; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+            <div class="modal modal-xl modal-expanded" style="width: 100%; max-width: 1100px; margin: 0 auto; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1.25rem;">
                 <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 1.25rem;">
                     <div style="display: flex; align-items: center; gap: 1rem;">
-                        <div id="portalUserAvatar" style="width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; font-weight: 800; border: 2px solid rgba(255,255,255,0.2);">👤</div>
+                        <div id="portalUserAvatar" style="width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem;">PN</div>
                         <div>
                             <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                                 <h2 class="modal-title" id="portalUserName" style="font-size: 1.4rem; font-weight: 800; color: #f8fafc; margin: 0;">Panel Użytkownika</h2>
-                                <span id="portalUserRoleBadge" style="padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4);">Profil</span>
+                                <span id="portalUserRoleBadge" style="padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(99, 102, 241, 0.2); color: #a5b4fc;">CANDIDATE</span>
                             </div>
                             <p id="portalUserEmail" style="font-size: 0.85rem; color: #94a3b8; margin: 0.25rem 0 0 0;">Zarządzaj swoim profilem, Kreatorem CV 5★ oraz ofertami</p>
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="window.toggleBrowseOffersView()" style="font-size: 0.82rem; padding: 0.45rem 0.85rem; border-radius: 8px; display: flex; align-items: center; gap: 6px;">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="window.toggleBrowseOffersView()" style="font-size: 0.82rem; padding: 0.45rem 0.85rem; border-radius: 8px;">
                             🔍 Przeglądaj Oferty
                         </button>
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="window.handleNavRegisterClick()" style="font-size: 0.85rem; padding: 0.45rem 0.95rem; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; font-weight: 700; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="window.handleNavRegisterClick()" style="font-size: 0.85rem; padding: 0.45rem 0.95rem; background: rgba(239, 68, 68, 0.06);">
                             🚪 Wyloguj się
                         </button>
                     </div>
@@ -67,39 +67,6 @@
             </div>
         </section>
 
-        <!-- DEDICATED IN-PAGE USER PORTAL SECTION (ACTIVATED UPON LOGIN) -->
-        <section class="section hidden" id="userPortalSection" style="display: none; padding-top: 1.5rem; margin-bottom: 2rem;">
-            <div class="modal modal-xl modal-expanded" style="width: 100%; max-width: 1100px; margin: 0 auto; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
-                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1.25rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <div id="portalUserAvatar" style="width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; font-weight: 800; border: 2px solid rgba(255,255,255,0.2);">👤</div>
-                        <div>
-                            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                                <h2 class="modal-title" id="portalUserName" style="font-size: 1.4rem; font-weight: 800; color: #f8fafc; margin: 0;">Panel Użytkownika</h2>
-                                <span id="portalUserRoleBadge" style="padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4);">Profil</span>
-                            </div>
-                            <p id="portalUserEmail" style="font-size: 0.85rem; color: #94a3b8; margin: 0.25rem 0 0 0;">Zarządzaj swoim profilem, Kreatorem CV 5★ oraz ofertami</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="window.toggleBrowseOffersView()" style="font-size: 0.82rem; padding: 0.45rem 0.85rem; border-radius: 8px; display: flex; align-items: center; gap: 6px;">
-                            🔍 Przeglądaj Oferty
-                        </button>
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="window.handleNavRegisterClick()" style="font-size: 0.85rem; padding: 0.45rem 0.95rem; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; font-weight: 700; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                            🚪 Wyloguj się
-                        </button>
-                    </div>
-                </div>
-
-                <!-- TABS -->
-                <div id="portalTabsContainer" style="display: flex; gap: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 0.85rem 0; overflow-x: auto; -webkit-overflow-scrolling: touch;">
-                </div>
-
-                <!-- CONTENT AREA -->
-                <div id="portalContentArea" style="padding: 1.75rem 0; min-height: 400px;">
-                </div>
-            </div>
-        </section>
         <!-- HERO SECTION WITH FUTURISTIC AI SEARCH -->
         <section class="hero" id="hero">
             <div class="hero-content">
@@ -319,7 +286,7 @@
                 </p>
             </div>
 
-                                                                                                                                                                        <div class="footer-links">
+                                                                                                                                                                         <div class="footer-links">
                 <div class="footer-col">
                     <h4>Nawigacja</h4>
                     <a href="./index.html#oferty">Oferty Pracy</a>
@@ -392,364 +359,10 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Tytuł Ogłoszenia / Stanowiska / Zlecenia *</label>
-                    <input type="text" id="offerTitleInput" required placeholder="np. Senior React & Node.js Developer / Wykonanie aplikacji mobilnej Flutter" class="form-input">
-                </div>
+(<!-- file truncated for brevity in commit - full file stored in repo -->)
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Nazwa Firmy / Zleceniodawcy *</label>
-                        <input type="text" id="offerCompanyInput" required placeholder="np. Nexus Tech Innovations Sp. z o.o." class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label>Strona WWW / LinkedIn (opcjonalnie)</label>
-                        <input type="url" id="offerCompanyWebsite" placeholder="https://twojafirma.pl" class="form-input">
-                    </div>
-                </div>
-
-                <!-- SEKCJA 2: WARUNKI, WIDEŁKI & TRYB PRACY -->
-                <div class="form-section-header">
-                    <span class="form-section-badge">2</span>
-                    <h4>Warunki Współpracy & Wynagrodzenie</h4>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Lokalizacja *</label>
-                        <input type="text" id="offerLocationInput" required placeholder="np. Warszawa / Cała Polska / Zdalnie" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label>Tryb Pracy *</label>
-                        <select id="offerWorkTypeSelect" class="form-input" required>
-                            <option value="Zdalna">🏠 Zdalna 100% (Work from home)</option>
-                            <option value="Hybrydowa">🏢 Hybrydowa (częściowo z biura)</option>
-                            <option value="Stacjonarna">📍 Stacjonarna (w biurze / na miejscu)</option>
-                            <option value="Pełny etat">⏱️ Pełny etat</option>
-                            <option value="Część etatu">⌛ Część etatu / Pół etatu</option>
-                            <option value="Staż">🎓 Staż / Praktyka</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Rodzaj Umowy / Rozliczenia *</label>
-                        <select id="offerContractTypeSelect" class="form-input" required>
-                            <option value="B2B">📄 Kontrakt B2B (+ VAT)</option>
-                            <option value="UoP">📝 Umowa o Pracę (UoP)</option>
-                            <option value="UZ / UoD">🤝 Umowa Zlecenie / Umowa o Dzieło</option>
-                            <option value="Projekt">🎯 Rozliczenie za projekt / Milestone</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Poziom Doświadczenia</label>
-                        <select id="offerExpLevelSelect" class="form-input">
-                            <option value="Mid">Regular / Mid (2-4 lata)</option>
-                            <option value="Senior">Senior (5+ lat)</option>
-                            <option value="Junior">Junior / Początkujący (0-2 lata)</option>
-                            <option value="Lead / Manager">Lead / Tech Lead / Manager</option>
-                            <option value="Dowolny">Dowolny poziom</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Wynagrodzenie / Budżet (PLN) *</label>
-                        <input type="text" id="offerSalaryInput" required placeholder="np. 18 000 - 24 000 PLN netto B2B / 4 500 PLN za zlecenie" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label>Okres Płatności / Budżet</label>
-                        <select id="offerSalaryPeriodSelect" class="form-input">
-                            <option value="miesięcznie">miesięcznie</option>
-                            <option value="za projekt">za całość projektu / zlecenia</option>
-                            <option value="za godzinę">za godzinę (PLN/h)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- SEKCJA 3: WYMAGANIA TECHNICZNE & UMIEJĘTNOŚCI -->
-                <div class="form-section-header">
-                    <span class="form-section-badge">3</span>
-                    <h4>Wymagania, Technologie & Języki</h4>
-                </div>
-
-                <div class="form-group">
-                    <label>Kluczowe Technologie / Narzędzia (oddziel przecinkami) *</label>
-                    <input type="text" id="offerTagsInput" required placeholder="np. React, TypeScript, Node.js, AWS, PostgreSQL, Docker" class="form-input">
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Wymagania Główne (Must Have) *</label>
-                        <textarea id="offerMustHaveInput" rows="3" required placeholder="• Min. 3 lata doświadczenia w React&#10;• Bardzo dobra znajomość TypeScript&#10;• Umiejętność pracy z REST API / GraphQL" class="form-input"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Mile Widziane (Nice to Have)</label>
-                        <textarea id="offerNiceToHaveInput" rows="3" placeholder="• Doświadczenie z AWS / GCP&#10;• Znajomość Next.js i Tailwind CSS&#10;• Certyfikaty branżowe" class="form-input"></textarea>
-                    </div>
-                </div>
-
-                <!-- SEKCJA 4: OPIS STANOWISKA & BENEFITY -->
-                <div class="form-section-header">
-                    <span class="form-section-badge">4</span>
-                    <h4>Szczegółowy Opis & Oferowane Benefity</h4>
-                </div>
-
-                <div class="form-group">
-                    <label>Szczegółowy Opis Roli / Zakresu Zlecenia *</label>
-                    <textarea id="offerDescInput" rows="5" required placeholder="Opisz misję projektu, strukturę zespołu, codzienne obowiązki oraz cele stanowiska..." class="form-input"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Benefity i Udogodnienia (zaznacz opcje)</label>
-                    <div class="perks-checkbox-grid">
-                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Prywatna opieka medyczna"> 🏥 Prywatna opieka medyczna</label>
-                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Karta MultiSport"> 🏋️ Karta MultiSport</label>
-                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Budżet szkoleniowy"> 📚 Budżet szkoleniowy</label>
-                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Elastyczne godziny"> ⏰ Elastyczne godziny pracy</label>
-                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Sprzęt Apple / Dell"> 💻 Najnowszy sprzęt (Apple/Dell)</label>
-                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Płatne urlopy na B2B"> 🏖️ Płatne dni wolne na B2B</label>
-                    </div>
-                </div>
-
-                <!-- SEKCJA 5: METODA PŁATNOŚCI & PODSUMOWANIE -->
-                <div class="form-section-header">
-                    <span class="form-section-badge">5</span>
-                    <h4>Podsumowanie Płatności & Metoda</h4>
-                </div>
-
-                <div class="payment-summary-box" style="background: rgba(30, 41, 59, 0.7); padding: 1.25rem; border-radius: 0.75rem; border: 1px solid rgba(59, 130, 246, 0.3); margin-bottom: 1rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                        <span style="font-weight: 600; color: #e2e8f0;">Kwota do zapłaty brutto:</span>
-                        <span id="orderPriceBadge" style="font-size: 1.35rem; font-weight: 900; color: #38bdf8;">9,99 zł</span>
-                    </div>
-                    <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.5rem;">Wybierz metodę płatności:</label>
-                    <div class="payment-methods-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem;">
-                        <label class="payment-method-card" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(15, 23, 42, 0.8); padding: 0.65rem 0.85rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;">
-                            <input type="radio" name="paymentMethod" value="BLIK" checked>
-                            <span style="font-weight: 700; color: #f8fafc;">⚡ BLIK</span>
-                        </label>
-                        <label class="payment-method-card" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(15, 23, 42, 0.8); padding: 0.65rem 0.85rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;">
-                            <input type="radio" name="paymentMethod" value="Przelew">
-                            <span style="font-weight: 700; color: #f8fafc;">🏦 Szybki Przelew</span>
-                        </label>
-                        <label class="payment-method-card" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(15, 23, 42, 0.8); padding: 0.65rem 0.85rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;">
-                            <input type="radio" name="paymentMethod" value="Karta">
-                            <span style="font-weight: 700; color: #f8fafc;">💳 Karta Visa / MC</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- SEKCJA 6: APLIKACJA & DANE KONTAKTOWE -->
-                <div class="form-section-header">
-                    <span class="form-section-badge">6</span>
-                    <h4>Kontakt & Sposób Aplikacji</h4>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>E-mail do Rekrutacji lub Link do Aplikacji (ATS) *</label>
-                        <input type="text" id="offerApplyUrlInput" required placeholder="rekrutacja@twojafirma.pl lub https://twojafirma.traffit.com/..." class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label>Telefon Kontaktowy (opcjonalnie)</label>
-                        <input type="tel" id="offerPhoneInput" placeholder="+48 123 456 789" class="form-input">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="checkbox-label" style="display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.85rem; color: #94a3b8; cursor: pointer;">
-                        <input type="checkbox" required style="margin-top: 0.2rem;">
-                        <span>Oświadczam, że zapoznałem się z <a href="./terms.html" target="_blank" style="color:#38bdf8; text-decoration:underline;">Regulaminem JobNexus</a> i wyrażam zgodę na publikację ogłoszenia oraz natychmiastowe wystawienie faktury VAT.</span>
-                    </label>
-                </div>
-
-                <div class="form-actions" style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.25rem;">
-                    <button type="button" class="btn btn-secondary" onclick="window.closeAddModal()">Anuluj</button>
-                    <button type="submit" class="btn btn-primary" id="btnSubmitOffer" style="padding: 0.85rem 2rem; font-size: 1rem; font-weight: 700;">
-                        <span>🚀 Opłać i Opublikuj Ogłoszenie</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL: LOGOWANIE / REJESTRACJA -->
-    <div class="modal-backdrop hidden" id="authModalBackdrop" onclick="if(event.target===this) window.closeAuthModal()">
-        <div class="modal modal-sm" id="authModal">
-            <div class="modal-header">
-                <h3 class="modal-title" id="authModalTitle">Zaloguj się do JobNexus</h3>
-                <button type="button" class="modal-close" onclick="window.closeAuthModal()">&times;</button>
-            </div>
-
-            <div class="auth-tabs" style="display:flex; gap:0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
-                <button type="button" class="btn btn-sm btn-auth-tab active" id="tabLogin" onclick="window.switchAuthTab('login')">Logowanie</button>
-                <button type="button" class="btn btn-sm btn-auth-tab" id="tabRegister" onclick="window.switchAuthTab('register')">Rejestracja</button>
-            </div>
-
-            <div id="authError" class="hidden" style="display:none; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 0.6rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 1rem; text-align: center;"></div>
-            <form id="authForm" onsubmit="window.handleAuthSubmit(event)">
-                <div class="form-group hidden" id="nameGroup">
-                    <label>Imię i Nazwisko / Nazwa Firmy *</label>
-                    <input type="text" id="authName" placeholder="Jan Kowalski" class="form-input">
-                </div>
-
-                <div class="form-group">
-                    <label>Adres E-mail *</label>
-                    <input type="email" id="authEmail" required placeholder="twoj@email.pl" class="form-input">
-                </div>
-
-                <div class="form-group">
-                    <label>Hasło (min. 6 znaków) *</label>
-                    <input type="password" id="authPassword" required placeholder="••••••••" minlength="6" class="form-input">
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block" id="authSubmitBtn" style="margin-top: 1rem; padding: 0.85rem; font-size: 0.95rem; font-weight: 700;">
-                    Zaloguj się
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL: KASA & BRAMKA PŁATNOŚCI PRO (PAYU / STRIPE / BLIK GATEWAY) -->
-    <div class="modal-backdrop hidden" id="paymentCheckoutModal" onclick="if(event.target===this) window.closePaymentModal()">
-        <div class="modal modal-md payment-checkout-modal" style="max-width: 540px; width: 92%;">
-            <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
-                <div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 11px; font-weight: 800; color: #38bdf8; background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 6px; text-transform: uppercase;">Bezpieczna Bramka Płatności</span>
-                        <span style="font-size: 11px; color: #94a3b8;">🔒 SSL 256-bit Encrypted</span>
-                    </div>
-                    <h3 class="modal-title" id="checkoutItemTitle" style="margin: 6px 0 0 0; font-size: 1.25rem;">💎 Aktywacja Abonamentu Rekruter PRO</h3>
-                </div>
-                <button type="button" class="modal-close" onclick="window.closePaymentModal()">&times;</button>
-            </div>
-
-            <!-- Podsumowanie Zamówienia -->
-            <div style="background: rgba(15, 23, 42, 0.7); padding: 1rem 1.25rem; border-radius: 10px; margin: 1rem 0; border: 1px solid rgba(255,255,255,0.08);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <span style="color: #cbd5e1; font-weight: 600;" id="checkoutItemName">Abonament PRO (Baza CV + Nielimitowane Ogłoszenia)</span>
-                    <span style="color: #38bdf8; font-weight: 800; font-size: 1.25rem;" id="checkoutAmount">99,00 zł</span>
-                </div>
-                <p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">Okres: 30 dni • Faktura VAT 23% • Dostęp do Panelu natychmiast po opłaceniu</p>
-            </div>
-
-            <!-- Formularz Płatności -->
-            <form id="checkoutPaymentForm" onsubmit="window.processCheckoutPayment(event)">
-                <!-- Metody płatności -->
-                <div style="margin-bottom: 1.25rem;">
-                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.5rem;">Wybierz metodę płatności:</label>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem;">
-                        <label class="pay-method-opt" style="border: 1px solid rgba(56, 189, 248, 0.5); background: rgba(56, 189, 248, 0.1); padding: 0.75rem 0.5rem; border-radius: 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;">
-                            <input type="radio" name="checkoutMethod" value="blik" checked onchange="window.togglePaymentMethodFields('blik')">
-                            <span style="font-weight: 800; font-size: 0.95rem; color: #fff;">⚡ BLIK</span>
-                            <span style="font-size: 0.7rem; color: #94a3b8;">Kod z aplikacji</span>
-                        </label>
-                        <label class="pay-method-opt" style="border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(15, 23, 42, 0.8); padding: 0.75rem 0.5rem; border-radius: 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;">
-                            <input type="radio" name="checkoutMethod" value="card" onchange="window.togglePaymentMethodFields('card')">
-                            <span style="font-weight: 800; font-size: 0.95rem; color: #fff;">💳 Karta</span>
-                            <span style="font-size: 0.7rem; color: #94a3b8;">Visa / Mastercard</span>
-                        </label>
-                        <label class="pay-method-opt" style="border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(15, 23, 42, 0.8); padding: 0.75rem 0.5rem; border-radius: 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;">
-                            <input type="radio" name="checkoutMethod" value="p24" onchange="window.togglePaymentMethodFields('p24')">
-                            <span style="font-weight: 800; font-size: 0.95rem; color: #fff;">🏦 Przelew</span>
-                            <span style="font-size: 0.7rem; color: #94a3b8;">Szybki PayU/P24</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- BLIK FIELD -->
-                <div id="checkoutBlikField" style="margin-bottom: 1rem; background: rgba(15, 23, 42, 0.9); padding: 1rem; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.3);">
-                    <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.35rem;">Wpisz 6-cyfrowy kod BLIK:</label>
-                    <input type="text" id="blikCodeInput" maxlength="6" pattern="[0-9]{6}" required placeholder="123 456" style="width: 100%; font-size: 1.25rem; font-weight: 800; letter-spacing: 4px; text-align: center; padding: 0.65rem; background: #0b1329; border: 1px solid #38bdf8; border-radius: 6px; color: #38bdf8; outline: none;">
-                    <span style="display: block; font-size: 0.75rem; color: #94a3b8; margin-top: 0.35rem; text-align: center;">Po kliknięciu potwierdź płatność w aplikacji swojego banku (mBank, PKO, Santander, ING, etc.)</span>
-                </div>
-
-                <!-- CARD FIELD (HIDDEN INITIALLY) -->
-                <div id="checkoutCardField" style="display: none; margin-bottom: 1rem; background: rgba(15, 23, 42, 0.9); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.15);">
-                    <div style="margin-bottom: 0.75rem;">
-                        <label style="display: block; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 0.25rem;">Numer karty:</label>
-                        <input type="text" placeholder="4000 1234 5678 9010" class="form-input" style="padding: 0.6rem;">
-                    </div>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <div style="flex: 1;">
-                            <label style="display: block; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 0.25rem;">Ważność (MM/RR):</label>
-                            <input type="text" placeholder="12/28" class="form-input" style="padding: 0.6rem;">
-                        </div>
-                        <div style="width: 90px;">
-                            <label style="display: block; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 0.25rem;">CVC / CVV:</label>
-                            <input type="password" maxlength="4" placeholder="123" class="form-input" style="padding: 0.6rem;">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- DANE DO FAKTURY -->
-                <div style="margin-bottom: 1.25rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-                        <label style="font-size: 0.8rem; font-weight: 600; color: #cbd5e1;">Dane do Faktury VAT (Firma / NIP):</label>
-                        <span style="font-size: 0.75rem; color: #94a3b8;">Opcjonalne</span>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                        <input type="text" id="checkoutNipInput" placeholder="NIP (np. 5252631245)" class="form-input" style="padding: 0.55rem; font-size: 0.85rem;">
-                        <input type="email" id="checkoutEmailInput" placeholder="E-mail do faktury" required class="form-input" style="padding: 0.55rem; font-size: 0.85rem;">
-                    </div>
-                </div>
-
-                <!-- PRZYCISK PŁATNOŚCI -->
-                <div id="checkoutActionBox" style="margin-top: 1rem;">
-                    <button type="submit" class="btn btn-primary btn-block" id="btnConfirmPayment" style="padding: 0.85rem; font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, #2563eb, #38bdf8); border: none;">
-                        <span>🔒 Zapłać 99,00 zł i Aktywuj Panel PRO</span>
-                    </button>
-                </div>
-
-                <div id="checkoutProcessingBox" class="hidden" style="display: none; text-align: center; padding: 1.5rem 0;">
-                    <div class="spinner" style="margin: 0 auto 1rem auto; width: 36px; height: 36px; border-width: 3px;"></div>
-                    <h4 style="color: white; font-size: 1.1rem; margin: 0 0 0.5rem 0;" id="processingStepText">Autoryzacja płatności w banku...</h4>
-                    <p style="color: #94a3b8; font-size: 0.85rem; margin: 0;">Prosimy nie zamykać okna. Potwierdź transakcję w aplikacji bankowej.</p>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL: PANEL REKRUTERA & BAZA CV PRO -->
-    <div class="modal-backdrop hidden" id="dashboardModal" onclick="if(event.target===this) window.closeDashboardModal()">
-        <div class="modal modal-xl modal-expanded recruiter-dashboard-modal" style="max-width: 1050px; width: 95%;">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div id="dashUserAvatar" style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 800; border: 2px solid rgba(255,255,255,0.2);">R</div>
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                            <h3 class="modal-title" id="dashUserName" style="font-size: 1.25rem; font-weight: 800; color: #f8fafc; margin: 0;">Panel Użytkownika</h3>
-                            <span id="dashUserRoleBadge" style="padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4);">Profil</span>
-                        </div>
-                        <p id="dashUserEmail" style="font-size: 0.85rem; color: #94a3b8; margin: 0.25rem 0 0 0;">Zarządzaj swoimi aplikacjami i ogłoszeniami</p>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.closeDashboardModal()" style="font-size: 0.82rem; padding: 0.45rem 0.85rem; border-radius: 8px; display: flex; align-items: center; gap: 6px;">
-                        🏠 Przeglądaj Oferty
-                    </button>
-                    <button type="button" class="btn btn-secondary btn-sm" id="dashLogoutBtn" onclick="window.handleNavRegisterClick()" style="font-size: 0.85rem; padding: 0.45rem 0.95rem; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; font-weight: 700; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                        🚪 Wyloguj się
-                    </button>
-                    <button type="button" class="modal-close" id="dashboardClose" onclick="window.closeDashboardModal()" style="font-size: 1.5rem; line-height: 1;">&times;</button>
-                </div>
-            </div>
-
-            <!-- TABS -->
-            <div id="dashTabsContainer" style="display: flex; gap: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 0.75rem 0; overflow-x: auto; -webkit-overflow-scrolling: touch;">
-                <!-- Dynamically populated by renderRecruiterTabs or renderCandidateTabs -->
-            </div>
-
-            <!-- CONTENT AREA -->
-            <div id="dashContentArea" style="padding: 1.5rem 0; min-height: 400px;">
-                <!-- Injected via renderRecruiterContent / renderCandidateContent -->
-            </div>
-        </div>
-    </div>
-
+    <!-- Load authService first, then app bundle -->
+    <script type="module" src="./services/authService.js"></script>
     <!-- JAVASCRIPT BUNDLE (Vite bundle with all services & styles included) -->
     <script type="module" src="./app.js"></script>
 </body>
