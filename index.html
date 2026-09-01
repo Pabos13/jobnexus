@@ -320,7 +320,7 @@
                     </div>
                     <span class="price-note">za przechowywanie w bazie</span>
                 </div>
-                <button class="cv-builder-btn" onclick="alert('Kreator CV wkrótce dostępny!')">Stwórz CV</button>
+                <button class="cv-builder-btn" id="openCvBuilderBtn">Stwórz CV</button>
             </div>
         </div>
     </section>
@@ -748,6 +748,115 @@
                     Zapłać i aktywuj (<span id="payBtnAmount">29,99 zł</span>)
                 </button>
             </form>
+        </div>
+    </div>
+
+
+    <!-- MODAL: KREATOR CV AI -->
+    <div class="modal hidden" id="cvBuilderModal">
+        <div class="modal-content" style="max-width: 900px; width: 95%;">
+            <button class="modal-close" id="cvBuilderClose">&times;</button>
+            <div class="modal-header">
+                <div class="modal-icon" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                </div>
+                <h2>Kreator CV AI</h2>
+                <p>Wypełnij formularz, zoptymalizuj treść przez AI i pobierz gotowe, profesjonalne CV zgodne z ATS.</p>
+            </div>
+
+            <div class="cv-builder-workspace" style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 1.5rem; margin-top: 1.25rem;">
+                <!-- Form Column -->
+                <div class="cv-builder-form-col" style="max-height: 520px; overflow-y: auto; padding-right: 0.5rem;">
+                    <div class="form-group">
+                        <label>Imię i Nazwisko</label>
+                        <input type="text" id="cvName" class="form-input" placeholder="np. Jan Kowalski" value="Jan Kowalski">
+                    </div>
+                    <div class="form-group">
+                        <label>Docelowe stanowisko / Tytuł zawodowy</label>
+                        <input type="text" id="cvTitle" class="form-input" placeholder="np. Senior Frontend Developer" value="Senior Frontend Developer">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input type="email" id="cvEmail" class="form-input" placeholder="jan@example.com" value="jan.kowalski@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Telefon</label>
+                            <input type="tel" id="cvPhone" class="form-input" placeholder="+48 500 600 700" value="+48 500 600 700">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: flex; justify-content: space-between;">
+                            <span>Podsumowanie zawodowe</span>
+                            <button type="button" id="cvAiEnhanceBioBtn" style="background: none; border: none; color: #a78bfa; font-size: 0.8rem; font-weight: 600; cursor: pointer;">✨ AI Ulepsz opis</button>
+                        </label>
+                        <textarea id="cvBio" class="form-input" style="min-height: 80px; resize: vertical;" placeholder="Krótkie podsumowanie doświadczenia i celów zawodowych...">Doświadczony programista z 5-letnim stażem w budowaniu nowoczesnych aplikacji webowych w oparciu o React, TypeScript oraz chmurę AWS.</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Doświadczenie zawodowe (Stanowisko, Firma, Lata, Obowiązki)</label>
+                        <textarea id="cvExperience" class="form-input" style="min-height: 90px; resize: vertical;" placeholder="np. 2022 - obecnie: Senior React Developer w TechCorp. Rozwój architektury mikrofrontendów...">• 2022 - obecnie: Senior Frontend Developer w Nexus Labs. Rozwój architektury mikrofrontendów i integracja modeli AI.
+• 2020 - 2022: Frontend Developer w Digital Studio. Tworzenie aplikacji SaaS w React i Next.js.</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Umiejętności & Technologie (oddzielone przecinkami)</label>
+                        <input type="text" id="cvSkills" class="form-input" placeholder="np. React, TypeScript, Node.js, Docker, Git" value="React, TypeScript, Node.js, Vite, TailwindCSS, AWS, Docker, Git, CI/CD">
+                    </div>
+                    <div class="form-group">
+                        <label>Edukacja / Kursy</label>
+                        <input type="text" id="cvEducation" class="form-input" placeholder="np. Politechnika Warszawska — Informatyka (Inżynier)" value="Politechnika Warszawska — Informatyka (Inżynier, 2016-2020)">
+                    </div>
+                </div>
+
+                <!-- Live Preview Column -->
+                <div class="cv-builder-preview-col" style="background: #ffffff; color: #1e293b; border-radius: 0.75rem; padding: 1.5rem; max-height: 520px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: 'Inter', system-ui, sans-serif;">
+                    <div id="cvLivePreview">
+                        <div style="border-bottom: 2px solid #2563eb; padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                            <h3 id="prevName" style="color: #0f172a; font-size: 1.4rem; font-weight: 800; margin: 0;">Jan Kowalski</h3>
+                            <p id="prevTitle" style="color: #2563eb; font-size: 0.95rem; font-weight: 600; margin: 0.2rem 0 0.4rem;">Senior Frontend Developer</p>
+                            <div style="font-size: 0.75rem; color: #64748b; display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                                <span id="prevEmail">✉️ jan.kowalski@example.com</span>
+                                <span id="prevPhone">📞 +48 500 600 700</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 0.85rem;">
+                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Podsumowanie zawodowe</h4>
+                            <p id="prevBio" style="font-size: 0.8rem; color: #334155; line-height: 1.4; margin: 0;">Doświadczony programista z 5-letnim stażem w budowaniu nowoczesnych aplikacji webowych w oparciu o React, TypeScript oraz chmurę AWS.</p>
+                        </div>
+
+                        <div style="margin-bottom: 0.85rem;">
+                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Doświadczenie zawodowe</h4>
+                            <div id="prevExp" style="font-size: 0.8rem; color: #334155; line-height: 1.4; white-space: pre-line;">• 2022 - obecnie: Senior Frontend Developer w Nexus Labs.
+• 2020 - 2022: Frontend Developer w Digital Studio.</div>
+                        </div>
+
+                        <div style="margin-bottom: 0.85rem;">
+                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Umiejętności</h4>
+                            <div id="prevSkills" style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                                <span style="background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">React</span>
+                                <span style="background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">TypeScript</span>
+                                <span style="background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Node.js</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; font-weight: 700; margin-bottom: 0.25rem;">Edukacja</h4>
+                            <p id="prevEdu" style="font-size: 0.8rem; color: #334155; margin: 0;">Politechnika Warszawska — Informatyka (Inżynier, 2016-2020)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions Footer -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; gap: 0.75rem;">
+                <div style="color: #94a3b8; font-size: 0.85rem;">
+                    <span>Format: Standard ATS-friendly</span>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <button type="button" class="btn btn-secondary" id="cvSaveProfileBtn">💾 Zapisz w profilu</button>
+                    <button type="button" class="btn btn-primary" id="cvDownloadPdfBtn" style="background: linear-gradient(135deg, #2563eb, #7c3aed);">📥 Pobierz / Drukuj CV (PDF)</button>
+                </div>
+            </div>
         </div>
     </div>
 

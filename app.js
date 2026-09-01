@@ -2205,3 +2205,166 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+
+
+// ============================================
+// KREATOR CV AI MODAL & REALTIME PREVIEW
+// ============================================
+function initCvBuilder() {
+    const cvModal = document.getElementById('cvBuilderModal');
+    const cvClose = document.getElementById('cvBuilderClose');
+    const openBtns = document.querySelectorAll('.cv-builder-btn, a[href="#cv-builder"]');
+
+    openBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if (btn.tagName === 'BUTTON' || btn.classList.contains('cv-builder-btn')) {
+                e.preventDefault();
+                openCvBuilderModal();
+            }
+        });
+    });
+
+    window.openCvBuilderModal = function() {
+        if (!cvModal) return;
+        cvModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        syncCvPreview();
+    };
+
+    if (cvClose && cvModal) {
+        cvClose.addEventListener('click', () => {
+            cvModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        });
+        cvModal.addEventListener('click', (e) => {
+            if (e.target === cvModal) {
+                cvModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
+    // Input elements
+    const fields = ['cvName', 'cvTitle', 'cvEmail', 'cvPhone', 'cvBio', 'cvExperience', 'cvSkills', 'cvEducation'];
+    fields.forEach(fId => {
+        const el = document.getElementById(fId);
+        if (el) {
+            el.addEventListener('input', syncCvPreview);
+        }
+    });
+
+    // AI Bio Enhance button
+    const aiBioBtn = document.getElementById('cvAiEnhanceBioBtn');
+    if (aiBioBtn) {
+        aiBioBtn.addEventListener('click', () => {
+            const bioEl = document.getElementById('cvBio');
+            if (bioEl) {
+                aiBioBtn.textContent = '✨ Generowanie AI...';
+                setTimeout(() => {
+                    bioEl.value = 'Rezultatowo zorientowany specjalista z udokumentowanym doświadczeniem w projektowaniu i wdrażaniu skalowalnych rozwiązań. Cechuje mnie wysoka dbałość o jakość kodu, optymalizację wydajności oraz skuteczną współpracę w zwinnych zespołach (Agile/Scrum).';
+                    aiBioBtn.textContent = '✨ AI Ulepsz opis';
+                    syncCvPreview();
+                    showToast('✨ Opis profilu został zoptymalizowany pod kątem systemów ATS!', 'success');
+                }, 800);
+            }
+        });
+    }
+
+    // Save to Profile
+    const saveBtn = document.getElementById('cvSaveProfileBtn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            const cvData = {
+                name: document.getElementById('cvName')?.value || '',
+                title: document.getElementById('cvTitle')?.value || '',
+                email: document.getElementById('cvEmail')?.value || '',
+                phone: document.getElementById('cvPhone')?.value || '',
+                bio: document.getElementById('cvBio')?.value || '',
+                experience: document.getElementById('cvExperience')?.value || '',
+                skills: document.getElementById('cvSkills')?.value || '',
+                education: document.getElementById('cvEducation')?.value || '',
+                updatedAt: new Date().toISOString()
+            };
+            localStorage.setItem('jobnexus_user_cv', JSON.stringify(cvData));
+            showToast('💾 Twoje CV zostało zapisane w profilu kandydata!', 'success');
+        });
+    }
+
+    // Print / PDF Export
+    const downloadBtn = document.getElementById('cvDownloadPdfBtn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', () => {
+            const previewContent = document.getElementById('cvLivePreview')?.innerHTML;
+            if (!previewContent) return;
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>CV — ${document.getElementById('cvName')?.value || 'Kandydat'}</title>
+                    <style>
+                        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; color: #1e293b; line-height: 1.5; }
+                        h3 { color: #0f172a; margin: 0; font-size: 24px; }
+                        h4 { color: #2563eb; font-size: 14px; margin-top: 18px; margin-bottom: 6px; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+                        p, div { font-size: 13px; color: #334155; }
+                        span { display: inline-block; }
+                        @media print { body { padding: 0; } }
+                    </style>
+                </head>
+                <body>
+                    ${previewContent}
+                    <script>
+                        window.onload = function() { window.print(); window.close(); }
+                    </script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        });
+    }
+}
+
+function syncCvPreview() {
+    const name = document.getElementById('cvName')?.value || 'Twoje Imię i Nazwisko';
+    const title = document.getElementById('cvTitle')?.value || 'Stanowisko zawodowe';
+    const email = document.getElementById('cvEmail')?.value || 'email@example.com';
+    const phone = document.getElementById('cvPhone')?.value || '+48 000 000 000';
+    const bio = document.getElementById('cvBio')?.value || 'Krótki opis...';
+    const exp = document.getElementById('cvExperience')?.value || 'Doświadczenie...';
+    const skills = document.getElementById('cvSkills')?.value || 'Umiejętności...';
+    const edu = document.getElementById('cvEducation')?.value || 'Edukacja...';
+
+    const prevName = document.getElementById('prevName');
+    const prevTitle = document.getElementById('prevTitle');
+    const prevEmail = document.getElementById('prevEmail');
+    const prevPhone = document.getElementById('prevPhone');
+    const prevBio = document.getElementById('prevBio');
+    const prevExp = document.getElementById('prevExp');
+    const prevSkills = document.getElementById('prevSkills');
+    const prevEdu = document.getElementById('prevEdu');
+
+    if (prevName) prevName.textContent = name;
+    if (prevTitle) prevTitle.textContent = title;
+    if (prevEmail) prevEmail.textContent = `✉️ ${email}`;
+    if (prevPhone) prevPhone.textContent = `📞 ${phone}`;
+    if (prevBio) prevBio.textContent = bio;
+    if (prevExp) prevExp.textContent = exp;
+    if (prevEdu) prevEdu.textContent = edu;
+
+    if (prevSkills) {
+        prevSkills.innerHTML = '';
+        skills.split(',').map(s => s.trim()).filter(Boolean).forEach(s => {
+            const span = document.createElement('span');
+            span.style.cssText = 'background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;';
+            span.textContent = s;
+            prevSkills.appendChild(span);
+        });
+    }
+}
+
+// Ensure initCvBuilder is called on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+    initCvBuilder();
+});
