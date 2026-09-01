@@ -10,7 +10,11 @@ export class StorageService {
         FAVORITES: 'jobnexus_favorites',
         NOTIFICATIONS: 'jobnexus_notifications',
         ANALYTICS: 'jobnexus_analytics',
-        APPLICATIONS: 'jobnexus_applications'
+        APPLICATIONS: 'jobnexus_applications',
+        ANNOUNCEMENTS: 'jobnexus_announcements',
+        SEARCH_HISTORY: 'jobnexus_search_history',
+        CV_MATCHES: 'jobnexus_cv_matches',
+        CV_MATCHES_TIME: 'jobnexus_cv_matches_timestamp'
     };
 
     static getUser() {
@@ -130,6 +134,65 @@ export class StorageService {
         });
         this.saveNotifications(notifications.slice(0, 50));
         return notifications;
+    }
+
+    static saveAnnouncements(announcements) {
+        try {
+            localStorage.setItem(this.KEYS.ANNOUNCEMENTS, JSON.stringify(announcements));
+        } catch (e) {}
+    }
+
+    static loadAnnouncements() {
+        try {
+            const raw = localStorage.getItem(this.KEYS.ANNOUNCEMENTS);
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    static addSearchHistory(query) {
+        if (!query || typeof query !== 'string') return;
+        try {
+            let history = this.getSearchHistory();
+            history = history.filter(item => item !== query);
+            history.unshift(query);
+            if (history.length > 20) history = history.slice(0, 20);
+            localStorage.setItem(this.KEYS.SEARCH_HISTORY, JSON.stringify(history));
+        } catch (e) {}
+    }
+
+    static getSearchHistory() {
+        try {
+            const raw = localStorage.getItem(this.KEYS.SEARCH_HISTORY);
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    static saveCVMatches(matches) {
+        try {
+            localStorage.setItem(this.KEYS.CV_MATCHES, JSON.stringify(matches));
+            localStorage.setItem(this.KEYS.CV_MATCHES_TIME, Date.now().toString());
+        } catch (e) {}
+    }
+
+    static loadCVMatches() {
+        try {
+            const timeStr = localStorage.getItem(this.KEYS.CV_MATCHES_TIME);
+            if (!timeStr) return [];
+            const timestamp = parseInt(timeStr, 10);
+            if (Date.now() - timestamp > 24 * 60 * 60 * 1000) {
+                localStorage.removeItem(this.KEYS.CV_MATCHES);
+                localStorage.removeItem(this.KEYS.CV_MATCHES_TIME);
+                return [];
+            }
+            const raw = localStorage.getItem(this.KEYS.CV_MATCHES);
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+            return [];
+        }
     }
 
     static clearAll() {
