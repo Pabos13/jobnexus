@@ -36,7 +36,7 @@ export class AuthService {
         }
     }
 
-    static async register(email, password, name = '', role = 'candidate') {
+        static async register(email, password, name = '', role = 'candidate') {
         if (!email || !this.validateEmail(email)) {
             throw new Error('Invalid email format');
         }
@@ -51,27 +51,28 @@ export class AuthService {
         const cleanName = name.trim();
         const userRole = (role === 'recruiter') ? 'recruiter' : 'candidate';
 
-        try {
-            const apiBase = CONFIG.API_BASE_URL;
-            const response = await fetch(`${apiBase}/auth/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: cleanEmail, password, name: cleanName })
-            });
+        if (CONFIG.API_BASE_URL !== undefined && CONFIG.API_BASE_URL.startsWith('http')) {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: cleanEmail, password, name: cleanName, role: userRole })
+                });
 
-            if (response.ok) {
-                const data = await response.json();
-                if (data.user) {
-                    this.setUser(data.user, data.token, data.refreshToken, data.expiresIn);
-                    return data.user;
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.user) {
+                        this.setUser(data.user, data.token || 'tok_' + Date.now(), data.refreshToken, data.expiresIn);
+                        return data.user;
+                    }
+                } else if (response.status !== 404 && response.status !== 502) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.message || 'Registration failed');
                 }
-            } else {
-                const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.message || 'Registration failed');
-            }
-        } catch (err) {
-            if (err.message && err.message !== 'Failed to fetch' && !err.message.includes('NetworkError') && !err.message.includes('fetch')) {
-                throw err;
+            } catch (err) {
+                if (err.message && err.message !== 'Failed to fetch' && !err.message.includes('NetworkError') && !err.message.includes('fetch') && !err.message.includes('404')) {
+                    throw err;
+                }
             }
         }
 
@@ -103,7 +104,23 @@ export class AuthService {
         return safeUser;
     }
 
-    static async login(email, password) {
+        const newUser = {
+            id: 'usr_' + Date.now(),
+            email: cleanEmail,
+            name: cleanName,
+            role: userRole,
+            password: password,
+            createdAt: new Date().toISOString()
+        };
+        users.push(newUser);
+        this._saveLocalUsers(users);
+
+        const safeUser = { id: newUser.id, email: newUser.email, name: newUser.name, role: newUser.role };
+        this.setUser(safeUser, 'tok_local_' + Date.now(), 'rt_local_' + Date.now(), 7 * 24 * 3600 * 1000);
+        return safeUser;
+    }
+
+        static async login(email, password) {
         if (!email || !this.validateEmail(email)) {
             throw new Error('Invalid email format');
         }
@@ -113,27 +130,28 @@ export class AuthService {
 
         const cleanEmail = email.toLowerCase().trim();
 
-        try {
-            const apiBase = CONFIG.API_BASE_URL;
-            const response = await fetch(`${apiBase}/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: cleanEmail, password })
-            });
+        if (CONFIG.API_BASE_URL !== undefined && CONFIG.API_BASE_URL.startsWith('http')) {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: cleanEmail, password })
+                });
 
-            if (response.ok) {
-                const data = await response.json();
-                if (data.user) {
-                    this.setUser(data.user, data.token, data.refreshToken, data.expiresIn);
-                    return data.user;
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.user) {
+                        this.setUser(data.user, data.token || 'tok_' + Date.now(), data.refreshToken, data.expiresIn);
+                        return data.user;
+                    }
+                } else if (response.status !== 404 && response.status !== 502) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.message || 'Invalid credentials');
                 }
-            } else {
-                const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.message || 'Invalid credentials');
-            }
-        } catch (err) {
-            if (err.message && err.message !== 'Failed to fetch' && !err.message.includes('NetworkError') && !err.message.includes('fetch')) {
-                throw err;
+            } catch (err) {
+                if (err.message && err.message !== 'Failed to fetch' && !err.message.includes('NetworkError') && !err.message.includes('fetch') && !err.message.includes('404')) {
+                    throw err;
+                }
             }
         }
 
@@ -141,14 +159,14 @@ export class AuthService {
         let found = users.find(u => u.email === cleanEmail);
         if (found) {
             if (found.password && found.password !== password) {
-                throw new Error('Invalid credentials');
+                throw new Error('Nieprawidłowe hasło');
             }
         } else {
             found = {
                 id: 'usr_' + Date.now(),
                 email: cleanEmail,
                 name: cleanEmail.split('@')[0],
-                role: 'candidate',
+                role: cleanEmail.includes('rekrut') || cleanEmail.includes('firma') ? 'recruiter' : 'candidate',
                 password: password,
                 createdAt: new Date().toISOString()
             };
