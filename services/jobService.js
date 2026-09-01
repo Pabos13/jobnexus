@@ -1,343 +1,158 @@
 /**
- * JobService — Centralna usługa pobierania, łączenia, filtrowania i cache'owania ofert pracy
- * Obsługuje Jooble API (Klucz: 5be594f9-f5e0-41f5-a41a-9c1ea12566be), pliki CSV oraz natychmiastowy fallback danych
+ * JobService - API & Data Management for JobNexus
+ * Integrates with Jooble API, internal CSV offers, and local state
  */
-
-const DEMO_FALLBACK_JOBS = [
-    {
-        id: 'jb-1',
-        title: 'Senior Full Stack Developer (React & Node.js)',
-        company: 'NexusTech Solutions',
-        location: 'Warszawa / Zdalnie',
-        salary: '18 000 - 24 000 PLN',
-        type: 'Zdalna',
-        category: 'it',
-        description: 'Rozwój platformy chmurowej SaaS w architekturze mikroserwisów. Wymagane: React 18, TypeScript, Node.js, PostgreSQL, AWS.',
-        date: new Date().toISOString(),
-        featured: true,
-        url: '#'
-    },
-    {
-        id: 'jb-2',
-        title: 'AI Prompt Engineer & LLM Specialist',
-        company: 'Cognitive AI Labs',
-        location: 'Kraków / Zdalnie',
-        salary: '16 000 - 22 000 PLN',
-        type: 'Zdalna',
-        category: 'ai',
-        description: 'Budowa i optymalizacja pipeline promptów dla modeli Claude i OpenAI, ewaluacja modeli LLM oraz integracja z systemami RAG.',
-        date: new Date().toISOString(),
-        featured: true,
-        url: '#'
-    },
-    {
-        id: 'jb-3',
-        title: 'Spawacz TIG / MIG-MAG (Konstrukcje stalowe)',
-        company: 'StalBud Engineering',
-        location: 'Gdańsk / Trójmiasto',
-        salary: '7 500 - 11 000 PLN',
-        type: 'Pełny etat',
-        category: 'inzynieria',
-        description: 'Prace spawalnicze metodami 141 (TIG) oraz 135 (MAG). Wymagane aktualne uprawnienia spawalnicze oraz czytanie rysunku technicznego.',
-        date: new Date().toISOString(),
-        featured: false,
-        url: '#'
-    },
-    {
-        id: 'jb-4',
-        title: 'UI/UX Product Designer (Design System & Figma)',
-        company: 'PixelCraft Studio',
-        location: 'Wrocław / Zdalnie',
-        salary: '12 000 - 16 000 PLN',
-        type: 'Zdalna',
-        category: 'design',
-        description: 'Projektowanie zaawansowanych interfejsów B2B/SaaS, tworzenie komponentów w Figmie oraz prowadzenie testów użyteczności.',
-        date: new Date().toISOString(),
-        featured: true,
-        url: '#'
-    },
-    {
-        id: 'jb-5',
-        title: 'Główna Księgowa / Senior Accountant',
-        company: 'FinancePro Partners',
-        location: 'Poznań',
-        salary: '10 000 - 14 000 PLN',
-        type: 'Pełny etat',
-        category: 'finanse',
-        description: 'Prowadzenie pełnej księgowości spółek handlowych, sporządzanie deklaracji podatkowych CIT, VAT, JPK oraz sprawozdań finansowych.',
-        date: new Date().toISOString(),
-        featured: false,
-        url: '#'
-    },
-    {
-        id: 'jb-6',
-        title: 'DevOps Cloud Engineer (AWS / Kubernetes / CI/CD)',
-        company: 'CloudScale Infrastructure',
-        location: 'Warszawa / Zdalnie',
-        salary: '20 000 - 27 000 PLN',
-        type: 'Zdalna',
-        category: 'it',
-        description: 'Zarządzanie klastrami Kubernetes w AWS (EKS), pisanie kodu infrastruktury w Terraformie, automatyzacja pipeline CI/CD.',
-        date: new Date().toISOString(),
-        featured: true,
-        url: '#'
-    },
-    {
-        id: 'jb-7',
-        title: 'Kierowca C+E (Trasy Międzynarodowe)',
-        company: 'TransLogistics Global',
-        location: 'Katowice / Europa',
-        salary: '9 000 - 13 500 PLN',
-        type: 'Pełny etat',
-        category: 'logistyka',
-        description: 'Przewozy międzynarodowe na terenie UE w systemie 2/1 lub 3/1. Nowoczesny tabor ciągników Euro 6.',
-        date: new Date().toISOString(),
-        featured: false,
-        url: '#'
-    },
-    {
-        id: 'jb-8',
-        title: 'Elektryk Automatyk Przemysłowy (SEP do 1kV)',
-        company: 'AutoRobotics Polska',
-        location: 'Łódź',
-        salary: '8 000 - 11 500 PLN',
-        type: 'Pełny etat',
-        category: 'inzynieria',
-        description: 'Utrzymanie ruchu zautomatyzowanych linii produkcyjnych, diagnostyka sterowników PLC (Siemens S7, TIA Portal), szafy sterownicze.',
-        date: new Date().toISOString(),
-        featured: false,
-        url: '#'
-    },
-    {
-        id: 'jb-9',
-        title: 'Growth Marketing & Performance Specialist',
-        company: 'ScaleUp Ventures',
-        location: 'Warszawa / Zdalnie',
-        salary: '9 000 - 14 000 PLN',
-        type: 'Zdalna',
-        category: 'marketing',
-        description: 'Skalowanie kampanii Paid Ads (Meta, Google, LinkedIn), analityka GA4, optymalizacja współczynnika konwersji (CRO).',
-        date: new Date().toISOString(),
-        featured: true,
-        url: '#'
-    },
-    {
-        id: 'jb-10',
-        title: 'Frontend Developer (Vue 3, Pinia & Tailwind)',
-        company: 'Veloce Software House',
-        location: 'Zdalnie',
-        salary: '14 000 - 18 000 PLN',
-        type: 'Zdalna',
-        category: 'it',
-        description: 'Implementacja interfejsów w Vue.js 3 (Composition API), praca z TailwindCSS i integracja z GraphQL API.',
-        date: new Date().toISOString(),
-        featured: false,
-        url: '#'
-    },
-    {
-        id: 'jb-11',
-        title: 'Junior QA Automation Engineer (Playwright / TS)',
-        company: 'QualityFirst Labs',
-        location: 'Kraków / Hybrydowo',
-        salary: '7 000 - 9 500 PLN',
-        type: 'Staż',
-        category: 'it',
-        description: 'Tworzenie i utrzymanie testów automatycznych end-to-end w Playwright (TypeScript), raportowanie błędów w Jira.',
-        date: new Date().toISOString(),
-        featured: false,
-        url: '#'
-    },
-    {
-        id: 'jb-12',
-        title: 'Cybersecurity Analyst & Threat Hunter (SOC)',
-        company: 'SecureNet Defense',
-        location: 'Warszawa / Zdalnie',
-        salary: '16 000 - 23 000 PLN',
-        type: 'Kontrakt',
-        category: 'it',
-        description: 'Monitorowanie i analiza incydentów w systemach SIEM/EDR, reagowanie na zagrożenia, testy podatności infrastruktury.',
-        date: new Date().toISOString(),
-        featured: true,
-        url: '#'
-    }
-];
+import { CONFIG } from '../config.js';
 
 const JobService = {
-    DEMO_JOBS: DEMO_FALLBACK_JOBS,
-    API_KEY: '5be594f9-f5e0-41f5-a41a-9c1ea12566be',
-
-    async loadCSVJobs() {
-        const candidatePaths = ['offers.csv', '/offers.csv', 'public/offers.csv'];
-        for (const path of candidatePaths) {
-            try {
-                const response = await fetch(path, { cache: 'no-cache' });
-                if (response.ok) {
-                    const text = await response.text();
-                    if (text && !text.trim().startsWith('<!DOCTYPE') && !text.trim().startsWith('<html')) {
-                        const parsed = this.parseCSV(text);
-                        if (parsed && parsed.length > 0) return parsed;
-                    }
-                }
-            } catch (e) {
-                // continue
-            }
+    detectJobType(title = '', description = '') {
+        const text = `${title} ${description}`.toLowerCase();
+        if (text.includes('remote') || text.includes('zdaln') || text.includes('work from home')) {
+            return 'Zdalna';
         }
-        return this.DEMO_JOBS;
+        if (text.includes('intern') || text.includes('staż') || text.includes('staz') || text.includes('praktyk')) {
+            return 'Staż';
+        }
+        if (text.includes('contract') || text.includes('kontrakt') || text.includes('b2b') || text.includes('zlecenie')) {
+            return 'Kontrakt';
+        }
+        if (text.includes('część') || text.includes('part-time') || text.includes('pół etatu')) {
+            return 'Część etatu';
+        }
+        return 'Pełny etat';
     },
 
-    parseCSV(text) {
-        if (!text || typeof text !== 'string') return [];
-        const lines = text.trim().split(/\r?\n/);
-        if (lines.length < 2) return [];
+    normalizeJoobleJob(item, index) {
+        if (!item) return null;
+        const title = item.title ? item.title.replace(/<\/?[^>]+(>|$)/g, '').trim() : 'Oferta Pracy';
+        const snippet = item.snippet ? item.snippet.replace(/<\/?[^>]+(>|$)/g, '').trim() : '';
+        const location = item.location || 'Polska / Zdalnie';
+        const salary = item.salary && item.salary.trim() ? item.salary.trim() : 'Do uzgodnienia';
+        const company = item.company || 'Pracodawca zweryfikowany';
+        const sourceUrl = item.link || item.source_url || '#';
+        const type = item.type || this.detectJobType(title, snippet);
 
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/^["']|["']$/g, ''));
-        const jobs = [];
+        return {
+            id: `jooble-${item.id || index || Date.now()}`,
+            title: title,
+            company: company,
+            location: location,
+            salary: salary,
+            type: type,
+            category: this.detectCategory(title, snippet),
+            tags: this.extractTags(title, snippet),
+            description: snippet || 'Szczegółowy opis stanowiska dostępny u źródła ogłoszenia.',
+            requirements: ['Doświadczenie na podobnym stanowisku', 'Motywacja i zaangażowanie'],
+            source: 'Jooble Live API',
+            sourceUrl: sourceUrl,
+            featured: false,
+            createdAt: item.updated || new Date().toISOString()
+        };
+    },
 
-        for (let i = 1; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (!line) continue;
+    detectCategory(title, desc) {
+        const text = `${title} ${desc}`.toLowerCase();
+        if (text.includes('react') || text.includes('javascript') || text.includes('python') || text.includes('developer') || text.includes('programista') || text.includes('frontend') || text.includes('backend') || text.includes('java')) return 'IT / Software';
+        if (text.includes('spawacz') || text.includes('monter') || text.includes('mechanik') || text.includes('elektryk') || text.includes('produkcja')) return 'Praca Fizyczna / Techniczna';
+        if (text.includes('księg') || text.includes('finans') || text.includes('rachunk') || text.includes('analityk')) return 'Finanse / Księgowość';
+        if (text.includes('sprzeda') || text.includes('handlowiec') || text.includes('marketing') || text.includes('obsługa')) return 'Sprzedaż / Marketing';
+        return 'Inne';
+    },
 
-            const values = [];
-            let inQuotes = false;
-            let current = '';
+    extractTags(title, desc) {
+        const text = `${title} ${desc}`.toLowerCase();
+        const techList = ['React', 'JavaScript', 'TypeScript', 'Python', 'Java', 'Node.js', 'SQL', 'AWS', 'Docker', 'TIG', 'MIG/MAG', 'Excel', 'B2B', 'Zdalnie', 'Full-time'];
+        const found = [];
+        for (const t of techList) {
+            if (text.includes(t.toLowerCase())) found.push(t);
+        }
+        if (found.length === 0) found.push('Standard');
+        return found.slice(0, 4);
+    },
 
-            for (let j = 0; j < line.length; j++) {
-                const char = line[j];
-                if (char === '"' || char === "'") {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                    values.push(current.trim().replace(/^["']|["']$/g, ''));
-                    current = '';
-                } else {
-                    current += char;
-                }
-            }
-            values.push(current.trim().replace(/^["']|["']$/g, ''));
+    async loadJoobleJobs(keywords = '', location = '') {
+        const apiKey = CONFIG.JOOBLE_API_KEY || '5be594f9-f5e0-41f5-a41a-9c1ea12566be';
+        const url = CONFIG.JOOBLE_API_URL || `https://pl.jooble.org/api/${apiKey}`;
 
-            const job = {};
-            headers.forEach((header, index) => {
-                job[header] = values[index] || '';
+        try {
+            const body = {
+                keywords: keywords || 'praca',
+                location: location || '',
+                radius: 25,
+                page: 1
+            };
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
             });
 
-            if (job.title || job.stanowisko) {
-                jobs.push({
-                    id: job.id || `csv-${i}`,
-                    title: job.title || job.stanowisko || 'Oferta pracy',
-                    company: job.company || job.firma || 'Firma',
-                    location: job.location || job.lokalizacja || 'Polska',
-                    salary: job.salary || job.wynagrodzenie || 'Konkurencyjne',
-                    type: job.type || job.typ || 'Pełny etat',
-                    category: (job.category || job.kategoria || 'it').toLowerCase(),
-                    description: job.description || job.opis || '',
-                    date: job.date || job.data || new Date().toISOString(),
-                    featured: String(job.featured || job.wyroznione).toLowerCase() === 'true',
-                    url: job.url || '#'
-                });
+            if (!response.ok) {
+                console.warn(`Jooble API status: ${response.status}`);
+                return [];
             }
+
+            const data = await response.json();
+            const rawJobs = data.jobs || [];
+            return rawJobs.map((item, idx) => this.normalizeJoobleJob(item, idx));
+        } catch (error) {
+            console.warn('Jooble fetch error:', error);
+            return [];
         }
-
-        return jobs.length ? jobs : this.DEMO_JOBS;
     },
 
-    async loadJoobleJobs(keywords = 'praca', location = 'Polska') {
-        const apiKey = this.API_KEY;
-        const targetUrl = `https://pl.jooble.org/api/${apiKey}`;
-        const requestBody = JSON.stringify({
-            keywords: keywords || 'praca',
-            location: location || 'Polska',
-            page: 1,
-            result_on_page: 20
-        });
-
-        const proxies = [
-            `https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`,
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-            targetUrl
-        ];
-
-        for (const url of proxies) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 2800);
-
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: requestBody,
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && Array.isArray(data.jobs) && data.jobs.length > 0) {
-                        return data.jobs.map((item, index) => ({
-                            id: `jooble-${item.id || index}`,
-                            title: item.title || 'Oferta pracy',
-                            company: item.company || 'Pracodawca zweryfikowany',
-                            location: item.location || location || 'Polska',
-                            salary: item.salary || 'Konkurencyjne',
-                            type: item.type || (item.title?.toLowerCase().includes('zdaln') ? 'Zdalna' : 'Pełny etat'),
-                            category: this.detectCategory(item.title || ''),
-                            description: (item.snippet || '').replace(/<[^>]*>?/gm, ''),
-                            date: item.updated || new Date().toISOString(),
-                            featured: false,
-                            url: item.link || '#'
-                        }));
-                    }
-                }
-            } catch (err) {
-                // kontynuuj do kolejnego proxy
-            }
-        }
-
-        return this.filterJobs(this.DEMO_JOBS, { searchQuery: keywords, locationQuery: location });
-    },
-
-    detectCategory(title = '') {
-        const t = title.toLowerCase();
-        if (t.includes('ai') || t.includes('data') || t.includes('llm') || t.includes('machine')) return 'ai';
-        if (t.includes('developer') || t.includes('programista') || t.includes('react') || t.includes('it') || t.includes('full') || t.includes('front') || t.includes('back')) return 'it';
-        if (t.includes('spawacz') || t.includes('inzynier') || t.includes('elektryk') || t.includes('mechanik') || t.includes('automatyk')) return 'inzynieria';
-        if (t.includes('ksiegow') || t.includes('finans') || t.includes('accountant') || t.includes('audyt')) return 'finanse';
-        if (t.includes('marketing') || t.includes('seo') || t.includes('copywriter') || t.includes('social')) return 'marketing';
-        if (t.includes('design') || t.includes('ui') || t.includes('ux') || t.includes('grafik')) return 'design';
-        return 'it';
-    },
-
-    combineJobs(csvJobs = [], apiJobs = []) {
-        const combined = [...csvJobs, ...apiJobs];
-        if (combined.length === 0) return [...this.DEMO_JOBS];
-
+    combineJobs(internalJobs = [], joobleJobs = []) {
         const seen = new Set();
-        return combined.filter(job => {
-            const key = `${(job.title || '').toLowerCase()}|${(job.company || '').toLowerCase()}`;
-            if (seen.has(key)) return false;
-            seen.add(key);
-            return true;
-        });
+        const combined = [];
+
+        for (const j of internalJobs) {
+            if (!j) continue;
+            const key = `${(j.title || '').toLowerCase().trim()}___${(j.company || '').toLowerCase().trim()}`;
+            if (!seen.has(key)) {
+                seen.add(key);
+                combined.push(j);
+            }
+        }
+
+        for (const j of joobleJobs) {
+            if (!j) continue;
+            const key = `${(j.title || '').toLowerCase().trim()}___${(j.company || '').toLowerCase().trim()}`;
+            if (!seen.has(key)) {
+                seen.add(key);
+                combined.push(j);
+            }
+        }
+
+        return combined;
     },
 
-    filterJobs(jobs = [], { searchQuery = '', locationQuery = '', currentFilter = 'all', minSalary = 0 } = {}) {
-        let list = (jobs && jobs.length) ? jobs : this.DEMO_JOBS;
+    filterJobs(jobs = [], filters = {}) {
+        const query = (filters.searchQuery || '').toLowerCase().trim();
+        const locQuery = (filters.locationQuery || '').toLowerCase().trim();
+        const filter = (filters.currentFilter || 'all').toLowerCase();
+        const minSalary = filters.minSalary || 0;
 
-        const sQuery = (searchQuery || '').toLowerCase().trim();
-        const lQuery = (locationQuery || '').toLowerCase().trim();
-        const filter = (currentFilter || 'all').toLowerCase();
+        return jobs.filter(job => {
+            if (!job) return false;
 
-        return list.filter(job => {
-            if (sQuery) {
-                const title = (job.title || '').toLowerCase();
-                const comp = (job.company || '').toLowerCase();
-                const desc = (job.description || '').toLowerCase();
-                if (!title.includes(sQuery) && !comp.includes(sQuery) && !desc.includes(sQuery)) {
-                    return false;
-                }
+            const title = (job.title || '').toLowerCase();
+            const desc = (job.description || '').toLowerCase();
+            const comp = (job.company || '').toLowerCase();
+            const loc = (job.location || '').toLowerCase();
+            const tags = (job.tags || []).map(t => t.toLowerCase()).join(' ');
+
+            if (query) {
+                const qWords = query.split(/\s+/);
+                const fullText = `${title} ${desc} ${comp} ${tags}`;
+                const matches = qWords.every(w => fullText.includes(w));
+                if (!matches) return false;
             }
 
-            if (lQuery) {
-                const loc = (job.location || '').toLowerCase();
-                if (!loc.includes(lQuery)) {
+            if (locQuery) {
+                if (!loc.includes(locQuery) && !locQuery.includes(loc)) {
                     return false;
                 }
             }
