@@ -1,3 +1,5 @@
+import './styles.css';
+import './styles-mobile.css';
 /**
  * JobNexus — Refactored Application
  * Integrates Jooble API (via backend proxy), CSV import, AI CV matching, announcements
@@ -168,49 +170,41 @@ function initAuth() {
 }
 
 function syncUserHeader(user) {
+    if (!user) return;
     const loginBtn = document.getElementById('loginBtnNav');
     const regBtn = document.getElementById('registerBtnNav');
+    const authTrigger = document.getElementById('authTrigger');
     const dashAvatar = document.getElementById('dashAvatar');
     const dashUserName = document.getElementById('dashUserName');
     const dashRoleBadge = document.getElementById('dashRoleBadge');
 
-    if (!user) {
-        if (loginBtn) {
-            loginBtn.innerHTML = '<span>Zaloguj się</span>';
-            loginBtn.onclick = () => window.openAuthModal('login');
-        }
-        if (regBtn) {
-            regBtn.innerHTML = '<span>Zarejestruj się</span>';
-            regBtn.onclick = () => window.openAuthModal('register');
-        }
-        return;
-    }
-
-    const displayName = user.name || user.email.split('@')[0];
-    const isRecruiter = user.role === 'recruiter';
+    const initials = (user.name || 'JN').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
 
     if (loginBtn) {
-        loginBtn.innerHTML = `<span>👤 ${escapeHtml(displayName)} (${isRecruiter ? '🏢 Rekruter' : '🧑‍💻 Profil'})</span>`;
+        loginBtn.innerHTML = `<span>👤 ${escapeHtml(user.name || 'Profil')}</span>`;
         loginBtn.onclick = () => {
-            if (isRecruiter) {
-                if (typeof window.openRecruiterPanel === 'function') window.openRecruiterPanel();
-            } else {
-                if (typeof window.openDashboard === 'function') window.openDashboard();
-            }
+            if (typeof window.openDashboardModal === 'function') window.openDashboardModal();
         };
     }
     if (regBtn) {
-        regBtn.innerHTML = `<span>🚪 Wyloguj</span>`;
+        regBtn.innerHTML = `<span>Wyloguj</span>`;
         regBtn.onclick = async () => {
             if (typeof AuthService !== 'undefined') await AuthService.logout();
-            syncUserHeader(null);
-            showToast('Wylogowano pomyślnie.', 'info');
+            location.reload();
+        };
+    }
+    if (authTrigger) {
+        authTrigger.innerHTML = `<span>👤 ${escapeHtml(user.name || 'Profil')}</span>`;
+        authTrigger.onclick = () => {
+            if (typeof window.openDashboardModal === 'function') window.openDashboardModal();
         };
     }
 
-    if (dashUserName) dashUserName.textContent = displayName;
+    if (dashAvatar) dashAvatar.textContent = initials;
+    if (dashUserName) dashUserName.textContent = user.name;
     if (dashRoleBadge) {
-        dashRoleBadge.textContent = isRecruiter ? '🏢 Rekruter (PRO)' : '🧑‍💻 Kandydat';
+        dashRoleBadge.textContent = user.role === 'recruiter' ? '🏢 Rekruter' : '🧑‍💻 Kandydat';
+        dashRoleBadge.className = `dashboard-role-badge ${user.role === 'recruiter' ? 'recruiter' : ''}`;
     }
 }
 
