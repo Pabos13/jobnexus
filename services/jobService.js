@@ -1,6 +1,6 @@
 /**
  * JobService — Centralna usługa pobierania, łączenia, filtrowania i cache'owania ofert pracy
- * Obsługuje Jooble API, pliki CSV oraz bezpieczny fallback danych
+ * Obsługuje Jooble API (Klucz: 5be594f9-f5e0-41f5-a41a-9c1ea12566be), pliki CSV oraz natychmiastowy fallback danych
  */
 
 const DEMO_FALLBACK_JOBS = [
@@ -164,6 +164,7 @@ const DEMO_FALLBACK_JOBS = [
 
 const JobService = {
     DEMO_JOBS: DEMO_FALLBACK_JOBS,
+    API_KEY: '5be594f9-f5e0-41f5-a41a-9c1ea12566be',
 
     async loadCSVJobs() {
         const candidatePaths = ['offers.csv', '/offers.csv', 'public/offers.csv'];
@@ -239,7 +240,7 @@ const JobService = {
     },
 
     async loadJoobleJobs(keywords = 'praca', location = 'Polska') {
-        const apiKey = (typeof CONFIG !== 'undefined' && CONFIG.JOOBLE_API_KEY) ? CONFIG.JOOBLE_API_KEY : '0c6396f9-05ea-4027-bc0c-d38a08d27771';
+        const apiKey = this.API_KEY;
         const targetUrl = `https://pl.jooble.org/api/${apiKey}`;
         const requestBody = JSON.stringify({
             keywords: keywords || 'praca',
@@ -256,11 +257,16 @@ const JobService = {
 
         for (const url of proxies) {
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2800);
+
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: requestBody
+                    body: requestBody,
+                    signal: controller.signal
                 });
+                clearTimeout(timeoutId);
 
                 if (response.ok) {
                     const data = await response.json();
@@ -281,7 +287,7 @@ const JobService = {
                     }
                 }
             } catch (err) {
-                // try next
+                // kontynuuj do kolejnego proxy
             }
         }
 

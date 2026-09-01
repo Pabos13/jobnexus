@@ -2465,3 +2465,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+
+
+// ============================================
+// SMART AI SEARCH PRESETS
+// ============================================
+window.applySearchPreset = function(keyword, location) {
+    const sInput = document.getElementById('searchInput');
+    const lInput = document.getElementById('locationInput');
+
+    if (sInput) sInput.value = keyword;
+    if (lInput) lInput.value = location;
+
+    state.searchQuery = keyword;
+    state.locationQuery = location;
+    state.jobsPage = 1;
+
+    filterAndDisplay();
+
+    // Also trigger Jooble live fetch for this keyword
+    if (typeof JobService !== 'undefined' && JobService.loadJoobleJobs) {
+        JobService.loadJoobleJobs(keyword, location).then(joobleJobs => {
+            if (joobleJobs && joobleJobs.length > 0) {
+                state.jobs = JobService.combineJobs(state.csvJobs || [], joobleJobs);
+                filterAndDisplay();
+            }
+        }).catch(err => console.warn('Jooble preset fetch error:', err));
+    }
+
+    const ofertySec = document.getElementById('oferty');
+    if (ofertySec) {
+        ofertySec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+};
