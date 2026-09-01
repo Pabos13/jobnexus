@@ -40,39 +40,38 @@ export class AuthService {
         if (!email || !this.validateEmail(email)) {
             throw new Error('Invalid email format');
         }
-        if (!password || password.length < 6) {
-            throw new Error('Password must be at least 6 characters');
+        if (!password || password.length < 8) {
+            throw new Error('Password must be at least 8 characters');
         }
-        if (!name || name.trim().length < 1) {
-            name = email.split('@')[0];
+        if (!name || name.trim().length < 2) {
+            throw new Error('Name must be at least 2 characters');
         }
 
         const cleanEmail = email.toLowerCase().trim();
         const cleanName = name.trim();
         const userRole = (role === 'recruiter') ? 'recruiter' : 'candidate';
 
-        if (CONFIG.API_BASE_URL !== undefined && typeof CONFIG.API_BASE_URL === 'string' && CONFIG.API_BASE_URL.startsWith('http')) {
-            try {
-                const response = await fetch(`${CONFIG.API_BASE_URL}/auth/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: cleanEmail, password, name: cleanName, role: userRole })
-                });
+        try {
+            const apiBase = CONFIG.API_BASE_URL || '';
+            const response = await fetch(`${apiBase}/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: cleanEmail, password, name: cleanName })
+            });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.user) {
-                        this.setUser(data.user, data.token || 'tok_' + Date.now(), data.refreshToken, data.expiresIn);
-                        return data.user;
-                    }
-                } else if (response.status !== 404 && response.status !== 502) {
-                    const errData = await response.json().catch(() => ({}));
-                    throw new Error(errData.message || 'Registration failed');
+            if (response.ok) {
+                const data = await response.json();
+                if (data.user) {
+                    this.setUser(data.user, data.token || 'tok_' + Date.now(), data.refreshToken, data.expiresIn);
+                    return data.user;
                 }
-            } catch (err) {
-                if (err.message && err.message !== 'Failed to fetch' && !err.message.includes('NetworkError') && !err.message.includes('fetch') && !err.message.includes('404')) {
-                    throw err;
-                }
+            } else if (response.status !== 404 && response.status !== 502) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.message || 'Registration failed');
+            }
+        } catch (err) {
+            if (err.message && err.message !== 'Failed to fetch' && !err.message.includes('NetworkError') && !err.message.includes('fetch') && !err.message.includes('404')) {
+                throw err;
             }
         }
 
@@ -114,37 +113,36 @@ export class AuthService {
 
         const cleanEmail = email.toLowerCase().trim();
 
-        if (CONFIG.API_BASE_URL !== undefined && typeof CONFIG.API_BASE_URL === 'string' && CONFIG.API_BASE_URL.startsWith('http')) {
-            try {
-                const response = await fetch(`${CONFIG.API_BASE_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: cleanEmail, password })
-                });
+        try {
+            const apiBase = CONFIG.API_BASE_URL || '';
+            const response = await fetch(`${apiBase}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: cleanEmail, password })
+            });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.user) {
-                        this.setUser(data.user, data.token || 'tok_' + Date.now(), data.refreshToken, data.expiresIn);
-                        return data.user;
-                    }
-                } else if (response.status !== 404 && response.status !== 502) {
-                    const errData = await response.json().catch(() => ({}));
-                    throw new Error(errData.message || 'Invalid credentials');
+            if (response.ok) {
+                const data = await response.json();
+                if (data.user) {
+                    this.setUser(data.user, data.token || 'tok_' + Date.now(), data.refreshToken, data.expiresIn);
+                    return data.user;
                 }
-            } catch (err) {
-                if (err.message && err.message !== 'Failed to fetch' && !err.message.includes('NetworkError') && !err.message.includes('fetch') && !err.message.includes('404')) {
-                    throw err;
-                }
+            } else if (response.status !== 404 && response.status !== 502) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.message || 'Invalid credentials');
+            }
+        } catch (err) {
+            if (err.message && err.message !== 'Failed to fetch' && !err.message.includes('NetworkError') && !err.message.includes('fetch') && !err.message.includes('404')) {
+                throw err;
             }
         }
 
         const users = this._getLocalUsers();
         let found = users.find(u => u.email === cleanEmail);
         if (found) {
-            // Password verified or updated
-            found.password = password;
-            this._saveLocalUsers(users);
+            if (found.password && found.password !== password) {
+                throw new Error('Invalid credentials');
+            }
         } else {
             found = {
                 id: 'usr_' + Date.now(),
@@ -231,7 +229,7 @@ export class AuthService {
         const refreshToken = localStorage.getItem(this.STORAGE_KEYS.REFRESH_TOKEN);
         if (!refreshToken) throw new Error('No refresh token available');
 
-        const apiBase = CONFIG.API_BASE_URL;
+        const apiBase = CONFIG.API_BASE_URL || '';
         const response = await fetch(`${apiBase}/auth/refresh`, {
             method: 'POST',
             headers: {
@@ -260,7 +258,7 @@ export class AuthService {
         if (!currentUser) throw new Error('User not logged in');
 
         const token = this.getToken();
-        const apiBase = CONFIG.API_BASE_URL;
+        const apiBase = CONFIG.API_BASE_URL || '';
         const response = await fetch(`${apiBase}/auth/profile`, {
             method: 'PUT',
             headers: {
