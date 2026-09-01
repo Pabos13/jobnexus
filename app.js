@@ -85,85 +85,16 @@ document.addEventListener('DOMContentLoaded', () => {
 // AUTHENTICATION CONTROLLER & SESSION
 // ============================================
 function initAuth() {
-    const authModal = document.getElementById('authModal');
-    const authClose = document.getElementById('authClose');
-    const authForm = document.getElementById('authForm');
-    const tabLogin = document.getElementById('tabLogin');
-    const tabRegister = document.getElementById('tabRegister');
-    const authError = document.getElementById('authError');
-    const authSubmitBtn = document.getElementById('authSubmitBtn');
-
-    if (tabLogin) tabLogin.addEventListener('click', () => window.openAuthModal('login'));
-    if (tabRegister) tabRegister.addEventListener('click', () => window.openAuthModal('register'));
-
-    if (authClose && authModal) {
-        authClose.addEventListener('click', () => {
-            authModal.classList.add('hidden');
-            document.body.style.overflow = '';
-        });
-        authModal.addEventListener('click', (e) => {
-            if (e.target === authModal) {
-                authModal.classList.add('hidden');
-                document.body.style.overflow = '';
+    // Sync initial session on load
+    try {
+        if (typeof AuthService !== 'undefined' && AuthService.getUser) {
+            const currentUser = AuthService.getUser();
+            if (typeof window.syncUserHeader === 'function') {
+                window.syncUserHeader(currentUser);
             }
-        });
-    }
-
-    if (authForm) {
-        authForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (authError) authError.classList.add('hidden');
-
-            const isRegister = tabRegister && tabRegister.classList.contains('active');
-            const email = document.getElementById('authEmail')?.value.trim();
-            const password = document.getElementById('authPassword')?.value;
-            const name = document.getElementById('authName')?.value.trim();
-            const role = document.querySelector('input[name="authRole"]:checked')?.value || 'candidate';
-
-            if (authSubmitBtn) {
-                authSubmitBtn.disabled = true;
-                authSubmitBtn.textContent = 'Przetwarzanie... ⏳';
-            }
-
-            try {
-                let user;
-                if (isRegister) {
-                    user = await AuthService.register(email, password, name, role);
-                } else {
-                    user = await AuthService.login(email, password);
-                }
-
-                if (authModal) authModal.classList.add('hidden');
-                document.body.style.overflow = '';
-                authForm.reset();
-
-                syncUserHeader(user);
-                showToast(isRegister ? `🎉 Konto utworzone! Witaj, ${user.name}` : `👋 Zalogowano pomyślnie jako ${user.name}`, 'success');
-
-                if (typeof window.openDashboardModal === 'function') {
-                    window.openDashboardModal();
-                }
-            } catch (err) {
-                if (authError) {
-                    authError.textContent = err.message || 'Wystąpił błąd autoryzacji.';
-                    authError.classList.remove('hidden');
-                }
-                showToast(err.message || 'Błąd autoryzacji', 'error');
-            } finally {
-                if (authSubmitBtn) {
-                    authSubmitBtn.disabled = false;
-                    authSubmitBtn.textContent = isRegister ? 'Zarejestruj się i utwórz konto' : 'Zaloguj się';
-                }
-            }
-        });
-    }
-
-    // Check existing session
-    if (typeof AuthService !== 'undefined' && AuthService.getUser) {
-        const currentUser = AuthService.getUser();
-        if (currentUser) {
-            syncUserHeader(currentUser);
         }
+    } catch(e) {
+        console.warn('Auth session check:', e);
     }
 }
 
