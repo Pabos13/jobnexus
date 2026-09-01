@@ -81,263 +81,131 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================
 // AUTHENTICATION
 // ============================================
-async function initAuth() {
-    let registerMode = false;
-    if (!els.authTrigger || !els.authModal || !els.authForm) return;
+// ============================================
+// AUTHENTICATION CONTROLLER & SESSION
+// ============================================
+function initAuth() {
+    const authModal = document.getElementById('authModal');
+    const authClose = document.getElementById('authClose');
+    const authForm = document.getElementById('authForm');
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const authError = document.getElementById('authError');
+    const authSubmitBtn = document.getElementById('authSubmitBtn');
 
-    const authRoleGroup = document.getElementById('authRoleGroup');
-    const authTabLogin = document.getElementById('authTabLogin');
-    const authTabRegister = document.getElementById('authTabRegister');
-    const roleLabelCandidate = document.getElementById('roleLabelCandidate');
-    const roleLabelRecruiter = document.getElementById('roleLabelRecruiter');
-    const dashboardTrigger = document.getElementById('dashboardTrigger');
+    if (tabLogin) tabLogin.addEventListener('click', () => window.openAuthModal('login'));
+    if (tabRegister) tabRegister.addEventListener('click', () => window.openAuthModal('register'));
 
-    const updateRoleUI = (selectedRole) => {
-        if (roleLabelCandidate && roleLabelRecruiter) {
-            if (selectedRole === 'candidate') {
-                roleLabelCandidate.style.borderColor = '#3b82f6';
-                roleLabelCandidate.style.background = 'rgba(59, 130, 246, 0.15)';
-                roleLabelCandidate.querySelector('span:nth-child(3)').style.color = 'white';
-
-                roleLabelRecruiter.style.borderColor = '#334155';
-                roleLabelRecruiter.style.background = '#0b1120';
-                roleLabelRecruiter.querySelector('span:nth-child(3)').style.color = '#cbd5e1';
-            } else {
-                roleLabelRecruiter.style.borderColor = '#6366f1';
-                roleLabelRecruiter.style.background = 'rgba(99, 102, 241, 0.15)';
-                roleLabelRecruiter.querySelector('span:nth-child(3)').style.color = 'white';
-
-                roleLabelCandidate.style.borderColor = '#334155';
-                roleLabelCandidate.style.background = '#0b1120';
-                roleLabelCandidate.querySelector('span:nth-child(3)').style.color = '#cbd5e1';
+    if (authClose && authModal) {
+        authClose.addEventListener('click', () => {
+            authModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        });
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) {
+                authModal.classList.add('hidden');
+                document.body.style.overflow = '';
             }
-        }
-    };
+        });
+    }
 
-    roleLabelCandidate?.addEventListener('click', () => {
-        const input = roleLabelCandidate.querySelector('input');
-        if (input) input.checked = true;
-        updateRoleUI('candidate');
-    });
+    if (authForm) {
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (authError) authError.classList.add('hidden');
 
-    roleLabelRecruiter?.addEventListener('click', () => {
-        const input = roleLabelRecruiter.querySelector('input');
-        if (input) input.checked = true;
-        updateRoleUI('recruiter');
-    });
+            const isRegister = tabRegister && tabRegister.classList.contains('active');
+            const email = document.getElementById('authEmail')?.value.trim();
+            const password = document.getElementById('authPassword')?.value;
+            const name = document.getElementById('authName')?.value.trim();
+            const role = document.querySelector('input[name="authRole"]:checked')?.value || 'candidate';
 
-    const setMode = (register) => {
-        registerMode = register;
-        if (authRoleGroup) {
-            authRoleGroup.classList.toggle('hidden', !register);
-            authRoleGroup.style.display = register ? 'flex' : 'none';
-        }
-        if (els.authNameGroup) {
-            els.authNameGroup.classList.toggle('hidden', !register);
-            els.authNameGroup.style.display = register ? 'flex' : 'none';
-        }
-        if (els.authName) els.authName.required = register;
-
-        if (register) {
-            if (authTabRegister) {
-                authTabRegister.style.background = '#2563eb';
-                authTabRegister.style.color = 'white';
+            if (authSubmitBtn) {
+                authSubmitBtn.disabled = true;
+                authSubmitBtn.textContent = 'Przetwarzanie... ⏳';
             }
-            if (authTabLogin) {
-                authTabLogin.style.background = 'transparent';
-                authTabLogin.style.color = '#94a3b8';
-            }
-            if (els.authTitle) els.authTitle.textContent = 'Załóż darmowe konto';
-            if (els.authSubtitle) els.authSubtitle.textContent = 'Wybierz typ konta (Kandydat lub Pracodawca) i dołącz do JobNexus.';
-            if (els.authSubmit) els.authSubmit.textContent = 'Zarejestruj się';
-            if (els.authSwitch) els.authSwitch.textContent = 'Masz już konto? Zaloguj się';
-            updateRoleUI(document.querySelector('input[name="authRole"]:checked')?.value || 'candidate');
-        } else {
-            if (authTabLogin) {
-                authTabLogin.style.background = '#2563eb';
-                authTabLogin.style.color = 'white';
-            }
-            if (authTabRegister) {
-                authTabRegister.style.background = 'transparent';
-                authTabRegister.style.color = '#94a3b8';
-            }
-            if (els.authTitle) els.authTitle.textContent = 'Zaloguj się do konta';
-            if (els.authSubtitle) els.authSubtitle.textContent = 'Wprowadź swoje dane, aby przejść do panelu i ofert.';
-            if (els.authSubmit) els.authSubmit.textContent = 'Zaloguj się';
-            if (els.authSwitch) els.authSwitch.textContent = 'Nie masz konta? Zarejestruj się';
-        }
-    };
 
-    authTabLogin?.addEventListener('click', () => setMode(false));
-    authTabRegister?.addEventListener('click', () => setMode(true));
-    els.authSwitch?.addEventListener('click', () => setMode(!registerMode));
-
-    const open = (register = false, message = '') => {
-        setMode(register);
-        els.authForm.reset();
-        els.authError.textContent = message;
-        els.authError.classList.toggle('hidden', !message);
-        els.authModal.classList.remove('hidden');
-        setTimeout(() => {
-            (register ? els.authName : els.authEmail)?.focus();
-        }, 50);
-    };
-
-    const close = () => els.authModal.classList.add('hidden');
-
-    const handleAuthTrigger = async (event) => {
-        event.preventDefault();
-        if (AuthService.isAuthenticated() || AuthService.getUser()) {
-            await AuthService.logout();
-            syncAuthTrigger(null);
-            showToast('Wylogowano pomyślnie', 'success');
-            return;
-        }
-        open(false);
-    };
-
-    els.authTrigger.addEventListener('click', handleAuthTrigger);
-    els.authClose?.addEventListener('click', close);
-    els.authModal.addEventListener('click', (e) => {
-        if (e.target === els.authModal) close();
-    });
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            if (!els.authModal.classList.contains('hidden')) close();
-            const dashM = document.getElementById('dashboardModal');
-            if (dashM && !dashM.classList.contains('hidden')) dashM.classList.add('hidden');
-        }
-    });
-
-    els.authForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        els.authError.classList.add('hidden');
-        els.authSubmit.disabled = true;
-        els.authSubmit.textContent = 'Przetwarzanie...';
-
-        try {
-            const selectedRole = document.querySelector('input[name="authRole"]:checked')?.value || 'candidate';
-            const user = registerMode 
-                ? await AuthService.register(els.authEmail.value, els.authPassword.value, els.authName?.value || '', selectedRole)
-                : await AuthService.login(els.authEmail.value, els.authPassword.value);
-
-            if (user) {
-                syncAuthTrigger(user);
-                close();
-                showToast(registerMode ? `Konto utworzone! Witaj w JobNexus, ${user.name}` : 'Zalogowano pomyślnie!', 'success');
-
-                // NATYCHMIASTOWE OTWARCIE WYBRANEGO PANELU
-                if (typeof window.openDashboard === 'function') {
-                    window.openDashboard();
+            try {
+                let user;
+                if (isRegister) {
+                    user = await AuthService.register(email, password, name, role);
+                } else {
+                    user = await AuthService.login(email, password);
                 }
-            } else if (registerMode) {
-                els.authError.textContent = 'Sprawdź skrzynkę e-mail i potwierdź konto.';
-                els.authError.classList.remove('hidden');
-            }
-        } catch (error) {
-            let userMsg = error.message || 'Nie udało się wykonać operacji.';
-            if (userMsg.includes('Invalid email format')) userMsg = 'Niepoprawny format adresu e-mail.';
-            if (userMsg.includes('Password must be at least 8 characters')) userMsg = 'Hasło musi mieć co najmniej 8 znaków.';
-            if (userMsg.includes('Name must be at least 2 characters')) userMsg = 'Imię musi mieć co najmniej 2 znaki.';
-            if (userMsg.includes('Password is required')) userMsg = 'Hasło jest wymagane.';
-            if (userMsg.includes('Invalid credentials')) userMsg = 'Nieprawidłowy e-mail lub hasło.';
-            els.authError.textContent = userMsg;
-            els.authError.classList.remove('hidden');
-        } finally {
-            els.authSubmit.disabled = false;
-            els.authSubmit.textContent = registerMode ? 'Zarejestruj się' : 'Zaloguj się';
-        }
-    });
 
-    const navDashBtn = document.getElementById('navDashboardBtn');
-    const navDashBtnText = document.getElementById('navDashboardBtnText');
+                if (authModal) authModal.classList.add('hidden');
+                document.body.style.overflow = '';
+                authForm.reset();
 
-    const syncAuthTrigger = (user) => {
-        if (user) {
-            const roleLabel = user.role === 'recruiter' ? 'Panel Rekrutera' : 'Panel Kandydata';
-            els.authTrigger.textContent = `Wyloguj (${user.name || user.email})`;
+                syncUserHeader(user);
+                showToast(isRegister ? `🎉 Konto utworzone! Witaj, ${user.name}` : `👋 Zalogowano pomyślnie jako ${user.name}`, 'success');
 
-            if (dashboardTrigger) {
-                dashboardTrigger.classList.remove('hidden');
-                const span = dashboardTrigger.querySelector('span');
-                if (span) span.textContent = roleLabel;
-            }
-
-            if (navDashBtn) {
-                navDashBtn.classList.remove('hidden');
-                if (navDashBtnText) navDashBtnText.textContent = roleLabel;
-            }
-        } else {
-            els.authTrigger.textContent = 'Zaloguj się';
-            if (dashboardTrigger) {
-                dashboardTrigger.classList.add('hidden');
-            }
-            if (navDashBtn) {
-                navDashBtn.classList.add('hidden');
-            }
-        }
-    };
-
-    
-    document.getElementById('heroRegisterCandidate')?.addEventListener('click', () => {
-        const u = AuthService.getUser();
-        if (u) {
-            window.openDashboard?.();
-        } else {
-            open(true);
-            const input = roleLabelCandidate?.querySelector('input');
-            if (input) input.checked = true;
-            updateRoleUI('candidate');
-        }
-    });
-
-    document.getElementById('heroRegisterRecruiter')?.addEventListener('click', () => {
-        const u = AuthService.getUser();
-        if (u) {
-            window.openDashboard?.();
-        } else {
-            open(true);
-            const input = roleLabelRecruiter?.querySelector('input');
-            if (input) input.checked = true;
-            updateRoleUI('recruiter');
-        }
-    });
-
-    navDashBtn?.addEventListener('click', () => {
-        if (typeof window.openDashboard === 'function') {
-            window.openDashboard();
-        }
-    });
-
-    // Podepnij Moje CV oraz Dodaj Ogłoszenie do paneli
-    document.querySelectorAll('a[href="#cv"]').forEach(a => {
-        a.addEventListener('click', (e) => {
-            const u = AuthService.getUser();
-            if (u) {
-                e.preventDefault();
-                window.openDashboard?.();
+                if (typeof window.openDashboardModal === 'function') {
+                    window.openDashboardModal();
+                }
+            } catch (err) {
+                if (authError) {
+                    authError.textContent = err.message || 'Wystąpił błąd autoryzacji.';
+                    authError.classList.remove('hidden');
+                }
+                showToast(err.message || 'Błąd autoryzacji', 'error');
+            } finally {
+                if (authSubmitBtn) {
+                    authSubmitBtn.disabled = false;
+                    authSubmitBtn.textContent = isRegister ? 'Zarejestruj się i utwórz konto' : 'Zaloguj się';
+                }
             }
         });
-    });
+    }
 
-    document.querySelectorAll('a[href="#dodaj"], a[href="#ogloszenia"]').forEach(a => {
-        a.addEventListener('click', (e) => {
-            const u = AuthService.getUser();
-            if (u && u.role === 'recruiter') {
-                e.preventDefault();
-                window.openDashboard?.();
-            }
-        });
-    });
-
-    const currentUser = await AuthService.syncSession();
-    syncAuthTrigger(currentUser);
-    window.openAuth = open;
+    // Check existing session
+    if (typeof AuthService !== 'undefined' && AuthService.getUser) {
+        const currentUser = AuthService.getUser();
+        if (currentUser) {
+            syncUserHeader(currentUser);
+        }
+    }
 }
 
-// DASHBOARD (PANEL KANDYDATA / REKRUTERA + EXTRA PREMIUM)
-// ==========================================
+function syncUserHeader(user) {
+    if (!user) return;
+    const loginBtn = document.getElementById('loginBtnNav');
+    const regBtn = document.getElementById('registerBtnNav');
+    const authTrigger = document.getElementById('authTrigger');
+    const dashAvatar = document.getElementById('dashAvatar');
+    const dashUserName = document.getElementById('dashUserName');
+    const dashRoleBadge = document.getElementById('dashRoleBadge');
+
+    const initials = (user.name || 'JN').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+
+    if (loginBtn) {
+        loginBtn.innerHTML = `<span>👤 ${escapeHtml(user.name || 'Profil')}</span>`;
+        loginBtn.onclick = () => {
+            if (typeof window.openDashboardModal === 'function') window.openDashboardModal();
+        };
+    }
+    if (regBtn) {
+        regBtn.innerHTML = `<span>Wyloguj</span>`;
+        regBtn.onclick = async () => {
+            if (typeof AuthService !== 'undefined') await AuthService.logout();
+            location.reload();
+        };
+    }
+    if (authTrigger) {
+        authTrigger.innerHTML = `<span>👤 ${escapeHtml(user.name || 'Profil')}</span>`;
+        authTrigger.onclick = () => {
+            if (typeof window.openDashboardModal === 'function') window.openDashboardModal();
+        };
+    }
+
+    if (dashAvatar) dashAvatar.textContent = initials;
+    if (dashUserName) dashUserName.textContent = user.name;
+    if (dashRoleBadge) {
+        dashRoleBadge.textContent = user.role === 'recruiter' ? '🏢 Rekruter' : '🧑‍💻 Kandydat';
+        dashRoleBadge.className = `dashboard-role-badge ${user.role === 'recruiter' ? 'recruiter' : ''}`;
+    }
+}
+
 function initDashboard() {
     const dashModal = document.getElementById('dashboardModal');
     window.openDashboard = () => {

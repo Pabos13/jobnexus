@@ -153,15 +153,7 @@
                     ➕ Otwórz Formularz Ogłoszenia
                 </button>
             </div>
-<div class="filter-chips">
-                <button class="chip active" data-filter="all">Wszystkie</button>
-                <button class="chip" data-filter="remote">Zdalna</button>
-                <button class="chip" data-filter="intern">Staż</button>
-                <button class="chip" data-filter="b2b">Kontrakt B2B</button>
-                <button class="chip" data-filter="it">IT & Tech</button>
-                <button class="chip" data-filter="inzynieria">Inżynieria</button>
-                <button class="chip" data-filter="finanse">Finanse</button>
-            </div>
+
 
             <!-- Advanced Salary Slider & Alert Bar -->
             <div class="advanced-filters-bar">
@@ -217,14 +209,7 @@
                     ➕ Otwórz Formularz Zlecenia
                 </button>
             </div>
-<div class="gigs-filter-bar" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem;">
-                <button class="chip active gig-filter-btn" data-category="all">Wszystkie zlecenia</button>
-                <button class="chip gig-filter-btn" data-category="ai">AI & Automatyzacja</button>
-                <button class="chip gig-filter-btn" data-category="web">Web & Mobile</button>
-                <button class="chip gig-filter-btn" data-category="design">Design & UI/UX</button>
-                <button class="chip gig-filter-btn" data-category="ecommerce">E-commerce</button>
-                <button class="chip gig-filter-btn" data-category="marketing">Marketing & SEO</button>
-            </div>
+
 
             <!-- Gigs Grid -->
             <div class="jobs-grid" id="gigsGrid">
@@ -703,18 +688,35 @@
         </div>
     </div>
 
-    <!-- 3. AUTH MODAL (LOGIN & REGISTER) -->
+        <!-- 3. AUTH MODAL (LOGIN & REGISTER) -->
     <div class="modal hidden" id="authModal">
-        <div class="modal-content" style="max-width: 440px;">
+        <div class="modal-content" style="max-width: 460px; width: 95%;">
             <button class="modal-close" id="authClose">&times;</button>
+            <div class="modal-header" style="margin-bottom: 1.25rem;">
+                <div class="modal-icon" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; margin-bottom: 0.5rem;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px;"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <h2 id="authModalTitle">Logowanie do JobNexus</h2>
+                <p id="authModalSubtitle">Wprowadź dane, aby uzyskać dostęp do panelu i ofert</p>
+            </div>
+
             <div class="auth-tabs" style="display: flex; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 1.5rem;">
                 <button type="button" class="auth-tab active" id="tabLogin" style="flex:1; padding:0.75rem; background:none; border:none; color:#fff; font-weight:700; border-bottom:2px solid #3b82f6; cursor:pointer;">Logowanie</button>
                 <button type="button" class="auth-tab" id="tabRegister" style="flex:1; padding:0.75rem; background:none; border:none; color:#94a3b8; font-weight:700; cursor:pointer;">Rejestracja</button>
             </div>
 
+            <div class="auth-error-box hidden" id="authError" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.85rem; margin-bottom: 1rem; font-weight: 600;"></div>
+
             <form id="authForm" class="auth-form">
+                <!-- Registration only: Name input -->
+                <div class="form-group hidden" id="nameGroup">
+                    <label>Imię i Nazwisko *</label>
+                    <input type="text" id="authName" placeholder="np. Jan Kowalski" class="form-input">
+                </div>
+
+                <!-- Registration only: Role selection -->
                 <div class="form-group hidden" id="roleGroup">
-                    <label>Wybierz typ konta</label>
+                    <label>Wybierz typ profilu *</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.35rem;">
                         <label style="display: flex; align-items: center; gap: 0.5rem; background: #1e293b; padding: 0.75rem; border-radius: 0.5rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);">
                             <input type="radio" name="authRole" value="candidate" checked>
@@ -728,21 +730,20 @@
                 </div>
 
                 <div class="form-group">
-                    <label>E-mail</label>
+                    <label>Adres E-mail *</label>
                     <input type="email" id="authEmail" required placeholder="twoj@email.com" class="form-input">
                 </div>
                 <div class="form-group">
-                    <label>Hasło</label>
-                    <input type="password" id="authPassword" required placeholder="••••••••" class="form-input">
+                    <label>Hasło (min. 6 znaków) *</label>
+                    <input type="password" id="authPassword" required placeholder="••••••••" minlength="6" class="form-input">
                 </div>
-                <button type="submit" class="btn btn-primary btn-block" id="authSubmitBtn" style="margin-top: 1rem;">
+                <button type="submit" class="btn btn-primary btn-block" id="authSubmitBtn" style="margin-top: 1rem; padding: 0.85rem; font-size: 0.95rem; font-weight: 700;">
                     Zaloguj się
                 </button>
             </form>
         </div>
     </div>
 
-    
     <!-- 4. EXPANDED ADD JOB ANNOUNCEMENT MODAL -->
     <div class="modal hidden" id="addModal">
         <div class="modal-content" style="max-width: 680px; width: 95%;">
