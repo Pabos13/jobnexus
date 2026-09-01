@@ -66,6 +66,46 @@
                     </div>
                 </div>
 
+                <!-- AI CV UPLOAD & INSTANT MATCHING CARD -->
+                <div class="ai-cv-matcher-card">
+                    <div class="ai-cv-header">
+                        <div class="ai-cv-icon-badge">🎯 AI CV Matcher & Weryfikacja ATS</div>
+                        <h2 class="ai-cv-title">Wgraj CV — AI zweryfikuje Twoje umiejętności i dopasuje oferty</h2>
+                        <p class="ai-cv-subtitle">Algorytm AI natychmiast przeskanuje technologie, staż i poziom dopasowania ATS do aktualnych ofert pracy.</p>
+                    </div>
+                    <div class="cv-dropzone" id="heroCvDropzone">
+                        <input type="file" id="heroCvInput" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" hidden>
+                        <div class="cv-dropzone-inner" id="heroCvDropzoneInner">
+                            <div class="cv-upload-pulse-icon">📄</div>
+                            <div class="cv-drop-text">
+                                <strong class="cv-drop-title">Przeciągnij i upuść swoje CV lub <span style="color:#38bdf8; text-decoration:underline;">kliknij, aby wybrać plik</span></strong>
+                                <span class="cv-drop-desc">Obsługiwane formaty: PDF, DOCX, DOC, JPG, PNG (maks. 10 MB)</span>
+                            </div>
+                            <button type="button" class="btn btn-primary cv-scan-btn" id="btnPickCv">
+                                ⚡ Skanuj CV i weryfikuj dopasowanie
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PERSONALIZED MATCHED JOBS CONTAINER -->
+                <div class="personalized-matches-container hidden" id="personalizedMatchesSection">
+                    <div class="personalized-matches-header">
+                        <div>
+                            <div class="ats-match-pill">
+                                ✨ Weryfikacja AI zakończona • Wynik ATS: <span id="atsScoreValue" style="font-weight:900; color:#38bdf8;">96%</span>
+                            </div>
+                            <h2 class="personalized-matches-title">🎯 Oferty Spersonalizowane pod Twoje CV</h2>
+                            <p class="personalized-matches-subtitle" id="matchedSkillsText">Dopasowano automatycznie na podstawie Twojego profilu i zweryfikowanych umiejętności.</p>
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="window.resetCvMatches()">
+                            ✕ Zresetuj filtr CV
+                        </button>
+                    </div>
+                    <div class="jobs-grid" id="personalizedJobsGrid">
+                        <!-- Cards injected by JS -->
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -129,17 +169,6 @@
                 <button type="button" class="btn btn-secondary action-banner-btn" onclick="openAddModal('featured')">
                     ➕ Dodaj ofertę pracy
                 </button>
-            </div>
-
-            <!-- Gigs Filter Bar -->
-            <div class="advanced-filters-bar">
-                <div class="salary-filter-group">
-                    <span class="salary-label">Kategoria zlecenia:</span>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.filterGigs('all')">Wszystkie</button>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.filterGigs('IT')">💻 IT & Web</button>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.filterGigs('Design')">🎨 Grafika</button>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.filterGigs('Teksty')">✍️ Copywriting</button>
-                </div>
             </div>
 
             <!-- Gigs Grid -->
