@@ -10,6 +10,77 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./styles.css">
     <link rel="stylesheet" href="./styles-mobile.css">
+
+    <!-- IMMEDIATE GLOBAL CONTROLLERS (Zero delay, always accessible) -->
+    <script>
+        window.openAddModal = function(type) {
+            var modal = document.getElementById('addModalBackdrop');
+            if (!modal) return;
+            var titleEl = document.getElementById('addModalTitle');
+            var typeSelect = document.getElementById('offerTypeSelect');
+            var priceBadge = document.getElementById('orderPriceBadge');
+            
+            if (type === 'gig') {
+                if (titleEl) titleEl.textContent = '🚀 Dodaj Zlecenie / Ogłoszenie Freelance (9,99 zł)';
+                if (typeSelect) typeSelect.value = 'gig';
+                if (priceBadge) priceBadge.textContent = '9,99 zł';
+            } else if (type === 'featured') {
+                if (titleEl) titleEl.textContent = '🔥 Dodaj Ofertę Pracy Wyróżnioną HOT (29,99 zł)';
+                if (typeSelect) typeSelect.value = 'featured';
+                if (priceBadge) priceBadge.textContent = '29,99 zł';
+            } else if (type === 'pro') {
+                if (titleEl) titleEl.textContent = '💎 Aktywacja Planu Abonamentowego PRO (99 zł/msc)';
+                if (typeSelect) typeSelect.value = 'featured';
+                if (priceBadge) priceBadge.textContent = '99,00 zł / msc';
+            } else {
+                if (titleEl) titleEl.textContent = '💼 Dodaj Ofertę Pracy Standard (9,99 zł)';
+                if (typeSelect) typeSelect.value = 'standard';
+                if (priceBadge) priceBadge.textContent = '9,99 zł';
+            }
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1';
+            modal.style.pointerEvents = 'auto';
+            modal.style.zIndex = '999999';
+        };
+
+        window.closeAddModal = function() {
+            var modal = document.getElementById('addModalBackdrop');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                modal.style.visibility = 'hidden';
+                modal.style.opacity = '0';
+                modal.style.pointerEvents = 'none';
+            }
+        };
+
+        window.openAuthModal = function(mode) {
+            var modal = document.getElementById('authModalBackdrop');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1';
+            modal.style.pointerEvents = 'auto';
+            modal.style.zIndex = '999999';
+            if (typeof window.switchAuthTab === 'function') {
+                window.switchAuthTab(mode);
+            }
+        };
+
+        window.closeAuthModal = function() {
+            var modal = document.getElementById('authModalBackdrop');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                modal.style.visibility = 'hidden';
+                modal.style.opacity = '0';
+                modal.style.pointerEvents = 'none';
+            }
+        };
+    </script>
 </head>
 <body>
     <!-- HEADER / NAVIGATION (PERFECTLY ALIGNED SINGLE ROW) -->
@@ -125,7 +196,7 @@
                         <p class="action-banner-subtitle">Opublikuj szczegółową ofertę pracy i dotrzyj do zweryfikowanych specjalistów w całej Polsce.</p>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary action-banner-btn" onclick="openAddModal('standard')">
+                <button type="button" class="btn btn-primary action-banner-btn" id="heroAddJobBtn" onclick="window.openAddModal('standard')">
                     ➕ Dodaj ofertę pracy - 9,99 zł
                 </button>
             </div>
@@ -166,7 +237,7 @@
                         <p class="action-banner-subtitle">Zleć zadanie freelance i otrzymaj natychmiastowe oferty od doświadczonych wykonawców.</p>
                     </div>
                 </div>
-                <button type="button" class="btn btn-secondary action-banner-btn" onclick="openAddModal('gig')">
+                <button type="button" class="btn btn-secondary action-banner-btn" id="heroAddGigBtn" onclick="window.openAddModal('gig')">
                     ➕ Dodaj Ogłoszenie / Zlecenie - 9,99 zł
                 </button>
             </div>
@@ -203,8 +274,8 @@
                         <li>✓ Bezpośredni kontakt z kandydatem</li>
                         <li>✓ Podstawowy algorytm dopasowania</li>
                     </ul>
-                    <button type="button" class="btn btn-secondary btn-block" onclick="openAddModal('standard')">
-                        Dodaj ogłoszenie standard
+                    <button type="button" class="btn btn-secondary btn-block" onclick="window.openAddModal('standard')">
+                        Dodaj ogłoszenie standard (9,99 zł)
                     </button>
                 </div>
 
@@ -217,8 +288,8 @@
                         <li>✓ Pierwszeństwo na liście ofert</li>
                         <li>✓ Powiadomienie e-mail do dopasowanych kandydatów</li>
                     </ul>
-                    <button type="button" class="btn btn-primary btn-block" onclick="openAddModal('featured')">
-                        Dodaj ogłoszenie wyróżnione
+                    <button type="button" class="btn btn-primary btn-block" onclick="window.openAddModal('featured')">
+                        Dodaj ogłoszenie wyróżnione (29,99 zł)
                     </button>
                 </div>
 
@@ -231,8 +302,8 @@
                         <li>✓ Panel rekrutera z Kanbanem aplikacji</li>
                         <li>✓ Dedykowany opiekun klienta</li>
                     </ul>
-                    <button type="button" class="btn btn-secondary btn-block" onclick="openAddModal('featured')">
-                        Aktywuj Plan PRO
+                    <button type="button" class="btn btn-secondary btn-block" onclick="window.openAddModal('pro')">
+                        Aktywuj Plan PRO (99 zł)
                     </button>
                 </div>
             </div>
@@ -258,14 +329,12 @@
                     <a href="#oferty">Oferty Pracy</a>
                     <a href="#zlecenia">Zlecenia Freelance</a>
                     <a href="#cennik">Cennik</a>
-                    <a href="javascript:void(0)" onclick="document.getElementById('openJobAlertBtn').click()">Job Alert</a>
                 </div>
 
                 <div class="footer-col">
                     <h4>Pracodawcy</h4>
-                    <a href="javascript:void(0)" onclick="openAddModal('standard')">Dodaj Ogłoszenie</a>
+                    <a href="javascript:void(0)" onclick="window.openAddModal('standard')">Dodaj Ogłoszenie</a>
                     <a href="#zlecenia">Oferty Zleceń</a>
-                    <a href="javascript:void(0)" onclick="document.getElementById('navDashboardBtn').click()">Panel Rekrutera (Kanban)</a>
                     <a href="#cennik">Cennik 99 zł/msc</a>
                 </div>
 
@@ -282,341 +351,229 @@
         </div>
     </footer>
 
-    <!-- MODAL: DODAJ OGŁOSZENIE / ZLECENIE -->
-    <div class="modal-backdrop hidden" id="addModalBackdrop" onclick="if(event.target===this) closeAddModal()">
-        <div class="modal" id="addModal">
+    <!-- MODAL: ROZBUDOWANY FORMULARZ DODAWANIA OGŁOSZENIA / ZLECENIA Z PŁATNOŚCIĄ -->
+    <div class="modal-backdrop hidden" id="addModalBackdrop" onclick="if(event.target===this) window.closeAddModal()">
+        <div class="modal modal-xl modal-expanded" id="addModal">
             <div class="modal-header">
-                <h3 class="modal-title" id="addModalTitle">Dodaj Ogłoszenie</h3>
-                <button type="button" class="modal-close" onclick="closeAddModal()">&times;</button>
+                <div>
+                    <h3 class="modal-title" id="addModalTitle">💼 Dodaj Ofertę Pracy / Zlecenie</h3>
+                    <p class="modal-subtitle">Uzupełnij szczegółowe dane, widełki finansowe oraz wymagania, aby dotrzeć do najlepszych specjalistów.</p>
+                </div>
+                <button type="button" class="modal-close" onclick="window.closeAddModal()">&times;</button>
             </div>
 
-            <form id="addOfferForm" class="add-offer-form">
-                <div class="form-group">
-                    <label>Typ publikacji</label>
-                    <select id="offerTypeSelect" class="form-input">
-                        <option value="standard">Oferta Pracy Standard (9,99 zł)</option>
-                        <option value="featured">Oferta Pracy Wyróżniona HOT (29,99 zł)</option>
-                        <option value="gig">Zlecenie Freelance / Projekt</option>
-                    </select>
+            <form id="addOfferForm" class="add-offer-form" onsubmit="window.handleAddOfferSubmit(event)">
+                <!-- SEKCJA 1: TYP I DANE PODSTAWOWE -->
+                <div class="form-section-header">
+                    <span class="form-section-badge">1</span>
+                    <h4>Podstawowe Informacje & Pakiet Publikacji</h4>
                 </div>
-
-                <div class="form-group">
-                    <label>Tytuł stanowiska / zlecenia *</label>
-                    <input type="text" id="offerTitleInput" required placeholder="np. Senior Frontend Developer / Wykonanie sklepu Shopify" class="form-input">
-                </div>
-
+                
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Firma / Zleceniodawca *</label>
-                        <input type="text" id="offerCompanyInput" required placeholder="np. Nexus Tech Sp. z o.o." class="form-input">
+                        <label>Wybierz Pakiet Publikacji *</label>
+                        <select id="offerTypeSelect" class="form-input" required onchange="var b = document.getElementById('orderPriceBadge'); if(b){ b.textContent = this.value === 'featured' ? '29,99 zł' : '9,99 zł'; }">
+                            <option value="standard">💼 Oferta Pracy Standard (9,99 zł / 30 dni)</option>
+                            <option value="featured">🔥 Oferta Pracy Wyróżniona HOT (29,99 zł / 30 dni)</option>
+                            <option value="gig">🚀 Zlecenie Freelance / Projekt (9,99 zł / 30 dni)</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label>Lokalizacja *</label>
-                        <input type="text" id="offerLocationInput" required placeholder="np. Warszawa / Zdalnie" class="form-input">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Wynagrodzenie / Budżet *</label>
-                        <input type="text" id="offerSalaryInput" required placeholder="np. 15 000 - 20 000 PLN / 3 500 PLN za projekt" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label>Tryb pracy / Kontrakt</label>
-                        <select id="offerWorkTypeSelect" class="form-input">
-                            <option value="Pełny etat">Pełny etat</option>
-                            <option value="Zdalna">Zdalna</option>
-                            <option value="B2B">Kontrakt B2B</option>
-                            <option value="Część etatu">Część etatu</option>
-                            <option value="Staż">Staż / Praktyka</option>
+                        <label>Kategoria / Branża *</label>
+                        <select id="offerCategorySelect" class="form-input" required>
+                            <option value="IT / Software">💻 IT / Software & Web</option>
+                            <option value="AI & Data Science">🧠 AI & Machine Learning / Data</option>
+                            <option value="Design & Creative">🎨 Grafika, UI/UX & Design</option>
+                            <option value="Marketing & Sales">📈 Marketing, SEO & Sprzedaż</option>
+                            <option value="Finanse / Księgowość">📊 Finanse, Księgowość & Analityka</option>
+                            <option value="Praca Fizyczna / Techniczna">🔧 Praca Techniczna, Inżynieria & Produkcja</option>
+                            <option value="Obsługa Klienta">🎧 Obsługa Klienta / Support</option>
+                            <option value="Inne">🌐 Inna Kategoria</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Tagi / Technologie (oddzielone przecinkami)</label>
-                    <input type="text" id="offerTagsInput" placeholder="np. React, TypeScript, Node.js, AWS" class="form-input">
+                    <label>Tytuł Ogłoszenia / Stanowiska / Zlecenia *</label>
+                    <input type="text" id="offerTitleInput" required placeholder="np. Senior React & Node.js Developer / Wykonanie aplikacji mobilnej Flutter" class="form-input">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nazwa Firmy / Zleceniodawcy *</label>
+                        <input type="text" id="offerCompanyInput" required placeholder="np. Nexus Tech Innovations Sp. z o.o." class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Strona WWW / LinkedIn (opcjonalnie)</label>
+                        <input type="url" id="offerCompanyWebsite" placeholder="https://twojafirma.pl" class="form-input">
+                    </div>
+                </div>
+
+                <!-- SEKCJA 2: WARUNKI, WIDEŁKI & TRYB PRACY -->
+                <div class="form-section-header">
+                    <span class="form-section-badge">2</span>
+                    <h4>Warunki Współpracy & Wynagrodzenie</h4>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Lokalizacja *</label>
+                        <input type="text" id="offerLocationInput" required placeholder="np. Warszawa / Cała Polska / Zdalnie" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Tryb Pracy *</label>
+                        <select id="offerWorkTypeSelect" class="form-input" required>
+                            <option value="Zdalna">🏠 Zdalna 100% (Work from home)</option>
+                            <option value="Hybrydowa">🏢 Hybrydowa (częściowo z biura)</option>
+                            <option value="Stacjonarna">📍 Stacjonarna (w biurze / na miejscu)</option>
+                            <option value="Pełny etat">⏱️ Pełny etat</option>
+                            <option value="Część etatu">⌛ Część etatu / Pół etatu</option>
+                            <option value="Staż">🎓 Staż / Praktyka</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Rodzaj Umowy / Rozliczenia *</label>
+                        <select id="offerContractTypeSelect" class="form-input" required>
+                            <option value="B2B">📄 Kontrakt B2B (+ VAT)</option>
+                            <option value="UoP">📝 Umowa o Pracę (UoP)</option>
+                            <option value="UZ / UoD">🤝 Umowa Zlecenie / Umowa o Dzieło</option>
+                            <option value="Projekt">🎯 Rozliczenie za projekt / Milestone</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Poziom Doświadczenia</label>
+                        <select id="offerExpLevelSelect" class="form-input">
+                            <option value="Mid">Regular / Mid (2-4 lata)</option>
+                            <option value="Senior">Senior (5+ lat)</option>
+                            <option value="Junior">Junior / Początkujący (0-2 lata)</option>
+                            <option value="Lead / Manager">Lead / Tech Lead / Manager</option>
+                            <option value="Dowolny">Dowolny poziom</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Wynagrodzenie / Budżet (PLN) *</label>
+                        <input type="text" id="offerSalaryInput" required placeholder="np. 18 000 - 24 000 PLN netto B2B / 4 500 PLN za zlecenie" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Okres Płatności / Budżet</label>
+                        <select id="offerSalaryPeriodSelect" class="form-input">
+                            <option value="miesięcznie">miesięcznie</option>
+                            <option value="za projekt">za całość projektu / zlecenia</option>
+                            <option value="za godzinę">za godzinę (PLN/h)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- SEKCJA 3: WYMAGANIA TECHNICZNE & UMIEJĘTNOŚCI -->
+                <div class="form-section-header">
+                    <span class="form-section-badge">3</span>
+                    <h4>Wymagania, Technologie & Języki</h4>
                 </div>
 
                 <div class="form-group">
-                    <label>Opis i wymagania *</label>
-                    <textarea id="offerDescInput" rows="4" required placeholder="Opisz zakres obowiązków, wymagania techniczne oraz benefity..." class="form-input"></textarea>
+                    <label>Kluczowe Technologie / Narzędzia (oddziel przecinkami) *</label>
+                    <input type="text" id="offerTagsInput" required placeholder="np. React, TypeScript, Node.js, AWS, PostgreSQL, Docker" class="form-input">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Wymagania Główne (Must Have) *</label>
+                        <textarea id="offerMustHaveInput" rows="3" required placeholder="• Min. 3 lata doświadczenia w React&#10;• Bardzo dobra znajomość TypeScript&#10;• Umiejętność pracy z REST API / GraphQL" class="form-input"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Mile Widziane (Nice to Have)</label>
+                        <textarea id="offerNiceToHaveInput" rows="3" placeholder="• Doświadczenie z AWS / GCP&#10;• Znajomość Next.js i Tailwind CSS&#10;• Certyfikaty branżowe" class="form-input"></textarea>
+                    </div>
+                </div>
+
+                <!-- SEKCJA 4: OPIS STANOWISKA & BENEFITY -->
+                <div class="form-section-header">
+                    <span class="form-section-badge">4</span>
+                    <h4>Szczegółowy Opis & Oferowane Benefity</h4>
                 </div>
 
                 <div class="form-group">
-                    <label>Link do aplikacji lub e-mail rekrutacyjny *</label>
-                    <input type="text" id="offerApplyUrlInput" required placeholder="https://twojafirma.pl/kariera lub rekrutacja@firma.pl" class="form-input">
+                    <label>Szczegółowy Opis Roli / Zakresu Zlecenia *</label>
+                    <textarea id="offerDescInput" rows="5" required placeholder="Opisz misję projektu, strukturę zespołu, codzienne obowiązki oraz cele stanowiska..." class="form-input"></textarea>
                 </div>
 
-                <div class="form-actions" style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
-                    <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Anuluj</button>
-                    <button type="submit" class="btn btn-primary" id="btnSubmitOffer">
-                        <span>🚀 Opublikuj natychmiast</span>
+                <div class="form-group">
+                    <label>Benefity i Udogodnienia (zaznacz opcje)</label>
+                    <div class="perks-checkbox-grid">
+                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Prywatna opieka medyczna"> 🏥 Prywatna opieka medyczna</label>
+                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Karta MultiSport"> 🏋️ Karta MultiSport</label>
+                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Budżet szkoleniowy"> 📚 Budżet szkoleniowy</label>
+                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Elastyczne godziny"> ⏰ Elastyczne godziny pracy</label>
+                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Sprzęt Apple / Dell"> 💻 Najnowszy sprzęt (Apple/Dell)</label>
+                        <label class="perk-checkbox-item"><input type="checkbox" name="perks" value="Płatne urlopy na B2B"> 🏖️ Płatne dni wolne na B2B</label>
+                    </div>
+                </div>
+
+                <!-- SEKCJA 5: METODA PŁATNOŚCI & PODSUMOWANIE -->
+                <div class="form-section-header">
+                    <span class="form-section-badge">5</span>
+                    <h4>Podsumowanie Płatności & Metoda</h4>
+                </div>
+
+                <div class="payment-summary-box" style="background: rgba(30, 41, 59, 0.7); padding: 1.25rem; border-radius: 0.75rem; border: 1px solid rgba(59, 130, 246, 0.3); margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <span style="font-weight: 600; color: #e2e8f0;">Kwota do zapłaty brutto:</span>
+                        <span id="orderPriceBadge" style="font-size: 1.35rem; font-weight: 900; color: #38bdf8;">9,99 zł</span>
+                    </div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.5rem;">Wybierz metodę płatności:</label>
+                    <div class="payment-methods-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem;">
+                        <label class="payment-method-card" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(15, 23, 42, 0.8); padding: 0.65rem 0.85rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;">
+                            <input type="radio" name="paymentMethod" value="BLIK" checked>
+                            <span style="font-weight: 700; color: #f8fafc;">⚡ BLIK</span>
+                        </label>
+                        <label class="payment-method-card" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(15, 23, 42, 0.8); padding: 0.65rem 0.85rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;">
+                            <input type="radio" name="paymentMethod" value="Przelew">
+                            <span style="font-weight: 700; color: #f8fafc;">🏦 Szybki Przelew</span>
+                        </label>
+                        <label class="payment-method-card" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(15, 23, 42, 0.8); padding: 0.65rem 0.85rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;">
+                            <input type="radio" name="paymentMethod" value="Karta">
+                            <span style="font-weight: 700; color: #f8fafc;">💳 Karta Visa / MC</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- SEKCJA 6: APLIKACJA & DANE KONTAKTOWE -->
+                <div class="form-section-header">
+                    <span class="form-section-badge">6</span>
+                    <h4>Kontakt & Sposób Aplikacji</h4>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>E-mail do Rekrutacji lub Link do Aplikacji (ATS) *</label>
+                        <input type="text" id="offerApplyUrlInput" required placeholder="rekrutacja@twojafirma.pl lub https://twojafirma.traffit.com/..." class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Telefon Kontaktowy (opcjonalnie)</label>
+                        <input type="tel" id="offerPhoneInput" placeholder="+48 123 456 789" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label" style="display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.85rem; color: #94a3b8; cursor: pointer;">
+                        <input type="checkbox" required style="margin-top: 0.2rem;">
+                        <span>Oświadczam, że zapoznałem się z Regulaminem JobNexus i wyrażam zgodę na publikację ogłoszenia oraz natychmiastowe wystawienie faktury VAT.</span>
+                    </label>
+                </div>
+
+                <div class="form-actions" style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.25rem;">
+                    <button type="button" class="btn btn-secondary" onclick="window.closeAddModal()">Anuluj</button>
+                    <button type="submit" class="btn btn-primary" id="btnSubmitOffer" style="padding: 0.85rem 2rem; font-size: 1rem; font-weight: 700;">
+                        <span>🚀 Opłać i Opublikuj Ogłoszenie</span>
                     </button>
                 </div>
             </form>
-        </div>
-    </div>
-
-    <!-- MODAL: USER DASHBOARD (PANEL UŻYTKOWNIKA) -->
-    <div class="modal-backdrop hidden" id="dashboardModalBackdrop" onclick="if(event.target===this) window.closeDashboardModal()">
-        <div class="modal modal-xl" id="dashboardModal">
-            <div class="modal-header">
-                <div class="dash-user-badge">
-                    <div class="dash-avatar" id="dashUserAvatar">👤</div>
-                    <div>
-                        <h3 class="modal-title" id="dashUserName">Panel Użytkownika</h3>
-                        <p class="modal-subtitle" id="dashUserRole">Kandydat • Aktywny profil</p>
-                    </div>
-                </div>
-                <div style="display:flex; align-items:center; gap: 0.75rem;">
-                    <button type="button" class="btn btn-secondary btn-sm" id="btnSwitchRole" onclick="window.toggleUserRole()">
-                        🔄 Zmień na panel Rekrutera
-                    </button>
-                    <button type="button" class="modal-close" onclick="window.closeDashboardModal()">&times;</button>
-                </div>
-            </div>
-
-            <!-- CANDIDATE VIEW -->
-            <div id="candidateDashboard">
-                <div class="dashboard-stats-grid">
-                    <div class="dash-stat-card">
-                        <div class="stat-icon-wrapper">📄</div>
-                        <div class="stat-data">
-                            <div class="stat-number" id="dashAtsScore">94%</div>
-                            <div class="stat-desc">Wynik dopasowania ATS</div>
-                        </div>
-                    </div>
-                    <div class="dash-stat-card">
-                        <div class="stat-icon-wrapper green">📨</div>
-                        <div class="stat-data">
-                            <div class="stat-number" id="dashAppsCount">3</div>
-                            <div class="stat-desc">Wysłane aplikacje</div>
-                        </div>
-                    </div>
-                    <div class="dash-stat-card">
-                        <div class="stat-icon-wrapper amber">⭐</div>
-                        <div class="stat-data">
-                            <div class="stat-number" id="dashFavsCount">5</div>
-                            <div class="stat-desc">Zapisane oferty</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dashboard-grid-layout">
-                    <!-- Column 1: Zapisane oferty & Aplikacje -->
-                    <div class="dash-card">
-                        <div class="dash-card-header">
-                            <h4>⭐ Twoje Zapisane Oferty</h4>
-                            <span class="badge-count" id="dashFavBadge">5</span>
-                        </div>
-                        <div class="dash-list" id="dashSavedJobsList">
-                            <!-- Injected by JS -->
-                        </div>
-                    </div>
-
-                    <!-- Column 2: Status Aplikacji -->
-                    <div class="dash-card">
-                        <div class="dash-card-header">
-                            <h4>📨 Zgłoszenia i Aplikacje</h4>
-                            <span class="badge-count" id="dashAppBadge">3</span>
-                        </div>
-                        <div class="dash-list" id="dashApplicationsList">
-                            <!-- Injected by JS -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- RECRUITER VIEW -->
-            <div id="recruiterDashboard" class="hidden">
-                <div class="dashboard-stats-grid">
-                    <div class="dash-stat-card recruiter-stat">
-                        <div class="stat-icon-wrapper purple">👥</div>
-                        <div class="stat-data">
-                            <div class="stat-number">28</div>
-                            <div class="stat-desc">Wszystkich kandydatów</div>
-                        </div>
-                    </div>
-                    <div class="dash-stat-card recruiter-stat">
-                        <div class="stat-icon-wrapper green">📢</div>
-                        <div class="stat-data">
-                            <div class="stat-number">4</div>
-                            <div class="stat-desc">Aktywne ogłoszenia</div>
-                        </div>
-                    </div>
-                    <div class="dash-stat-card recruiter-stat">
-                        <div class="stat-icon-wrapper amber">💎</div>
-                        <div class="stat-data">
-                            <div class="stat-number">PRO</div>
-                            <div class="stat-desc">Plan 99 zł/msc aktywny</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dash-card">
-                    <div class="dash-card-header">
-                        <h4>📋 Tablica Rekrutacyjna (Kanban)</h4>
-                        <button type="button" class="btn btn-primary btn-sm" onclick="openAddModal('standard')">+ Nowe ogłoszenie</button>
-                    </div>
-                    <div class="kanban-board">
-                        <div class="kanban-col">
-                            <div class="kanban-col-header">
-                                <span>Nowe zgłoszenia</span>
-                                <span class="kanban-count">12</span>
-                            </div>
-                            <div class="kanban-items">
-                                <div class="kanban-item">
-                                    <div class="kanban-user">Jan Kowalski</div>
-                                    <div class="kanban-role">Senior React Developer</div>
-                                    <div class="kanban-score">ATS: 96%</div>
-                                </div>
-                                <div class="kanban-item">
-                                    <div class="kanban-user">Anna Nowak</div>
-                                    <div class="kanban-role">Fullstack Python</div>
-                                    <div class="kanban-score">ATS: 91%</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="kanban-col">
-                            <div class="kanban-col-header">
-                                <span>Weryfikacja / Test</span>
-                                <span class="kanban-count">8</span>
-                            </div>
-                            <div class="kanban-items">
-                                <div class="kanban-item">
-                                    <div class="kanban-user">Michał Wiśniewski</div>
-                                    <div class="kanban-role">DevOps AWS Engineer</div>
-                                    <div class="kanban-score">ATS: 94%</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="kanban-col">
-                            <div class="kanban-col-header">
-                                <span>Rozmowa techniczna</span>
-                                <span class="kanban-count">5</span>
-                            </div>
-                            <div class="kanban-items">
-                                <div class="kanban-item">
-                                    <div class="kanban-user">Katarzyna Zielińska</div>
-                                    <div class="kanban-role">UI/UX Designer</div>
-                                    <div class="kanban-score">ATS: 98%</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="kanban-col">
-                            <div class="kanban-col-header">
-                                <span>Oferta złożona 🎉</span>
-                                <span class="kanban-count">3</span>
-                            </div>
-                            <div class="kanban-items">
-                                <div class="kanban-item accepted">
-                                    <div class="kanban-user">Piotr Lewandowski</div>
-                                    <div class="kanban-role">Backend Go Developer</div>
-                                    <div class="kanban-score">Zaakceptowano</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-footer" style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
-                <button type="button" class="btn btn-secondary" onclick="window.AuthService && window.AuthService.logout(); location.reload();">
-                    🚪 Wyloguj się
-                </button>
-                <button type="button" class="btn btn-primary" onclick="window.closeDashboardModal()">
-                    Zamknij panel
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: INTERAKTYWNY KREATOR CV AI -->
-    <div class="modal-backdrop hidden" id="cvBuilderModalBackdrop" onclick="if(event.target===this) window.closeCvBuilderModal()">
-        <div class="modal modal-xl" id="cvBuilderModal">
-            <div class="modal-header">
-                <div>
-                    <h3 class="modal-title">✨ Interaktywny Kreator CV z Optymalizacją ATS</h3>
-                    <p class="modal-subtitle">Wypełnij formularz lub wgraj obecne CV — wygenerujemy gotowy dokument z oceną ATS.</p>
-                </div>
-                <button type="button" class="modal-close" onclick="window.closeCvBuilderModal()">&times;</button>
-            </div>
-
-            <div class="cv-builder-grid">
-                <!-- FORM -->
-                <div class="cv-form-pane">
-                    <div class="form-group">
-                        <label>Imię i Nazwisko *</label>
-                        <input type="text" id="cvName" class="form-input" placeholder="np. Aleksander Nowak" value="Aleksander Nowak">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Docelowe Stanowisko *</label>
-                            <input type="text" id="cvTitle" class="form-input" placeholder="np. Senior Frontend Engineer" value="Senior Frontend Engineer">
-                        </div>
-                        <div class="form-group">
-                            <label>E-mail kontaktowy *</label>
-                            <input type="email" id="cvEmail" class="form-input" placeholder="kontakt@domena.pl" value="aleksander.nowak@email.com">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Kluczowe Umiejętności i Technologie (oddziel przecinkami) *</label>
-                        <input type="text" id="cvSkills" class="form-input" placeholder="React, TypeScript, Next.js, Redux, Node.js, GraphQL, Tailwind CSS" value="React, TypeScript, Next.js, Redux, Node.js, Tailwind CSS, Jest, REST API">
-                    </div>
-                    <div class="form-group">
-                        <label>Podsumowanie zawodowe (Bio) *</label>
-                        <textarea id="cvSummary" class="form-input" rows="3" placeholder="Doświadczony inżynier oprogramowania z 5-letnim stażem...">Doświadczony Senior Frontend Developer z ponad 5-letnim doświadczeniem w budowaniu skalowalnych aplikacji webowych w ekosystemie React / TypeScript oraz integracji zaawansowanych modeli AI.</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Doświadczenie zawodowe *</label>
-                        <textarea id="cvExperience" class="form-input" rows="4" placeholder="Opisz swoje ostatnie projekty i role...">Tech Lead Frontend @ Nexus Innovations (2022 - obecnie)
-• Przebudowa architektury platformy B2B na Next.js i TypeScript — wzrost wydajności o 42%
-• Zarządzanie 5-osobowym zespołem inżynierów frontendowych
-• Integracja modułów uczenia maszynowego i przetwarzania danych w czasie rzeczywistym</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Edukacja i Certyfikaty</label>
-                        <input type="text" id="cvEducation" class="form-input" placeholder="np. Informatyka — Politechnika Warszawska" value="Informatyka Stosowana — Politechnika Warszawska (Mgr inż.)">
-                    </div>
-                </div>
-
-                <!-- LIVE ATS PREVIEW & DOWNLOAD -->
-                <div class="cv-preview-pane">
-                    <div class="ats-score-box">
-                        <div class="ats-circle-score">
-                            <span class="score-val">98%</span>
-                            <span class="score-label">ATS Score</span>
-                        </div>
-                        <div class="ats-feedback">
-                            <strong>Znakomite dopasowanie ATS!</strong>
-                            <p>CV zawiera kluczowe słowa wyszukiwane przez rekruterów i systemy rekrutacyjne.</p>
-                        </div>
-                    </div>
-
-                    <div class="cv-sheet-preview" id="cvSheetPreview">
-                        <h2 id="prevName">Aleksander Nowak</h2>
-                        <h4 id="prevTitle">Senior Frontend Engineer</h4>
-                        <p class="prev-contact" id="prevEmail">aleksander.nowak@email.com • Warszawa / Zdalnie</p>
-                        <hr>
-                        <h5>PODSUMOWANIE</h5>
-                        <p id="prevSummary">Doświadczony Senior Frontend Developer z ponad 5-letnim doświadczeniem...</p>
-                        <h5>UMIEJĘTNOŚCI</h5>
-                        <p id="prevSkills">React, TypeScript, Next.js, Redux, Node.js, Tailwind CSS, Jest, REST API</p>
-                        <h5>DOŚWIADCZENIE</h5>
-                        <pre id="prevExperience" style="font-family:inherit; white-space:pre-wrap; font-size:0.85rem; color:#cbd5e1;">Tech Lead Frontend @ Nexus Innovations (2022 - obecnie)</pre>
-                        <h5>EDUKACJA</h5>
-                        <p id="prevEducation">Informatyka Stosowana — Politechnika Warszawska (Mgr inż.)</p>
-                    </div>
-
-                    <button type="button" class="btn btn-primary btn-block" style="margin-top: 1rem;" onclick="window.downloadCvPdf()">
-                        📥 Pobierz gotowe CV (PDF)
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 
