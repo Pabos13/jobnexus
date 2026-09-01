@@ -732,3 +732,22 @@ html, body {
         width: 100%;
     }
 }
+
+
+/* 1-Column Vertical Layout for Offers and Gigs */
+.offers-grid,
+.gigs-grid,
+.jobs-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 100% !important;
+    max-width: 960px !important;
+    margin: 0 auto !important;
+}
+
+.job-card,
+.gig-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
