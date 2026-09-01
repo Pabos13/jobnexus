@@ -306,7 +306,7 @@ function initDashboard() {
         dashUserRoleBadge.style.color = isRecruiter ? '#a5b4fc' : '#60a5fa';
         dashUserRoleBadge.style.borderColor = isRecruiter ? 'rgba(99, 102, 241, 0.3)' : 'rgba(59, 130, 246, 0.3)';
 
-        dashSwitchRoleBtn.textContent = isRecruiter ? 'Przełącz na profil Kandydata' : 'Przełącz na profil Rekrutera';
+        dashSwitchRoleBtn.textContent = isRecruiter ? '' : '';
 
         if (isRecruiter) {
             renderRecruiterTabs();
@@ -2737,7 +2737,7 @@ window.switchAuthTab = function(mode) {
     var tabRegister = document.getElementById('tabRegister');
     var titleEl = document.getElementById('authModalTitle');
     var nameGroup = document.getElementById('nameGroup');
-    var roleGroup = document.getElementById('roleGroup');
+    
     var authName = document.getElementById('authName');
     var submitBtn = document.getElementById('authSubmitBtn');
     var authError = document.getElementById('authError');
@@ -2875,7 +2875,7 @@ window.handleAuthSubmit = async function(event) {
     var email = (document.getElementById('authEmail')?.value || '').trim();
     var password = document.getElementById('authPassword')?.value || '';
     var name = (document.getElementById('authName')?.value || '').trim();
-    var role = document.getElementById('authRole')?.value || 'candidate';
+    var role = 'candidate';
     var submitBtn = document.getElementById('authSubmitBtn');
     var authError = document.getElementById('authError');
 
