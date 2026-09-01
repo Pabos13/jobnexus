@@ -1,0 +1,97 @@
+/* UX Helpers — Containers & Reveal Animations for Futuristic Theme
+   Provides content containers, animated headings, glow borders and a simple
+   scroll-reveal system (powered by ux.js). These styles override where needed
+   and are intentionally lightweight.
+*/
+
+/* Content container: centers text, subtle glass, inner padding */
+.content-container {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.03);
+  border-radius: 14px;
+  padding: 22px 24px;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+  backdrop-filter: blur(6px) saturate(1.05);
+  margin: 12px 0;
+  overflow: hidden;
+}
+
+/* Compact variant */
+.content-container--sm { padding: 14px 16px; border-radius: 12px }
+.content-container--lg { padding: 28px 30px; border-radius: 20px }
+
+/* Animated heading (gradient sweep & reveal) */
+.animated-heading {
+  display: inline-block;
+  position: relative;
+  font-weight: 900;
+  background: linear-gradient(90deg,var(--primary-1),#9be5ff,#caa6ff,var(--primary-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.animated-heading:after{
+  content:'';position:absolute;left:0;right:0;bottom:-6px;height:6px;border-radius:6px;pointer-events:none;
+  background: linear-gradient(90deg, rgba(56,189,248,0.12), rgba(124,58,237,0.08));
+  filter: blur(8px);
+  transform-origin:left center;transform:translateY(6px) scaleX(0);
+  transition: transform 550ms cubic-bezier(.2,.9,.2,1);
+}
+.reveal-on-scroll.in-view .animated-heading:after{ transform:translateY(0) scaleX(1); }
+
+/* Glow border decorative */
+.glow-border { position:relative; }
+.glow-border:before{
+  content:'';position:absolute;inset:-1px;border-radius:inherit;z-index:0;
+  background: linear-gradient(90deg, rgba(56,189,248,0.06), rgba(124,58,237,0.06));
+  filter: blur(12px);opacity:0.65;pointer-events:none;
+}
+.glow-border > * { position:relative; z-index:1 }
+
+/* Reveal / reveal-on-scroll: initial state and in-view state */
+.reveal-on-scroll{
+  opacity:0; transform:translateY(18px) scale(0.995);
+  transition: opacity 520ms var(--delay, 0ms) ease-out, transform 520ms var(--delay, 0ms) cubic-bezier(.2,.9,.2,1);
+  will-change: opacity, transform;
+}
+.reveal-on-scroll.in-view{ opacity:1; transform:none }
+
+/* Stagger helpers for children */
+.staggered-child > * { opacity:0; transform:translateY(12px); }
+.staggered-child.in-view > *{ animation: staggerFade 540ms forwards; }
+@keyframes staggerFade { to { opacity:1; transform:none } }
+
+/* Directional reveals */
+.reveal-left{ transform:translateX(-22px) scale(.997); }
+.reveal-right{ transform:translateX(22px) scale(.997); }
+.reveal-scale{ transform:scale(.98); }
+.reveal-on-scroll.in-view.reveal-left, .reveal-on-scroll.in-view.reveal-right, .reveal-on-scroll.in-view.reveal-scale{ transform:none }
+
+/* Floating decorative accent (top-right) */
+.floating-accent{ position:relative }
+.floating-accent:after{
+  content:'';position:absolute;right:-30px;top:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle at 30% 30%, rgba(56,189,248,0.08), transparent 40%), radial-gradient(circle at 70% 70%, rgba(124,58,237,0.06), transparent 35%);filter:blur(18px);pointer-events:none;z-index:0;opacity:0.95;transform:translateZ(0);
+}
+
+/* Text highlight pill */
+.text-pill{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg, rgba(56,189,248,0.06), rgba(124,58,237,0.04));color:var(--primary-1);font-weight:800;border:1px solid rgba(56,189,248,0.05)}
+
+/* Utility: set css variable delay via inline style or JS */
+/* Usage: element.style.setProperty('--delay', '120ms') */
+
+/* Slight parallax float for decorative elements */
+@keyframes floatY { 0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)} }
+.float-slow{ animation: floatY 6s ease-in-out infinite }
+
+/* Ensure job cards also use reveal & container look */
+.job-card { position:relative; overflow:visible }
+.job-card .job-card-header, .job-card .job-description { position:relative; z-index:2 }
+.job-card .card-overlay{ position:absolute; inset:0; border-radius:14px; pointer-events:none; box-shadow: inset 0 0 120px rgba(0,0,0,0.12) }
+
+/* small helpers */
+.center-inline { display:inline-flex; align-items:center; gap:8px }
+.text-muted { color:var(--muted) }
+
+/* Reduced motion fallback */
+@media (prefers-reduced-motion: reduce){
+  .reveal-on-scroll, .staggered-child.in-view > * { transition:none !important; animation:none !important }
+}
