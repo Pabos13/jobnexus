@@ -2616,3 +2616,513 @@ img {
     border-radius: 4px;
     margin-bottom: 1rem;
 }
+
+
+/* ==========================================================================
+   ENHANCED DASHBOARDS — CANDIDATE & RECRUITER (MODERN GLASSMORPHISM & UX)
+   ========================================================================== */
+
+.dashboard-section {
+    padding: 3rem 0 5rem;
+    background: radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.15), transparent 70%),
+                radial-gradient(circle at 100% 100%, rgba(15, 23, 42, 0.9), #030712);
+    min-height: 85vh;
+}
+
+.dashboard-container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* Dashboard Header & User Info */
+.dashboard-header {
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1.25rem;
+    padding: 1.75rem 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.05);
+}
+
+.dashboard-user-info {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.dashboard-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #ffffff;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.dashboard-avatar::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #10b981;
+    border: 3px solid #0f172a;
+}
+
+.dashboard-welcome h2 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.dashboard-role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.dashboard-role-badge.recruiter {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+    border-color: rgba(168, 85, 247, 0.3);
+}
+
+.dashboard-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.btn-switch-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-switch-role:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.4);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+}
+
+/* Stats Cards Grid */
+.dashboard-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2.25rem;
+}
+
+.dash-stat-card {
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1.15rem;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.dash-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: #3b82f6;
+    opacity: 0.7;
+}
+
+.dash-stat-card.recruiter-stat::before {
+    background: #a855f7;
+}
+
+.dash-stat-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(59, 130, 246, 0.1);
+}
+
+.stat-icon-wrapper {
+    width: 52px;
+    height: 52px;
+    border-radius: 0.85rem;
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.stat-icon-wrapper.purple {
+    background: rgba(168, 85, 247, 0.12);
+    color: #a855f7;
+}
+
+.stat-icon-wrapper.green {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+.stat-icon-wrapper.amber {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+}
+
+.stat-data .stat-number {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.1;
+    margin-bottom: 0.2rem;
+}
+
+.stat-data .stat-desc {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #94a3b8;
+}
+
+/* Dashboard Modules Layout */
+.dashboard-grid-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.75rem;
+    margin-bottom: 2.5rem;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-grid-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.dash-card {
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1.25rem;
+    padding: 1.75rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    margin-bottom: 1.75rem;
+}
+
+.dash-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dash-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+/* ATS CV Matcher Score Box */
+.ats-score-container {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 1.25rem;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.ats-score-circle {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: conic-gradient(#3b82f6 94%, #1e293b 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.35);
+    flex-shrink: 0;
+}
+
+.ats-score-inner {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: #0f172a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.ats-score-num {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #38bdf8;
+    line-height: 1;
+}
+
+.ats-score-text {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.ats-score-details h4 {
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+}
+
+.ats-score-details p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+}
+
+.ats-pill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.ats-pill {
+    padding: 0.25rem 0.65rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(59, 130, 246, 0.15);
+    color: #93c5fd;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.ats-pill.missing {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* AI Interview Simulator / Coach */
+.ai-coach-box {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.ai-question-bubble {
+    background: rgba(30, 41, 59, 0.8);
+    border-left: 4px solid #8b5cf6;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.ai-question-bubble strong {
+    color: #a78bfa;
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ai-answer-textarea {
+    width: 100%;
+    min-height: 110px;
+    background: #0b1120;
+    border: 1px solid #334155;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    color: #ffffff;
+    font-size: 0.95rem;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s ease;
+    margin-bottom: 1rem;
+}
+
+.ai-answer-textarea:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+}
+
+/* ==========================================================================
+   RECRUITER KANBAN BOARD (ENHANCED UI)
+   ========================================================================== */
+
+.kanban-board {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(280px, 1fr));
+    gap: 1.25rem;
+    overflow-x: auto;
+    padding-bottom: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.kanban-board::-webkit-scrollbar {
+    height: 8px;
+}
+
+.kanban-board::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 4px;
+}
+
+.kanban-board::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+}
+
+.kanban-column {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1.15rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 480px;
+}
+
+.kanban-column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.06);
+}
+
+.kanban-column-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.kanban-counter {
+    background: #1e293b;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.kanban-column:nth-child(1) .kanban-column-header { border-bottom-color: #3b82f6; }
+.kanban-column:nth-child(2) .kanban-column-header { border-bottom-color: #f59e0b; }
+.kanban-column:nth-child(3) .kanban-column-header { border-bottom-color: #8b5cf6; }
+.kanban-column:nth-child(4) .kanban-column-header { border-bottom-color: #10b981; }
+
+.kanban-card {
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.85rem;
+    padding: 1rem;
+    margin-bottom: 0.85rem;
+    cursor: grab;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.kanban-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.kanban-candidate-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.25rem;
+}
+
+.kanban-candidate-role {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-bottom: 0.65rem;
+}
+
+.kanban-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.kanban-match-score {
+    color: #34d399;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
