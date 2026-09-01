@@ -1252,13 +1252,13 @@ function initNavbar() {
 // ============================================
 
 
-async function loadData() {
+async async function loadData() {
     // 1. Immediately load preloaded jobs in 0 ms so screen is NEVER empty
     const initialJobs = (typeof JobService !== 'undefined' && JobService.DEMO_JOBS) ? [...JobService.DEMO_JOBS] : [];
     state.jobs = initialJobs;
     state.filteredJobs = [...initialJobs];
     state.jobsPage = 1;
-    state.jobsPerPage = 9;
+    state.jobsPerPage = 7;
 
     filterAndDisplay();
     showLoading(false);
@@ -1942,7 +1942,7 @@ function renderPaginationBar(containerId, currentPage, totalPages, totalItems, i
 // Global Gigs & Jobs Pagination State
 if (!window.state) window.state = {};
 window.state.jobsPage = 1;
-window.state.jobsPerPage = 9;
+window.state.jobsPerPage = 7;
 
 window.state.gigs = DEMO_GIGS;
 window.state.gigsPage = 1;
