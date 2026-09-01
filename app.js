@@ -1,4 +1,31 @@
 
+window.payAndDownloadCv = function() {
+    var user = null;
+    try {
+        var raw = localStorage.getItem('jobnexus_user');
+        user = raw ? JSON.parse(raw) : null;
+    } catch(e) {}
+
+    // If user already paid or has PRO subscription, download directly
+    if (user && (user.hasPaidCv || user.plan === 'pro')) {
+        if (typeof window.downloadCvPdf === 'function') {
+            window.downloadCvPdf();
+        }
+        return;
+    }
+
+    // Save current form state first
+    if (typeof window.saveCvBuilderData === 'function') {
+        window.saveCvBuilderData();
+    }
+
+    // Launch checkout modal for 14.99 zł
+    if (typeof window.startProCheckout === 'function') {
+        window.startProCheckout('cv_builder_pass', '14,99 zł', 'Kreator CV Profesjonalny + Eksport PDF (14,99 zł)');
+    }
+};
+
+
 window.openCvBuilder = function() {
     var user = null;
     try {
