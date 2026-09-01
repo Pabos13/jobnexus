@@ -1207,27 +1207,35 @@ function initNavbar() {
 // ============================================
 // JOB OFFERS & ADVANCED PAGINATION
 // ============================================
+
+// ============================================
+// JOB OFFERS & ADVANCED PAGINATION
+// ============================================
 async function loadData() {
     showLoading(true);
 
     try {
-        // 1. Load CSV jobs
-        const csvJobs = await JobService.loadCSVJobs();
-        state.csvJobs = csvJobs || [];
+        let loaded = [];
+        if (typeof JobService !== 'undefined' && JobService.loadCSVJobs) {
+            loaded = await JobService.loadCSVJobs();
+        }
 
-        // 2. Load Jooble / fallback jobs
-        const apiJobs = await JobService.loadJoobleJobs(
-            state.searchQuery || 'praca',
-            state.locationQuery || 'Polska'
-        );
+        if (!loaded || loaded.length === 0) {
+            loaded = (typeof JobService !== 'undefined' && JobService.DEMO_JOBS) ? [...JobService.DEMO_JOBS] : [];
+        }
 
-        // 3. Combine and deduplicate
-        state.jobs = JobService.combineJobs(state.csvJobs, apiJobs || []);
+        state.csvJobs = loaded || [];
+        state.jobs = [...state.csvJobs];
+        state.filteredJobs = [...state.csvJobs];
+        state.jobsPage = 1;
+        state.jobsPerPage = 9;
 
         filterAndDisplay();
     } catch (err) {
         console.error('Data loading error:', err);
-        state.jobs = [...state.csvJobs];
+        const fallback = (typeof JobService !== 'undefined' && JobService.DEMO_JOBS) ? [...JobService.DEMO_JOBS] : [];
+        state.jobs = fallback;
+        state.filteredJobs = fallback;
         filterAndDisplay();
     } finally {
         showLoading(false);
@@ -1235,68 +1243,75 @@ async function loadData() {
 }
 
 function initSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const locationInput = document.getElementById('locationInput');
+    const searchBtn = document.getElementById('searchBtn');
     let debounceTimer;
 
     const doSearch = () => {
-        state.searchQuery = els.searchInput ? els.searchInput.value.trim() : '';
-        state.locationQuery = els.locationInput ? els.locationInput.value.trim() : '';
+        state.searchQuery = searchInput ? searchInput.value.trim() : '';
+        state.locationQuery = locationInput ? locationInput.value.trim() : '';
         state.jobsPage = 1;
 
-        if (state.searchQuery) {
+        if (state.searchQuery && typeof StorageService !== 'undefined') {
             StorageService.addSearchHistory(state.searchQuery);
         }
 
         filterAndDisplay();
     };
 
-    if (els.searchInput) {
-        els.searchInput.addEventListener('input', () => {
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(doSearch, CONFIG.DEBOUNCE_DELAY || 300);
+            debounceTimer = setTimeout(doSearch, 300);
         });
-        els.searchInput.addEventListener('keypress', (e) => {
+        searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') doSearch();
         });
     }
 
-    if (els.locationInput) {
-        els.locationInput.addEventListener('input', () => {
+    if (locationInput) {
+        locationInput.addEventListener('input', () => {
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(doSearch, CONFIG.DEBOUNCE_DELAY || 300);
+            debounceTimer = setTimeout(doSearch, 300);
         });
-        els.locationInput.addEventListener('keypress', (e) => {
+        locationInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') doSearch();
         });
     }
 
-    if (els.searchBtn) {
-        els.searchBtn.addEventListener('click', doSearch);
+    if (searchBtn) {
+        searchBtn.addEventListener('click', doSearch);
     }
 }
 
 function initFilters() {
-    if (els.filterChips) {
-        els.filterChips.forEach(chip => {
-            chip.addEventListener('click', () => {
-                els.filterChips.forEach(c => c.classList.remove('active'));
-                chip.classList.add('active');
-                state.currentFilter = chip.dataset.filter || 'all';
-                state.jobsPage = 1;
-                filterAndDisplay();
-            });
+    const chips = document.querySelectorAll('#oferty .chip');
+    chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            chips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            state.currentFilter = chip.dataset.filter || 'all';
+            state.jobsPage = 1;
+            filterAndDisplay();
         });
-    }
+    });
 }
 
 function filterAndDisplay() {
     const filters = {
-        searchQuery: state.searchQuery,
-        locationQuery: state.locationQuery,
-        currentFilter: state.currentFilter,
+        searchQuery: state.searchQuery || '',
+        locationQuery: state.locationQuery || '',
+        currentFilter: state.currentFilter || 'all',
         minSalary: state.minSalary || 0
     };
 
-    state.filteredJobs = JobService.filterJobs(state.jobs, filters);
+    if (typeof JobService !== 'undefined' && JobService.filterJobs) {
+        state.filteredJobs = JobService.filterJobs(state.jobs, filters);
+    } else {
+        state.filteredJobs = [...(state.jobs || [])];
+    }
+
     state.jobsPage = state.jobsPage || 1;
     state.jobsPerPage = state.jobsPerPage || 9;
 
@@ -1304,48 +1319,41 @@ function filterAndDisplay() {
 }
 
 function displayJobs() {
-    if (!els.jobsGrid) return;
+    const grid = document.getElementById('jobsGrid');
+    const empty = document.getElementById('jobsEmpty');
+    if (!grid) return;
 
-    const total = state.filteredJobs.length;
+    const jobsList = (state.filteredJobs && state.filteredJobs.length) ? state.filteredJobs : (state.jobs || []);
+    const total = jobsList.length;
     const perPage = state.jobsPerPage || 9;
     const totalPages = Math.max(1, Math.ceil(total / perPage));
     const current = Math.min(Math.max(1, state.jobsPage || 1), totalPages);
     state.jobsPage = current;
 
-    els.jobsGrid.innerHTML = '';
+    grid.innerHTML = '';
 
     if (total === 0) {
-        if (els.jobsEmpty) els.jobsEmpty.classList.remove('hidden');
+        if (empty) empty.classList.remove('hidden');
         renderPaginationBar('jobsPagination', 1, 0, 0, perPage, null, null);
         return;
     }
 
-    if (els.jobsEmpty) els.jobsEmpty.classList.add('hidden');
+    if (empty) empty.classList.add('hidden');
 
     const start = (current - 1) * perPage;
     const end = Math.min(start + perPage, total);
-    const toShow = state.filteredJobs.slice(start, end);
+    const toShow = jobsList.slice(start, end);
 
     toShow.forEach((job, idx) => {
         const card = createJobCard(job);
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(15px)';
-        els.jobsGrid.appendChild(card);
-
-        requestAnimationFrame(() => {
-            setTimeout(() => {
-                card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, idx * 40);
-        });
+        grid.appendChild(card);
     });
 
     // Render Advanced Pagination for Jobs
     renderPaginationBar('jobsPagination', current, totalPages, total, perPage, (newPage) => {
         state.jobsPage = newPage;
         displayJobs();
-        const jobsSection = document.getElementById('jobs') || document.getElementById('oferty');
+        const jobsSection = document.getElementById('oferty') || document.getElementById('jobs');
         if (jobsSection) {
             jobsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -1354,6 +1362,13 @@ function displayJobs() {
         state.jobsPage = 1;
         displayJobs();
     });
+}
+
+function showLoading(show) {
+    const loading = document.getElementById('jobsLoading');
+    const grid = document.getElementById('jobsGrid');
+    if (loading) loading.classList.toggle('hidden', !show);
+    if (show && grid) grid.innerHTML = '';
 }
 
 function createJobCard(job) {

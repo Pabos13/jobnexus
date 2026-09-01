@@ -971,3 +971,135 @@ body {
     .footer-inner { grid-template-columns: 1fr; }
     .footer-links { grid-template-columns: 1fr; }
 }
+
+
+/* ==========================================================================
+   MOBILE NAVBAR & PINNED BOTTOM NAVIGATION BAR
+   ========================================================================== */
+.mobile-bottom-bar {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    /* Compact Top Header */
+    .header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        padding: 0;
+        height: 52px;
+    }
+
+    .header-inner {
+        padding: 0.5rem 1rem;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .logo {
+        font-size: 1.2rem;
+    }
+
+    .nav {
+        display: none !important;
+    }
+
+    .header-actions .cv-builder-btn,
+    .header-actions #navDashboardBtn {
+        display: none !important;
+    }
+
+    .header-actions #authTrigger {
+        padding: 0.35rem 0.85rem;
+        font-size: 0.8rem;
+    }
+
+    .mobile-toggle {
+        display: none !important;
+    }
+
+    /* Fixed Bottom Bar on Mobile */
+    body {
+        padding-bottom: 74px !important;
+    }
+
+    .mobile-bottom-bar {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: rgba(10, 15, 29, 0.96);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 9999;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0 0.25rem;
+        box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.6);
+    }
+
+    .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.15rem;
+        background: none;
+        border: none;
+        color: #94a3b8;
+        text-decoration: none;
+        font-size: 0.68rem;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0.35rem 0.5rem;
+        border-radius: 0.5rem;
+        transition: all 0.2s ease;
+        flex: 1;
+    }
+
+    .bottom-nav-item .bnav-icon {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+    }
+
+    .bottom-nav-item:hover,
+    .bottom-nav-item.active {
+        color: #38bdf8;
+    }
+
+    .bottom-nav-item.active .bnav-icon {
+        stroke: #38bdf8;
+        filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.6));
+    }
+
+    /* Hero & search sizing on mobile */
+    .hero {
+        padding: 2.25rem 1rem 1.75rem;
+    }
+    .hero-title {
+        font-size: 1.85rem;
+        line-height: 1.25;
+    }
+    .hero-subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+    .section {
+        padding: 2rem 1rem;
+    }
+    .section-title {
+        font-size: 1.5rem;
+    }
+    .jobs-grid {
+        grid-template-columns: 1fr;
+    }
+    .advanced-filters-bar {
+        padding: 1rem;
+    }
+}
