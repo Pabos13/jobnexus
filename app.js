@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try { initFilters(); } catch (e) { console.warn('initFilters:', e); }
     try { initModal(); } catch (e) { console.warn('initModal:', e); }
     try { initCVUpload(); } catch (e) { console.warn('initCVUpload:', e); }
-    try { loadData(); } catch (e) { console.warn('loadData:', e); }
+    try { initOffers(); } catch (e) { console.warn('initOffers:', e); }
     try { initGigs(); } catch (e) { console.warn('initGigs:', e); }
 });
 
@@ -2312,18 +2312,17 @@ window.openPaymentModal = function(productName = 'Wyróżnienie ogłoszenia', am
 
 // Wire up pricing cards to payment modal
 document.addEventListener('DOMContentLoaded', () => {
-    initAdvancedFilters();
-
-    // Attach payment modal to pricing buttons
-    const pricingBtns = document.querySelectorAll('#cennik .btn');
-    pricingBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const card = btn.closest('.pricing-card');
-            const title = card ? card.querySelector('h3')?.textContent : 'Pakiet Rekrutera';
-            const price = card ? card.querySelector('.price')?.textContent : '99,99 zł';
-            window.openPaymentModal(title, price, 'Miesięczna subskrypcja');
-        });
+    try { initNavbar(); } catch (e) { console.warn('initNavbar:', e); }
+    try { initAuth(); } catch (e) { console.warn('initAuth:', e); }
+    try { initDashboard(); } catch (e) { console.warn('initDashboard:', e); }
+    try { initInfoPages(); } catch (e) { console.warn('initInfoPages:', e); }
+    try { initSearch(); } catch (e) { console.warn('initSearch:', e); }
+    try { initFilters(); } catch (e) { console.warn('initFilters:', e); }
+    try { initModal(); } catch (e) { console.warn('initModal:', e); }
+    try { initCVUpload(); } catch (e) { console.warn('initCVUpload:', e); }
+    try { initOffers(); } catch (e) { console.warn('initOffers:', e); }
+    try { initGigs(); } catch (e) { console.warn('initGigs:', e); }
+});
     });
 });
 
@@ -2487,7 +2486,16 @@ function syncCvPreview() {
 
 // Ensure initCvBuilder is called on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
-    initCvBuilder();
+    try { initNavbar(); } catch (e) { console.warn('initNavbar:', e); }
+    try { initAuth(); } catch (e) { console.warn('initAuth:', e); }
+    try { initDashboard(); } catch (e) { console.warn('initDashboard:', e); }
+    try { initInfoPages(); } catch (e) { console.warn('initInfoPages:', e); }
+    try { initSearch(); } catch (e) { console.warn('initSearch:', e); }
+    try { initFilters(); } catch (e) { console.warn('initFilters:', e); }
+    try { initModal(); } catch (e) { console.warn('initModal:', e); }
+    try { initCVUpload(); } catch (e) { console.warn('initCVUpload:', e); }
+    try { initOffers(); } catch (e) { console.warn('initOffers:', e); }
+    try { initGigs(); } catch (e) { console.warn('initGigs:', e); }
 });
 
 // ============================================
@@ -2538,26 +2546,17 @@ window.openAuthModal = function(mode = 'login', role = 'candidate') {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    const tabLogin = document.getElementById('tabLogin');
-    const tabRegister = document.getElementById('tabRegister');
-    const authClose = document.getElementById('authClose');
-    const authModal = document.getElementById('authModal');
-    const authTrigger = document.getElementById('authTrigger');
-
-    if (tabLogin) {
-        tabLogin.addEventListener('click', () => window.openAuthModal('login'));
-    }
-    if (tabRegister) {
-        tabRegister.addEventListener('click', () => window.openAuthModal('register'));
-    }
-    if (authTrigger) {
-        authTrigger.addEventListener('click', () => window.openAuthModal('login'));
-    }
-    if (authClose && authModal) {
-        authClose.addEventListener('click', () => {
-            authModal.classList.add('hidden');
-            document.body.style.overflow = '';
-        });
+    try { initNavbar(); } catch (e) { console.warn('initNavbar:', e); }
+    try { initAuth(); } catch (e) { console.warn('initAuth:', e); }
+    try { initDashboard(); } catch (e) { console.warn('initDashboard:', e); }
+    try { initInfoPages(); } catch (e) { console.warn('initInfoPages:', e); }
+    try { initSearch(); } catch (e) { console.warn('initSearch:', e); }
+    try { initFilters(); } catch (e) { console.warn('initFilters:', e); }
+    try { initModal(); } catch (e) { console.warn('initModal:', e); }
+    try { initCVUpload(); } catch (e) { console.warn('initCVUpload:', e); }
+    try { initOffers(); } catch (e) { console.warn('initOffers:', e); }
+    try { initGigs(); } catch (e) { console.warn('initGigs:', e); }
+});
         authModal.addEventListener('click', (e) => {
             if (e.target === authModal) {
                 authModal.classList.add('hidden');
@@ -2766,7 +2765,16 @@ window.resetCvMatches = function() {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    initHeroCvMatcher();
+    try { initNavbar(); } catch (e) { console.warn('initNavbar:', e); }
+    try { initAuth(); } catch (e) { console.warn('initAuth:', e); }
+    try { initDashboard(); } catch (e) { console.warn('initDashboard:', e); }
+    try { initInfoPages(); } catch (e) { console.warn('initInfoPages:', e); }
+    try { initSearch(); } catch (e) { console.warn('initSearch:', e); }
+    try { initFilters(); } catch (e) { console.warn('initFilters:', e); }
+    try { initModal(); } catch (e) { console.warn('initModal:', e); }
+    try { initCVUpload(); } catch (e) { console.warn('initCVUpload:', e); }
+    try { initOffers(); } catch (e) { console.warn('initOffers:', e); }
+    try { initGigs(); } catch (e) { console.warn('initGigs:', e); }
 });
 
 
