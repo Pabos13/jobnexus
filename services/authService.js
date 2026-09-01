@@ -38,53 +38,48 @@ export class AuthService {
 
     static async register(email, password, name = '', role = 'candidate') {
         if (!email || !this.validateEmail(email)) {
-            throw new Error('Invalid email format');
+            throw new Error('Podaj poprawny adres e-mail');
         }
-        if (!password || password.length < 8) {
-            throw new Error('Password must be at least 8 characters');
+        if (!password || password.length < 6) {
+            throw new Error('Hasło musi mieć co najmniej 6 znaków');
         }
         if (!name || name.trim().length < 2) {
-            throw new Error('Name must be at least 2 characters');
+            throw new Error('Podaj imię i nazwisko lub nazwę firmy (min. 2 znaki)');
         }
 
         const cleanEmail = email.toLowerCase().trim();
         const cleanName = name.trim();
         const userRole = (role === 'recruiter') ? 'recruiter' : 'candidate';
 
-        try {
-            const apiBase = CONFIG.API_BASE_URL || '';
-            const response = await fetch(`${apiBase}/auth/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: cleanEmail, password, name: cleanName })
-            });
+        if (CONFIG.API_BASE_URL && typeof CONFIG.API_BASE_URL === 'string' && CONFIG.API_BASE_URL.startsWith('http')) {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: cleanEmail, password, name: cleanName })
+                });
 
-            if (response.ok) {
-                const data = await response.json();
-                if (data.user) {
-                    this.setUser(data.user, data.token || 'tok_' + Date.now(), data.refreshToken, data.expiresIn);
-                    return data.user;
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.user) {
+                        this.setUser(data.user, data.token || 'tok_' + Date.now(), data.refreshToken, data.expiresIn);
+                        return data.user;
+                    }
+                } else if (response.status !== 404 && response.status !== 502) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.message || 'Rejestracja nie powiodła się');
                 }
-            } else if (response.status !== 404 && response.status !== 502) {
-                const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.message || 'Registration failed');
-            }
-        } catch (err) {
-            if (err.message && err.message !== 'Failed to fetch' && !err.message.includes('NetworkError') && !err.message.includes('fetch') && !err.message.includes('404')) {
-                throw err;
+            } catch (err) {
+                if (err.message && !err.message.includes('Failed to fetch') && !err.message.includes('NetworkError') && !err.message.includes('fetch') && !err.message.includes('404')) {
+                    throw err;
+                }
             }
         }
 
         const users = this._getLocalUsers();
         let existing = users.find(u => u.email === cleanEmail);
         if (existing) {
-            existing.name = cleanName;
-            existing.role = userRole;
-            existing.password = password;
-            this._saveLocalUsers(users);
-            const safeUser = { id: existing.id, email: existing.email, name: existing.name, role: existing.role };
-            this.setUser(safeUser, 'tok_local_' + Date.now(), 'rt_local_' + Date.now(), 7 * 24 * 3600 * 1000);
-            return safeUser;
+            throw new Error('Konto z tym adresem e-mail już istnieje. Zaloguj się.');
         }
 
         const newUser = {
@@ -93,70 +88,63 @@ export class AuthService {
             name: cleanName,
             role: userRole,
             password: password,
+            plan: userRole === 'recruiter' ? 'pro' : 'standard',
             createdAt: new Date().toISOString()
         };
         users.push(newUser);
         this._saveLocalUsers(users);
 
-        const safeUser = { id: newUser.id, email: newUser.email, name: newUser.name, role: newUser.role };
+        const safeUser = { id: newUser.id, email: newUser.email, name: newUser.name, role: newUser.role, plan: newUser.plan };
         this.setUser(safeUser, 'tok_local_' + Date.now(), 'rt_local_' + Date.now(), 7 * 24 * 3600 * 1000);
         return safeUser;
     }
 
     static async login(email, password) {
         if (!email || !this.validateEmail(email)) {
-            throw new Error('Invalid email format');
+            throw new Error('Podaj poprawny adres e-mail');
         }
         if (!password) {
-            throw new Error('Password is required');
+            throw new Error('Wpisz hasło');
         }
 
         const cleanEmail = email.toLowerCase().trim();
 
-        try {
-            const apiBase = CONFIG.API_BASE_URL || '';
-            const response = await fetch(`${apiBase}/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: cleanEmail, password })
-            });
+        if (CONFIG.API_BASE_URL && typeof CONFIG.API_BASE_URL === 'string' && CONFIG.API_BASE_URL.startsWith('http')) {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: cleanEmail, password })
+                });
 
-            if (response.ok) {
-                const data = await response.json();
-                if (data.user) {
-                    this.setUser(data.user, data.token || 'tok_' + Date.now(), data.refreshToken, data.expiresIn);
-                    return data.user;
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.user) {
+                        this.setUser(data.user, data.token || 'tok_' + Date.now(), data.refreshToken, data.expiresIn);
+                        return data.user;
+                    }
+                } else if (response.status !== 404 && response.status !== 502) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.message || 'Nieprawidłowe dane logowania');
                 }
-            } else if (response.status !== 404 && response.status !== 502) {
-                const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.message || 'Invalid credentials');
-            }
-        } catch (err) {
-            if (err.message && err.message !== 'Failed to fetch' && !err.message.includes('NetworkError') && !err.message.includes('fetch') && !err.message.includes('404')) {
-                throw err;
+            } catch (err) {
+                if (err.message && !err.message.includes('Failed to fetch') && !err.message.includes('NetworkError') && !err.message.includes('fetch') && !err.message.includes('404')) {
+                    throw err;
+                }
             }
         }
 
         const users = this._getLocalUsers();
         let found = users.find(u => u.email === cleanEmail);
-        if (found) {
-            if (found.password && found.password !== password) {
-                throw new Error('Invalid credentials');
-            }
-        } else {
-            found = {
-                id: 'usr_' + Date.now(),
-                email: cleanEmail,
-                name: cleanEmail.split('@')[0],
-                role: cleanEmail.includes('rekrut') || cleanEmail.includes('firma') ? 'recruiter' : 'candidate',
-                password: password,
-                createdAt: new Date().toISOString()
-            };
-            users.push(found);
-            this._saveLocalUsers(users);
+        if (!found) {
+            throw new Error('Konto z tym adresem e-mail nie istnieje. Zarejestruj się najpierw.');
         }
 
-        const safeUser = { id: found.id, email: found.email, name: found.name, role: found.role || 'candidate' };
+        if (found.password && found.password !== password) {
+            throw new Error('Nieprawidłowe hasło. Spróbuj ponownie.');
+        }
+
+        const safeUser = { id: found.id, email: found.email, name: found.name, role: found.role || 'candidate', plan: found.plan || 'standard' };
         this.setUser(safeUser, 'tok_local_' + Date.now(), 'rt_local_' + Date.now(), 7 * 24 * 3600 * 1000);
         return safeUser;
     }
