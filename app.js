@@ -1754,91 +1754,234 @@ function displayCVMatches(matches) {
 const DEMO_GIGS = [
     {
         id: 'gig-1',
-        title: 'Wdrożenie modułu RAG / Chatbota AI dla e-commerce',
-        client: 'RetailTech Sp. z o.o.',
-        category: 'ai',
-        budget: '6 000 - 9 500 PLN',
+        title: 'Kompleksowy serwis internetowy dla firmy deweloperskiej (Next.js + Sanity CMS)',
+        client: 'ModernLiving Sp. z o.o.',
+        category: 'web',
+        budget: '7 500 - 11 000 PLN',
         duration: '⏱️ 14 dni',
-        proposals: 8,
-        tags: ['Python', 'LangChain', 'OpenAI', 'Pinecone'],
-        desc: 'Poszukujemy eksperta AI do integracji asystenta zakupowego RAG z bazą produktów Shopify i systemem rekomendacji.'
+        proposals: 6,
+        tags: ['Next.js', 'React', 'Sanity CMS', 'TailwindCSS'],
+        desc: 'Szukamy doświadczonego developera do zakodowania responsywnego portalu nieruchomości z interaktywną mapą inwestycji i panelem CMS.'
     },
     {
         id: 'gig-2',
-        title: 'Kompletny Rebranding & Projekt UI/UX Aplikacji SaaS',
-        client: 'CloudFlow Studio',
+        title: 'Rebranding marki, logo oraz kompletna księga znaku (Brandbook) dla marki premium',
+        client: 'Aura Candle Co.',
         category: 'design',
-        budget: '8 000 - 12 000 PLN',
-        duration: '⏱️ 21 dni',
-        proposals: 14,
-        tags: ['Figma', 'UI/UX Design', 'Design System', 'Prototyping'],
-        desc: 'Przygotowanie nowoczesnego design systemu, 35+ ekranów aplikacji webowej oraz interaktywnych prototypów w Figmie.'
+        budget: '3 500 - 5 500 PLN',
+        duration: '⏱️ 10 dni',
+        proposals: 12,
+        tags: ['Logo Design', 'Brandbook', 'Identyfikacja wizualna', 'Figma'],
+        desc: 'Potrzebujemy świeżej, minimalistycznej identyfikacji wizualnej dla ekologicznych świec sojowych (logo, typografia, paleta barw, etykiety).'
     },
     {
         id: 'gig-3',
-        title: 'Migracja Sklepu WooCommerce do Next.js + Headless',
-        client: 'BioCosmetics Group',
-        category: 'dev',
-        budget: '10 000 - 15 000 PLN',
-        duration: '⏱️ 30 dni',
-        proposals: 5,
-        tags: ['Next.js', 'React', 'TypeScript', 'Tailwind', 'GraphQL'],
-        desc: 'Budowa ultraszybkiego frontendu e-commerce w Next.js 14 z integracją płatności PayU, Stripe oraz InPost Paczkomaty.'
+        title: 'Wdrożenie i konfiguracja sklepu Shopify Plus z integracją BaseLinker i InPost',
+        client: 'EcoWear Polska',
+        category: 'ecommerce',
+        budget: '4 800 - 7 200 PLN',
+        duration: '⏱️ 21 dni',
+        proposals: 8,
+        tags: ['Shopify', 'Liquid', 'BaseLinker', 'Płatności'],
+        desc: 'Migracja z WooCommerce na Shopify, dostosowanie szablonu, spięcie bramek płatności (Przelewy24, BLIK) oraz synchronizacja magazynu.'
     },
     {
         id: 'gig-4',
-        title: 'Audyt Bezpieczeństwa & Optymalizacja Bazy PostgreSQL',
-        client: 'FinData Analytics',
-        category: 'dev',
-        budget: '4 500 - 7 000 PLN',
-        duration: '⏱️ 7 dni',
-        proposals: 3,
-        tags: ['PostgreSQL', 'Database Tuning', 'Security Audit', 'Docker'],
-        desc: 'Analiza wolnych zapytań SQL, indeksowanie tabel, optymalizacja kosztów na AWS RDS oraz audyt uprawnień i backupów.'
+        title: 'Montaż 15 dynamicznych rolek (Reels / TikTok / Shorts) z napisami i efektami',
+        client: 'FitLife Academy',
+        category: 'video',
+        budget: '2 200 - 3 500 PLN',
+        duration: '⏱️ Stała współpraca',
+        proposals: 15,
+        tags: ['CapCut', 'Premiere Pro', 'Reels', 'TikTok'],
+        desc: 'Poszukujemy montażysty do regularnej obróbki surowych nagrań wideo od trenerów personalnych. Wymagane chwytliwe hooki i dynamiczne napisy.'
     },
     {
         id: 'gig-5',
-        title: 'Automatyzacja procesów CRM & Make.com / n8n',
-        client: 'Logistics Hub Polska',
-        category: 'ai',
-        budget: '3 500 - 5 500 PLN',
-        duration: '⏱️ 10 dni',
-        proposals: 11,
-        tags: ['Make.com', 'n8n', 'HubSpot', 'Webhooks', 'REST API'],
-        desc: 'Budowa zautomatyzowanych scenariuszy synchronizacji zamówień, leadów B2B oraz powiadomień Slack/SMS.'
+        title: 'Pakiet 10 specjalistycznych artykułów blogowych SEO (Branża Finanse i Kredyty)',
+        client: 'FinanseDlaCiebie.pl',
+        category: 'copywriting',
+        budget: '1 800 - 2 600 PLN',
+        duration: '⏱️ 12 dni',
+        proposals: 9,
+        tags: ['Copywriting SEO', 'Finanse', 'SurferSEO', 'Blog'],
+        desc: 'Napisanie merytorycznych tekstów (każdy ok. 5000 zzs) zoptymalizowanych pod frazy kluczowe pod wytyczne z SurferSEO.'
     },
     {
         id: 'gig-6',
-        title: 'Aplikacja mobilna MVP (React Native / Flutter)',
-        client: 'FitLife Mobile',
-        category: 'dev',
-        budget: '14 000 - 20 000 PLN',
-        duration: '⏱️ 45 dni',
-        proposals: 9,
-        tags: ['React Native', 'Flutter', 'Firebase', 'iOS & Android'],
-        desc: 'Stworzenie aplikacji treningowej MVP z autoryzacją społecznościową, planerem treningów i płatnościami in-app.'
+        title: 'Aplikacja mobilna MVP do rezerwacji wizyt w salonach (Flutter / Supabase)',
+        client: 'BeautyBooking Startup',
+        category: 'mobile',
+        budget: '12 000 - 18 000 PLN',
+        duration: '⏱️ 30 dni',
+        proposals: 4,
+        tags: ['Flutter', 'Dart', 'Supabase', 'iOS / Android'],
+        desc: 'Stworzenie aplikacji cross-platformowej iOS/Android umożliwiającej przeglądanie kalendarza, wybór usług i płatność online za wizyty.'
     },
     {
         id: 'gig-7',
-        title: 'Optymalizacja Core Web Vitals & SEO dla portalu',
-        client: 'MediaPortal Media',
-        category: 'ecommerce',
-        budget: '3 000 - 5 000 PLN',
-        duration: '⏱️ 8 dni',
-        proposals: 7,
-        tags: ['Web Performance', 'SEO', 'Lighthouse', 'JavaScript'],
-        desc: 'Przyspieszenie wskaźników LCP/CLS, minifikacja zasobów i audyt SEO on-page pod kątem Google Search Console.'
+        title: 'Audyt bezpieczeństwa i optymalizacja szybkości (Core Web Vitals) dla serwisu WP',
+        client: 'Portal Turystyczny Sp. z o.o.',
+        category: 'web',
+        budget: '1 500 - 2 500 PLN',
+        duration: '⏱️ 7 dni',
+        proposals: 11,
+        tags: ['WordPress', 'PageSpeed', 'Cybersecurity', 'Cache'],
+        desc: 'Przyspieszenie działania serwisu na WordPress (wynik mobile > 85), zabezpieczenie przed atakami brute-force i optymalizacja bazy MySQL.'
     },
     {
         id: 'gig-8',
-        title: 'Projekt 3D & Animacje Produktowe na stronę',
-        client: 'NextGen Gadgets',
+        title: 'Tłumaczenie techniczne dokumentacji API i instrukcji maszyn (EN -> PL, 40 stron)',
+        client: 'Global Machinery Gmbh',
+        category: 'copywriting',
+        budget: '2 800 - 4 200 PLN',
+        duration: '⏱️ 10 dni',
+        proposals: 7,
+        tags: ['Tłumaczenia techniczne', 'Angielski', 'Dokumentacja API'],
+        desc: 'Precyzyjne tłumaczenie specyfikacji technicznej sterowników przemysłowych z zachowaniem specjalistycznej nomenklatury inżynierskiej.'
+    },
+    {
+        id: 'gig-9',
+        title: 'Konfiguracja i optymalizacja kampanii Google Ads (Search + Performance Max) dla B2B',
+        client: 'IT-Solutions Consulting',
+        category: 'marketing',
+        budget: '2 000 - 3 500 PLN / mc',
+        duration: '⏱️ Stała współpraca',
+        proposals: 8,
+        tags: ['Google Ads', 'PMax', 'Analityka', 'B2B'],
+        desc: 'Uruchomienie kampanii nakierowanych na generowanie leadów B2B dla firmy software house z rynków DACH i UK.'
+    },
+    {
+        id: 'gig-10',
+        title: 'Modele 3D produktów (10 mebli) do konfiguratora AR na stronie (Blender / GLB)',
+        client: 'NordicWood Meble',
         category: 'design',
-        budget: '5 000 - 8 000 PLN',
+        budget: '3 000 - 4 500 PLN',
         duration: '⏱️ 14 dni',
+        proposals: 5,
+        tags: ['Blender', '3D Modeling', 'Teksturowanie PBR', 'GLTF/GLB'],
+        desc: 'Przygotowanie fotorealistycznych, zoptymalizowanych modeli 3D mebli drewnianych z teksturami PBR do podglądu Augmented Reality.'
+    },
+    {
+        id: 'gig-11',
+        title: 'Projekt interfejsu aplikacji SaaS w Figma (Dashboard, Analityka, Ustawienia konta)',
+        client: 'DataMetric App',
+        category: 'design',
+        budget: '5 000 - 7 500 PLN',
+        duration: '⏱️ 18 dni',
+        proposals: 10,
+        tags: ['Figma', 'UI Design', 'SaaS Dashboard', 'Prototyp'],
+        desc: 'Zaprojektowanie responsywnego panelu zarządzania dla aplikacji analitycznej B2B (ok. 12 widoków + wersje Dark & Light mode).'
+    },
+    {
+        id: 'gig-12',
+        title: 'Automatyzacja procesów fakturowania i CRM z wykorzystaniem Make (Integromat) i Airtable',
+        client: 'Agencja Eventowa Bravo',
+        category: 'web',
+        budget: '2 400 - 3 800 PLN',
+        duration: '⏱️ 8 dni',
+        proposals: 7,
+        tags: ['Make.com', 'Airtable', 'API', 'Fakturownia'],
+        desc: 'Stworzenie scenariuszy automatyzujących: nowy formularz -> rekord w Airtable -> automatyczne wygenerowanie proformy w Fakturowni -> mail do klienta.'
+    },
+    {
+        id: 'gig-13',
+        title: 'Konfiguracja klastra Proxmox VE i serwerów VPS z panelem Docker i Traefik',
+        client: 'HostVenture Tech',
+        category: 'web',
+        budget: '3 200 - 4 800 PLN',
+        duration: '⏱️ 5 dni',
         proposals: 6,
-        tags: ['Blender', 'Spline 3D', 'Three.js', 'Motion Graphics'],
-        desc: 'Przygotowanie interaktywnych modeli 3D w Spline z możliwością obracania na stronie głównej w czasie rzeczywistym.'
+        tags: ['Linux', 'Proxmox', 'Docker', 'Traefik', 'SSL'],
+        desc: 'Instalacja środowiska wirtualizacji na serwerze dedykowanym, zabezpieczenie firewall (UFW), certyfikaty SSL i reverse proxy.'
+    },
+    {
+        id: 'gig-14',
+        title: 'Seria postów i grafik do Social Media na 1 miesiąc (LinkedIn & Facebook dla firmy IT)',
+        client: 'CloudExperts Polska',
+        category: 'marketing',
+        budget: '1 900 - 2 800 PLN / mc',
+        duration: '⏱️ Stała współpraca',
+        proposals: 14,
+        tags: ['Social Media', 'LinkedIn', 'Grafika', 'Canva/Figma'],
+        desc: 'Przygotowanie harmonogramu, treści 12 postów techniczno-biznesowych oraz szablonów grafik promujących usługi chmurowe.'
+    },
+    {
+        id: 'gig-15',
+        title: 'Optymalizacja konwersji (CRO) i testy A/B dla koszyka w sklepie internetowym',
+        client: 'ModaDlaKazdego.pl',
+        category: 'ecommerce',
+        budget: '2 500 - 4 000 PLN',
+        duration: '⏱️ 14 dni',
+        proposals: 5,
+        tags: ['CRO', 'A/B Testing', 'Hotjar', 'Google Optimize'],
+        desc: 'Audyt ścieżki zakupowej, analiza nagrań sesji użytkowników i wdrożenie 3 wariantów testowych checkoutu w celu obniżenia porzuceń koszyka.'
+    },
+    {
+        id: 'gig-16',
+        title: 'Wdrożenie skryptów Python do scrapingu danych rynkowych i monitorowania cen',
+        client: 'MarketPulse Analytics',
+        category: 'web',
+        budget: '3 000 - 4 500 PLN',
+        duration: '⏱️ 7 dni',
+        proposals: 8,
+        tags: ['Python', 'Scrapy', 'Playwright', 'PostgreSQL'],
+        desc: 'Stworzenie niezawodnych scraperów w Pythonie pobierających codzienne zmiany cen i stanów magazynowych z 5 serwisów branżowych.'
+    },
+    {
+        id: 'gig-17',
+        title: 'Wdrożenie chatbota AI do obsługi klienta z integracją WhatsApp i Messenger',
+        client: 'AutoSerwis 24h',
+        category: 'ai',
+        budget: '4 000 - 6 500 PLN',
+        duration: '⏱️ 10 dni',
+        proposals: 7,
+        tags: ['Voiceflow', 'OpenAI', 'WhatsApp API', 'Chatbot'],
+        desc: 'Automatyzacja wycen i rezerwacji terminów naprawy pojazdów za pośrednictwem inteligentnego bota konwersacyjnego na WhatsApp.'
+    },
+    {
+        id: 'gig-18',
+        title: 'Projekt katalogu produktów w formacie PDF i do druku (InDesign / 24 strony)',
+        client: 'Pol-Meble Fabryka',
+        category: 'design',
+        budget: '2 200 - 3 200 PLN',
+        duration: '⏱️ 9 dni',
+        proposals: 11,
+        tags: ['Adobe InDesign', 'DTP', 'Katalog', 'Druk'],
+        desc: 'Skład graficzny i przygotowanie do druku offsetowego eleganckiego katalogu mebli biurowych ze spisem treści i indeksami.'
+    },
+    {
+        id: 'gig-19',
+        title: 'Napisanie skryptów wideo i scenariuszy do kampanii TikTok / YouTube Shorts',
+        client: 'SmartGadgets Polska',
+        category: 'copywriting',
+        budget: '1 500 - 2 200 PLN',
+        duration: '⏱️ 6 dni',
+        proposals: 10,
+        tags: ['Scenariusze', 'TikTok', 'Storytelling', 'Video Hooks'],
+        desc: 'Przygotowanie 10 chwytliwych scenariuszy wideo (15-30s) prezentujących zalety produktów elektroniki użytkowej.'
+    },
+    {
+        id: 'gig-20',
+        title: 'Konfiguracja serwera pocztowego z rekordami SPF, DKIM, DMARC i audytem dostarczalności',
+        client: 'MailMaster Pro',
+        category: 'web',
+        budget: '1 200 - 1 800 PLN',
+        duration: '⏱️ 3 dni',
+        proposals: 6,
+        tags: ['DMARC', 'DKIM', 'SPF', 'Postfix', 'DNS'],
+        desc: 'Poprawa reputacji domeny wysyłkowej, konfiguracja poprawnych wpisów DNS i testy dostarczalności do skrzynek Gmail / WP / Onet.'
+    },
+    {
+        id: 'gig-21',
+        title: 'Audyt SEO i optymalizacja techniczna on-page dla portalu informacyjnego (10k podstron)',
+        client: 'WiadomosciLokalne.pl',
+        category: 'marketing',
+        budget: '2 800 - 4 200 PLN',
+        duration: '⏱️ 14 dni',
+        proposals: 9,
+        tags: ['SEO', 'Technical SEO', 'Screaming Frog', 'Core Web Vitals'],
+        desc: 'Identyfikacja kanibalizacji słów kluczowych, naprawa błędów 404, optymalizacja struktury nagłówków H1-H3 oraz linkowania wewnętrznego.'
     }
 ];
 
@@ -1848,306 +1991,62 @@ function renderPaginationBar(containerId, currentPage, totalPages, totalItems, i
     if (!container) return;
 
     if (totalItems === 0 || totalPages <= 1) {
-        container.innerHTML = totalItems > 0 ? `
-            <div class="pagination-info" style="width: 100%; text-align: center;">
-                Pokazano wszystkie <strong>${totalItems}</strong> pozycji
-            </div>
-        ` : '';
+        container.innerHTML = '';
         return;
     }
 
-    const startIdx = (currentPage - 1) * itemsPerPage + 1;
-    const endIdx = Math.min(currentPage * itemsPerPage, totalItems);
-
-    let pagesHtml = '';
+    let pagesHtml = '<div class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 24px; flex-wrap: wrap;">';
 
     // Previous button
     pagesHtml += `
-        <button class="page-btn page-prev" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">
-            ‹ Poprzednia
+        <button class="pagination-btn page-btn page-prev" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}" style="padding: 8px 14px; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.12); color: #e2e8f0; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;">
+            « Poprzednia
         </button>
     `;
 
-    // Smart pagination numbers
-    const delta = 1;
-    const range = [];
-    for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
-        range.push(i);
-    }
-
-    // Page 1
-    pagesHtml += `<button class="page-btn ${currentPage === 1 ? 'active' : ''}" data-page="1">1</button>`;
-
-    if (range[0] > 2) {
-        pagesHtml += `<span class="page-dots">...</span>`;
-    }
-
-    range.forEach(p => {
-        pagesHtml += `<button class="page-btn ${currentPage === p ? 'active' : ''}" data-page="${p}">${p}</button>`;
-    });
-
-    if (range[range.length - 1] < totalPages - 1) {
-        pagesHtml += `<span class="page-dots">...</span>`;
-    }
-
-    // Last Page
-    if (totalPages > 1) {
-        pagesHtml += `<button class="page-btn ${currentPage === totalPages ? 'active' : ''}" data-page="${totalPages}">${totalPages}</button>`;
+    // Numeric buttons
+    for (let p = 1; p <= totalPages; p++) {
+        const isActive = p === currentPage;
+        pagesHtml += `
+            <button class="pagination-btn page-btn ${isActive ? 'active' : ''}" data-page="${p}" style="padding: 8px 14px; background: ${isActive ? 'linear-gradient(135deg, #3b82f6, #2563eb)' : 'rgba(30, 41, 59, 0.8)'}; border: 1px solid ${isActive ? '#3b82f6' : 'rgba(255, 255, 255, 0.12)'}; color: #ffffff; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer;">
+                ${p}
+            </button>
+        `;
     }
 
     // Next button
     pagesHtml += `
-        <button class="page-btn page-next" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">
-            Następna ›
+        <button class="pagination-btn page-btn page-next" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}" style="padding: 8px 14px; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.12); color: #e2e8f0; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;">
+            Następna »
         </button>
     `;
 
-    container.innerHTML = `
-        <div class="pagination-info">
-            Pokazano <strong>${startIdx}-${endIdx}</strong> z <strong>${totalItems}</strong>
-        </div>
-        <div class="pagination-controls">
-            ${pagesHtml}
-        </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 12px; color: #94a3b8;">Na stronę:</span>
-            <select class="per-page-select" id="${containerId}_select">
-                <option value="6" ${itemsPerPage === 6 ? 'selected' : ''}>6</option>
-                <option value="9" ${itemsPerPage === 9 ? 'selected' : ''}>9</option>
-                <option value="12" ${itemsPerPage === 12 ? 'selected' : ''}>12</option>
-                <option value="24" ${itemsPerPage === 24 ? 'selected' : ''}>24</option>
-            </select>
-        </div>
-    `;
+    pagesHtml += '</div>';
+    container.innerHTML = pagesHtml;
 
-    // Attach listeners
-    container.querySelectorAll('.page-btn:not(:disabled)').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const p = parseInt(btn.dataset.page);
-            if (p && p !== currentPage) {
-                onPageChange(p);
+    // Attach click listeners to pagination buttons
+    container.querySelectorAll('.page-btn:not([disabled])').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetPage = parseInt(btn.dataset.page, 10);
+            if (targetPage && !isNaN(targetPage)) {
+                if (typeof onPageChange === 'function') {
+                    onPageChange(targetPage);
+                } else if (containerId === 'gigsPagination') {
+                    if (!window.state) window.state = {};
+                    window.state.gigsPage = targetPage;
+                    if (typeof renderGigs === 'function') renderGigs();
+                    const sec = document.getElementById('zlecenia');
+                    if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else if (containerId === 'jobsPagination' || containerId === 'offersPagination') {
+                    if (!window.state) window.state = {};
+                    window.state.currentPage = targetPage;
+                    if (typeof renderJobs === 'function') renderJobs();
+                    const sec = document.getElementById('oferty');
+                    if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             }
         });
-    });
-
-    const selectEl = document.getElementById(`${containerId}_select`);
-    selectEl?.addEventListener('change', (e) => {
-        const val = parseInt(e.target.value);
-        if (val) {
-            onPerPageChange(val);
-        }
-    });
-}
-
-// Global Gigs & Jobs Pagination State
-if (!window.state) window.state = {};
-window.state.jobsPage = 1;
-window.state.jobsPerPage = 7;
-
-window.state.gigs = DEMO_GIGS;
-window.state.gigsPage = 1;
-window.state.gigsPerPage = 7;
-window.state.gigsCategory = 'all';
-
-
-// ============================================
-// GIGS & FREELANCE PROJECTS CONTROLLER
-// ============================================
-window.openGigModal = function() {
-    const modal = document.getElementById('gigModal');
-    if (modal) {
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-};
-
-window.closeGigModal = function() {
-    const modal = document.getElementById('gigModal');
-    if (modal) {
-        modal.classList.add('hidden');
-        document.body.style.overflow = '';
-        const form = document.getElementById('gigForm');
-        if (form) form.reset();
-    }
-};
-
-function renderGigs() {
-    const grid = document.getElementById('gigsGrid');
-    const empty = document.getElementById('gigsEmpty');
-    if (!grid) return;
-
-    const allGigs = (window.state && window.state.gigs && window.state.gigs.length) ? window.state.gigs : DEMO_GIGS;
-    window.state.gigs = allGigs;
-
-    const selectedCat = (window.state && window.state.gigsCategory) ? window.state.gigsCategory : 'all';
-
-    let filtered = allGigs.filter(g => {
-        if (selectedCat === 'all') return true;
-        const gCat = (g.category || '').toLowerCase();
-        const tCat = selectedCat.toLowerCase();
-        if (gCat === tCat) return true;
-        if (tCat === 'web' && (gCat === 'dev' || gCat === 'web' || gCat === 'mobile')) return true;
-        if (tCat === 'ecommerce' && (gCat === 'ecommerce' || gCat === 'shop' || gCat === 'dev')) return true;
-        return false;
-    });
-
-    const total = filtered.length;
-    const perPage = (window.state && window.state.gigsPerPage) ? window.state.gigsPerPage : 6;
-    const totalPages = Math.max(1, Math.ceil(total / perPage));
-    const current = Math.min(Math.max(1, (window.state && window.state.gigsPage) ? window.state.gigsPage : 1), totalPages);
-    if (window.state) window.state.gigsPage = current;
-
-    grid.innerHTML = '';
-
-    if (total === 0) {
-        if (empty) empty.classList.remove('hidden');
-        renderPaginationBar('gigsPagination', 1, 0, 0, perPage, null, null);
-        return;
-    }
-
-    if (empty) empty.classList.add('hidden');
-
-    const start = (current - 1) * perPage;
-    const pageItems = filtered.slice(start, start + perPage);
-
-    pageItems.forEach(gig => {
-        const card = document.createElement('div');
-        card.className = 'job-card';
-        card.style.background = 'linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95))';
-        card.style.border = '1px solid rgba(168, 85, 247, 0.25)';
-
-        const tagsHtml = (gig.tags || []).map(t => `<span class="job-tag" style="background: rgba(168, 85, 247, 0.12); color: #c084fc;">${escapeHtml(t)}</span>`).join('');
-
-        card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
-                <span style="font-size: 0.75rem; font-weight: 700; color: #c084fc; background: rgba(168, 85, 247, 0.15); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(168, 85, 247, 0.3);">
-                    ${escapeHtml(gig.duration || '⏱️ Do ustalenia')}
-                </span>
-                <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 600;">
-                    👥 ${gig.proposals || 0} ofert wykonawców
-                </span>
-            </div>
-            <h3 style="font-size: 1.15rem; font-weight: 800; color: #ffffff; margin-bottom: 0.35rem; line-height: 1.35;">
-                ${escapeHtml(gig.title || 'Zlecenie projektowe')}
-            </h3>
-            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem;">
-                🏢 Zleceniodawca: <strong style="color: #cbd5e1;">${escapeHtml(gig.client || 'Firma zweryfikowana')}</strong>
-            </p>
-            <p style="font-size: 0.85rem; color: #94a3b8; line-height: 1.5; margin-bottom: 1rem;">
-                ${escapeHtml(gig.desc || '')}
-            </p>
-            <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1.25rem;">
-                ${tagsHtml}
-            </div>
-            <div class="job-footer" style="padding-top: 0.85rem; border-top: 1px solid rgba(255, 255, 255, 0.06); display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <span style="font-size: 0.75rem; color: #94a3b8; display: block;">Budżet zlecenia</span>
-                    <span class="job-salary" style="color: #38bdf8; font-size: 1.05rem;">${escapeHtml(gig.budget || 'Do negocjacji')}</span>
-                </div>
-                <button type="button" class="btn btn-primary btn-sm" onclick="window.openProposalModal('${escapeHtml(gig.id)}', '${escapeHtml(gig.title)}')">
-                    Złóż ofertę
-                </button>
-            </div>
-        `;
-        grid.appendChild(card);
-    });
-
-    // Render Pagination for Gigs
-    renderPaginationBar('gigsPagination', current, totalPages, total, perPage, (newPage) => {
-        window.state.gigsPage = newPage;
-        renderGigs();
-        const zleceniaSec = document.getElementById('zlecenia');
-        if (zleceniaSec) {
-            zleceniaSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    }, (newPerPage) => {
-        window.state.gigsPerPage = newPerPage;
-        window.state.gigsPage = 1;
-        renderGigs();
-    });
-}
-
-function initGigs() {
-    // Render gigs immediately on initialization
-    renderGigs();
-
-    // Gigs category filter buttons
-    document.querySelectorAll('.gig-filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.gig-filter-btn').forEach(b => {
-                b.classList.remove('active');
-            });
-            btn.classList.add('active');
-
-            if (!window.state) window.state = {};
-            window.state.gigsCategory = btn.dataset.category || btn.dataset.cat || 'all';
-            window.state.gigsPage = 1;
-            renderGigs();
-        });
-    });
-
-    // Modal close triggers
-    document.getElementById('gigModalClose')?.addEventListener('click', window.closeGigModal);
-    document.getElementById('gigModal')?.addEventListener('click', (e) => {
-        if (e.target === document.getElementById('gigModal')) window.closeGigModal();
-    });
-
-    // Gig Form Submit
-    document.getElementById('gigForm')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const title = document.getElementById('gigTitle')?.value.trim();
-        const client = document.getElementById('gigClient')?.value.trim() || 'Mój Profil';
-        const category = document.getElementById('gigCategory')?.value || 'web';
-        const budget = document.getElementById('gigBudget')?.value.trim() || 'Do negocjacji';
-        const duration = document.getElementById('gigDuration')?.value.trim() || '⏱️ 14 dni';
-        const tags = (document.getElementById('gigTags')?.value || '').split(',').map(t => t.trim()).filter(Boolean);
-        const desc = document.getElementById('gigDesc')?.value.trim();
-
-        if (!title || !desc) {
-            showToast('Wypełnij wymagane pola zlecenia!', 'error');
-            return;
-        }
-
-        const newGig = {
-            id: `gig-user-${Date.now()}`,
-            title,
-            client,
-            category,
-            budget,
-            duration,
-            proposals: 0,
-            tags: tags.length ? tags : ['Freelance', 'Projekt'],
-            desc
-        };
-
-        if (!window.state.gigs) window.state.gigs = [...DEMO_GIGS];
-        window.state.gigs.unshift(newGig);
-        window.closeGigModal();
-        renderGigs();
-        showToast('🚀 Twoje zlecenie zostało opublikowane pomyślnie!', 'success');
-    });
-
-    // Proposal Modal
-    window.openProposalModal = function(gigId, gigTitle) {
-        const propModal = document.getElementById('gigProposalModal');
-        const titleEl = document.getElementById('propGigTitle');
-        if (titleEl) titleEl.textContent = gigTitle || 'Zlecenie projektowe';
-        if (propModal) {
-            propModal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-    };
-
-    document.getElementById('gigProposalClose')?.addEventListener('click', () => {
-        document.getElementById('gigProposalModal')?.classList.add('hidden');
-        document.body.style.overflow = '';
-    });
-
-    document.getElementById('gigProposalForm')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        document.getElementById('gigProposalModal')?.classList.add('hidden');
-        document.body.style.overflow = '';
-        showToast('🎉 Twoja propozycja wykonania została przesłana do zleceniodawcy!', 'success');
     });
 }
 // ============================================
