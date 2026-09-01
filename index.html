@@ -71,85 +71,119 @@
             }
         };
 
-        window.openRecruiterPanel = function() {
-            if (typeof window.startProCheckout === 'function') {
-                window.startProCheckout('pro', '99,00 zł', 'Abonament Rekruter PRO (99 zł / miesiąc)');
-            } else if (typeof window.activateAndOpenRecruiter === 'function') {
-                window.activateAndOpenRecruiter();
-            }
-        };
+        
+window.openRecruiterPanel = function() {
+    window.startProCheckout('pro', '99,00 zł', 'Abonament Rekruter PRO (99 zł / miesiąc)');
+};
 
-        window.startProCheckout = function(plan, price, title) {
-            plan = plan || 'pro';
-            price = price || '99,00 zł';
-            title = title || 'Abonament Rekruter PRO (99 zł / miesiąc)';
-            var modal = document.getElementById('paymentCheckoutModal');
-            if (!modal) {
-                if (typeof window.activateAndOpenRecruiter === 'function') window.activateAndOpenRecruiter();
+window.startProCheckout = function(plan, price, title) {
+    plan = plan || 'pro';
+    price = price || '99,00 zł';
+    title = title || 'Abonament Rekruter PRO (99 zł / miesiąc)';
+    var modal = document.getElementById('paymentCheckoutModal');
+    if (!modal) {
+        alert('Moduł płatności jest niedostępny.');
+        return;
+    }
+    var titleEl = document.getElementById('checkoutItemTitle');
+    var amountEl = document.getElementById('checkoutAmount');
+    var nameEl = document.getElementById('checkoutItemName');
+    if (titleEl) titleEl.textContent = '💎 ' + title;
+    if (amountEl) amountEl.textContent = price;
+    if (nameEl) nameEl.textContent = title;
+
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    modal.style.visibility = 'visible';
+    modal.style.opacity = '1';
+    modal.style.pointerEvents = 'auto';
+    modal.style.zIndex = '999999';
+};
+
+window.closePaymentModal = function() {
+    var modal = document.getElementById('paymentCheckoutModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        modal.style.visibility = 'hidden';
+        modal.style.opacity = '0';
+        modal.style.pointerEvents = 'none';
+    }
+};
+
+window.togglePaymentMethodFields = function(method) {
+    var blik = document.getElementById('checkoutBlikField');
+    var card = document.getElementById('checkoutCardField');
+    if (blik) blik.style.display = (method === 'blik') ? 'block' : 'none';
+    if (card) card.style.display = (method === 'card') ? 'block' : 'none';
+};
+
+window.processCheckoutPayment = function(event) {
+    if (event) event.preventDefault();
+    var actionBox = document.getElementById('checkoutActionBox');
+    var processingBox = document.getElementById('checkoutProcessingBox');
+    var stepText = document.getElementById('processingStepText');
+
+    if (actionBox) actionBox.style.display = 'none';
+    if (processingBox) {
+        processingBox.classList.remove('hidden');
+        processingBox.style.display = 'block';
+    }
+
+    if (stepText) stepText.textContent = 'Łączenie z operatorem płatności (BLIK / PayU)...';
+
+    setTimeout(function() {
+        if (stepText) stepText.textContent = 'Autoryzacja w banku... Płatność zaakceptowana!';
+        setTimeout(function() {
+            window.closePaymentModal();
+            if (actionBox) actionBox.style.display = 'block';
+            if (processingBox) {
+                processingBox.classList.add('hidden');
+                processingBox.style.display = 'none';
+            }
+
+            // Activate PRO plan on current user (or prompt to register if not logged in)
+            var user = null;
+            try {
+                var raw = localStorage.getItem('jobnexus_user');
+                user = raw ? JSON.parse(raw) : null;
+            } catch(e) {}
+
+            if (!user) {
+                // If not logged in, prompt user to create account to attach subscription
+                if (typeof window.openAuthModal === 'function') {
+                    window.openAuthModal('register');
+                }
+                if (typeof showToast === 'function') {
+                    showToast('Płatność 99,00 zł zaakceptowana! Załóż konto, aby przypisać subskrypcję PRO.', 'success');
+                }
                 return;
             }
-            var titleEl = document.getElementById('checkoutItemTitle');
-            var amountEl = document.getElementById('checkoutAmount');
-            var nameEl = document.getElementById('checkoutItemName');
-            if (titleEl) titleEl.textContent = '💎 ' + title;
-            if (amountEl) amountEl.textContent = price;
-            if (nameEl) nameEl.textContent = title;
 
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-            modal.style.visibility = 'visible';
-            modal.style.opacity = '1';
-            modal.style.pointerEvents = 'auto';
-            modal.style.zIndex = '999999';
-        };
+            user.role = 'recruiter';
+            user.plan = 'pro';
+            try {
+                localStorage.setItem('jobnexus_user', JSON.stringify(user));
+            } catch(e) {}
 
-        window.closePaymentModal = function() {
-            var modal = document.getElementById('paymentCheckoutModal');
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.style.display = 'none';
-                modal.style.visibility = 'hidden';
-                modal.style.opacity = '0';
-                modal.style.pointerEvents = 'none';
-            }
-        };
-
-        window.togglePaymentMethodFields = function(method) {
-            var blik = document.getElementById('checkoutBlikField');
-            var card = document.getElementById('checkoutCardField');
-            if (blik) blik.style.display = (method === 'blik') ? 'block' : 'none';
-            if (card) card.style.display = (method === 'card') ? 'block' : 'none';
-        };
-
-        window.processCheckoutPayment = function(event) {
-            event.preventDefault();
-            var actionBox = document.getElementById('checkoutActionBox');
-            var processingBox = document.getElementById('checkoutProcessingBox');
-            var stepText = document.getElementById('processingStepText');
-
-            if (actionBox) actionBox.style.display = 'none';
-            if (processingBox) {
-                processingBox.classList.remove('hidden');
-                processingBox.style.display = 'block';
+            if (typeof window.syncUserHeader === 'function') {
+                window.syncUserHeader(user);
             }
 
-            if (stepText) stepText.textContent = 'Łączenie z operatorem płatności (BLIK / PayU)...';
+            // Open Recruiter Dashboard
+            if (typeof window.openDashboard === 'function') {
+                window.openDashboard();
+            }
 
-            setTimeout(function() {
-                if (stepText) stepText.textContent = 'Autoryzacja w banku... Płatność zaakceptowana!';
-                setTimeout(function() {
-                    window.closePaymentModal();
-                    if (actionBox) actionBox.style.display = 'block';
-                    if (processingBox) {
-                        processingBox.classList.add('hidden');
-                        processingBox.style.display = 'none';
-                    }
-                    if (typeof window.activateAndOpenRecruiter === 'function') {
-                        window.activateAndOpenRecruiter();
-                    }
-                }, 1200);
-            }, 1800);
-        };
+            if (typeof showToast === 'function') {
+                showToast('🎉 Płatność 99,00 zł zaakceptowana! Witaj w Panelu Rekrutera PRO.', 'success');
+            } else {
+                alert('Płatność zaakceptowana! Witaj w Panelu Rekrutera PRO.');
+            }
+        }, 1200);
+    }, 1800);
+};
+
 
         // AUTHENTICATION CONTROLLERS (GLOBAL & 100% RELIABLE)
         window.openAuthModal = function(mode) {
