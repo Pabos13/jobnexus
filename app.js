@@ -66,18 +66,10 @@ const els = {
 // INITIALIZATION
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
-    initNavbar();
-    initAuth();
-    initDashboard();
-    initInfoPages();
-    initSearch();
-    initFilters();
-    initModal();
-    initCVUpload();
-    loadData();
-    animateStats();
-    initScrollEffects();
-    initDemoAnnouncements();
+    try { initNavbar(); } catch (e) { console.warn('initNavbar:', e); }
+    try { initAuth(); } catch (e) { console.warn('initAuth:', e); }
+    try { initDashboard(); } catch (e) { console.warn('initDashboard:', e); }
+    try { initInfoPages(); } catch (e) { console.warn('initInfoPages:', e); }
 });
 
 // ============================================
