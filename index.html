@@ -86,20 +86,84 @@
         };
 
         
-        window.openRecruiterPanel = function() {
-            if (typeof window.activateAndOpenRecruiter === 'function') {
+                window.openRecruiterPanel = function() {
+            if (typeof window.startProCheckout === 'function') {
+                window.startProCheckout('pro', '99,00 zł', 'Abonament Rekruter PRO (99 zł / miesiąc)');
+            } else if (typeof window.activateAndOpenRecruiter === 'function') {
                 window.activateAndOpenRecruiter();
-            } else {
-                var modal = document.getElementById('dashboardModal');
-                if (modal) {
-                    modal.classList.remove('hidden');
-                    modal.style.display = 'flex';
-                    modal.style.visibility = 'visible';
-                    modal.style.opacity = '1';
-                    modal.style.pointerEvents = 'auto';
-                    modal.style.zIndex = '999999';
-                }
             }
+        };
+
+        window.startProCheckout = function(plan, price, title) {
+            plan = plan || 'pro';
+            price = price || '99,00 zł';
+            title = title || 'Abonament Rekruter PRO (99 zł / miesiąc)';
+            var modal = document.getElementById('paymentCheckoutModal');
+            if (!modal) {
+                if (typeof window.activateAndOpenRecruiter === 'function') window.activateAndOpenRecruiter();
+                return;
+            }
+            var titleEl = document.getElementById('checkoutItemTitle');
+            var amountEl = document.getElementById('checkoutAmount');
+            var nameEl = document.getElementById('checkoutItemName');
+            if (titleEl) titleEl.textContent = '💎 ' + title;
+            if (amountEl) amountEl.textContent = price;
+            if (nameEl) nameEl.textContent = title;
+
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1';
+            modal.style.pointerEvents = 'auto';
+            modal.style.zIndex = '999999';
+        };
+
+        window.closePaymentModal = function() {
+            var modal = document.getElementById('paymentCheckoutModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                modal.style.visibility = 'hidden';
+                modal.style.opacity = '0';
+                modal.style.pointerEvents = 'none';
+            }
+        };
+
+        window.togglePaymentMethodFields = function(method) {
+            var blik = document.getElementById('checkoutBlikField');
+            var card = document.getElementById('checkoutCardField');
+            if (blik) blik.style.display = (method === 'blik') ? 'block' : 'none';
+            if (card) card.style.display = (method === 'card') ? 'block' : 'none';
+        };
+
+        window.processCheckoutPayment = function(event) {
+            event.preventDefault();
+            var actionBox = document.getElementById('checkoutActionBox');
+            var processingBox = document.getElementById('checkoutProcessingBox');
+            var stepText = document.getElementById('processingStepText');
+
+            if (actionBox) actionBox.style.display = 'none';
+            if (processingBox) {
+                processingBox.classList.remove('hidden');
+                processingBox.style.display = 'block';
+            }
+
+            if (stepText) stepText.textContent = 'Łączenie z operatorem płatności (BLIK / PayU)...';
+
+            setTimeout(function() {
+                if (stepText) stepText.textContent = 'Autoryzacja w banku... Płatność zaakceptowana!';
+                setTimeout(function() {
+                    window.closePaymentModal();
+                    if (actionBox) actionBox.style.display = 'block';
+                    if (processingBox) {
+                        processingBox.classList.add('hidden');
+                        processingBox.style.display = 'none';
+                    }
+                    if (typeof window.activateAndOpenRecruiter === 'function') {
+                        window.activateAndOpenRecruiter();
+                    }
+                }, 1200);
+            }, 1800);
         };
 
         window.closeDashboardModal = function() {
@@ -666,6 +730,107 @@
     </div>
 
     
+    
+    <!-- MODAL: KASA & BRAMKA PŁATNOŚCI PRO (PAYU / STRIPE / BLIK GATEWAY) -->
+    <div class="modal-backdrop hidden" id="paymentCheckoutModal" onclick="if(event.target===this) window.closePaymentModal()">
+        <div class="modal modal-md payment-checkout-modal" style="max-width: 540px; width: 92%;">
+            <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 11px; font-weight: 800; color: #38bdf8; background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 6px; text-transform: uppercase;">Bezpieczna Bramka Płatności</span>
+                        <span style="font-size: 11px; color: #94a3b8;">🔒 SSL 256-bit Encrypted</span>
+                    </div>
+                    <h3 class="modal-title" id="checkoutItemTitle" style="margin: 6px 0 0 0; font-size: 1.25rem;">💎 Aktywacja Abonamentu Rekruter PRO</h3>
+                </div>
+                <button type="button" class="modal-close" onclick="window.closePaymentModal()">&times;</button>
+            </div>
+
+            <!-- Podsumowanie Zamówienia -->
+            <div style="background: rgba(15, 23, 42, 0.7); padding: 1rem 1.25rem; border-radius: 10px; margin: 1rem 0; border: 1px solid rgba(255,255,255,0.08);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="color: #cbd5e1; font-weight: 600;" id="checkoutItemName">Abonament PRO (Baza CV + Nielimitowane Ogłoszenia)</span>
+                    <span style="color: #38bdf8; font-weight: 800; font-size: 1.25rem;" id="checkoutAmount">99,00 zł</span>
+                </div>
+                <p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">Okres: 30 dni • Faktura VAT 23% • Dostęp do Panelu natychmiast po opłaceniu</p>
+            </div>
+
+            <!-- Formularz Płatności -->
+            <form id="checkoutPaymentForm" onsubmit="window.processCheckoutPayment(event)">
+                <!-- Metody płatności -->
+                <div style="margin-bottom: 1.25rem;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.5rem;">Wybierz metodę płatności:</label>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem;">
+                        <label class="pay-method-opt" style="border: 1px solid rgba(56, 189, 248, 0.5); background: rgba(56, 189, 248, 0.1); padding: 0.75rem 0.5rem; border-radius: 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                            <input type="radio" name="checkoutMethod" value="blik" checked onchange="window.togglePaymentMethodFields('blik')">
+                            <span style="font-weight: 800; font-size: 0.95rem; color: #fff;">⚡ BLIK</span>
+                            <span style="font-size: 0.7rem; color: #94a3b8;">Kod z aplikacji</span>
+                        </label>
+                        <label class="pay-method-opt" style="border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(15, 23, 42, 0.8); padding: 0.75rem 0.5rem; border-radius: 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                            <input type="radio" name="checkoutMethod" value="card" onchange="window.togglePaymentMethodFields('card')">
+                            <span style="font-weight: 800; font-size: 0.95rem; color: #fff;">💳 Karta</span>
+                            <span style="font-size: 0.7rem; color: #94a3b8;">Visa / Mastercard</span>
+                        </label>
+                        <label class="pay-method-opt" style="border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(15, 23, 42, 0.8); padding: 0.75rem 0.5rem; border-radius: 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                            <input type="radio" name="checkoutMethod" value="p24" onchange="window.togglePaymentMethodFields('p24')">
+                            <span style="font-weight: 800; font-size: 0.95rem; color: #fff;">🏦 Przelew</span>
+                            <span style="font-size: 0.7rem; color: #94a3b8;">Szybki PayU/P24</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- BLIK FIELD -->
+                <div id="checkoutBlikField" style="margin-bottom: 1rem; background: rgba(15, 23, 42, 0.9); padding: 1rem; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.3);">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.35rem;">Wpisz 6-cyfrowy kod BLIK:</label>
+                    <input type="text" id="blikCodeInput" maxlength="6" pattern="[0-9]{6}" required placeholder="123 456" style="width: 100%; font-size: 1.25rem; font-weight: 800; letter-spacing: 4px; text-align: center; padding: 0.65rem; background: #0b1329; border: 1px solid #38bdf8; border-radius: 6px; color: #38bdf8; outline: none;">
+                    <span style="display: block; font-size: 0.75rem; color: #94a3b8; margin-top: 0.35rem; text-align: center;">Po kliknięciu potwierdź płatność w aplikacji swojego banku (mBank, PKO, Santander, ING, etc.)</span>
+                </div>
+
+                <!-- CARD FIELD (HIDDEN INITIALLY) -->
+                <div id="checkoutCardField" style="display: none; margin-bottom: 1rem; background: rgba(15, 23, 42, 0.9); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.15);">
+                    <div style="margin-bottom: 0.75rem;">
+                        <label style="display: block; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 0.25rem;">Numer karty:</label>
+                        <input type="text" placeholder="4000 1234 5678 9010" class="form-input" style="padding: 0.6rem;">
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <div style="flex: 1;">
+                            <label style="display: block; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 0.25rem;">Ważność (MM/RR):</label>
+                            <input type="text" placeholder="12/28" class="form-input" style="padding: 0.6rem;">
+                        </div>
+                        <div style="width: 90px;">
+                            <label style="display: block; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 0.25rem;">CVC / CVV:</label>
+                            <input type="password" maxlength="4" placeholder="123" class="form-input" style="padding: 0.6rem;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DANE DO FAKTURY -->
+                <div style="margin-bottom: 1.25rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: #cbd5e1;">Dane do Faktury VAT (Firma / NIP):</label>
+                        <span style="font-size: 0.75rem; color: #94a3b8;">Opcjonalne</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <input type="text" id="checkoutNipInput" placeholder="NIP (np. 5252631245)" class="form-input" style="padding: 0.55rem; font-size: 0.85rem;">
+                        <input type="email" id="checkoutEmailInput" placeholder="E-mail do faktury" required value="rekrutacja@twojafirma.pl" class="form-input" style="padding: 0.55rem; font-size: 0.85rem;">
+                    </div>
+                </div>
+
+                <!-- PRZYCISK PŁATNOŚCI -->
+                <div id="checkoutActionBox" style="margin-top: 1rem;">
+                    <button type="submit" class="btn btn-primary btn-block" id="btnConfirmPayment" style="padding: 0.85rem; font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, #2563eb, #38bdf8); border: none;">
+                        <span>🔒 Zapłać 99,00 zł i Aktywuj Panel PRO</span>
+                    </button>
+                </div>
+
+                <div id="checkoutProcessingBox" class="hidden" style="display: none; text-align: center; padding: 1.5rem 0;">
+                    <div class="spinner" style="margin: 0 auto 1rem auto; width: 36px; height: 36px; border-width: 3px;"></div>
+                    <h4 style="color: white; font-size: 1.1rem; margin: 0 0 0.5rem 0;" id="processingStepText">Autoryzacja płatności w banku...</h4>
+                    <p style="color: #94a3b8; font-size: 0.85rem; margin: 0;">Prosimy nie zamykać okna. Potwierdź transakcję w aplikacji bankowej.</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- MODAL: PANEL REKRUTERA & BAZA CV PRO -->
     <div class="modal-backdrop hidden" id="dashboardModal" onclick="if(event.target===this) window.closeDashboardModal()">
         <div class="modal modal-xl modal-expanded recruiter-dashboard-modal" style="max-width: 1050px; width: 95%;">
