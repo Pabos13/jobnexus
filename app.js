@@ -1212,41 +1212,41 @@ function initNavbar() {
 // JOB OFFERS & ADVANCED PAGINATION
 // ============================================
 
+
 async function loadData() {
-    showLoading(true);
+    // 1. Immediately load preloaded jobs in 0 ms so screen is NEVER empty
+    const initialJobs = (typeof JobService !== 'undefined' && JobService.DEMO_JOBS) ? [...JobService.DEMO_JOBS] : [];
+    state.jobs = initialJobs;
+    state.filteredJobs = [...initialJobs];
+    state.jobsPage = 1;
+    state.jobsPerPage = 9;
 
+    filterAndDisplay();
+    showLoading(false);
+
+    // 2. Asynchronously load CSV and Jooble in background without blocking
     try {
-        let csvJobs = [];
-        let joobleJobs = [];
-
         if (typeof JobService !== 'undefined') {
-            csvJobs = await JobService.loadCSVJobs();
-            joobleJobs = await JobService.loadJoobleJobs(state.searchQuery || 'praca', state.locationQuery || 'Polska');
-            state.jobs = JobService.combineJobs(csvJobs || [], joobleJobs || []);
-        } else {
-            state.jobs = [];
+            const csvJobs = await JobService.loadCSVJobs();
+            if (csvJobs && csvJobs.length > 0) {
+                state.csvJobs = csvJobs;
+                state.jobs = JobService.combineJobs(csvJobs, state.jobs);
+                filterAndDisplay();
+            }
+
+            JobService.loadJoobleJobs(state.searchQuery || 'praca', state.locationQuery || 'Polska')
+                .then(joobleJobs => {
+                    if (joobleJobs && joobleJobs.length > 0) {
+                        state.jobs = JobService.combineJobs(state.jobs, joobleJobs);
+                        filterAndDisplay();
+                    }
+                })
+                .catch(err => console.warn('Jooble background fetch:', err));
         }
-
-        if (!state.jobs || state.jobs.length === 0) {
-            state.jobs = (typeof JobService !== 'undefined' && JobService.DEMO_JOBS) ? [...JobService.DEMO_JOBS] : [];
-        }
-
-        state.filteredJobs = [...state.jobs];
-        state.jobsPage = 1;
-        state.jobsPerPage = 9;
-
-        filterAndDisplay();
     } catch (err) {
-        console.error('Data loading error:', err);
-        const fallback = (typeof JobService !== 'undefined' && JobService.DEMO_JOBS) ? [...JobService.DEMO_JOBS] : [];
-        state.jobs = fallback;
-        state.filteredJobs = fallback;
-        filterAndDisplay();
-    } finally {
-        showLoading(false);
+        console.warn('Jobs loading background:', err);
     }
 }
-
 function initSearch() {
     const searchInput = document.getElementById('searchInput');
     const locationInput = document.getElementById('locationInput');
@@ -1910,141 +1910,207 @@ window.state.gigsPage = 1;
 window.state.gigsPerPage = 6;
 window.state.gigsCategory = 'all';
 
+
+// ============================================
+// GIGS & FREELANCE PROJECTS CONTROLLER
+// ============================================
+window.openGigModal = function() {
+    const modal = document.getElementById('gigModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+};
+
+window.closeGigModal = function() {
+    const modal = document.getElementById('gigModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+        const form = document.getElementById('gigForm');
+        if (form) form.reset();
+    }
+};
+
 function renderGigs() {
     const grid = document.getElementById('gigsGrid');
+    const empty = document.getElementById('gigsEmpty');
     if (!grid) return;
 
-    let filtered = window.state.gigs || [];
-    if (window.state.gigsCategory !== 'all') {
-        filtered = filtered.filter(g => g.category === window.state.gigsCategory);
-    }
+    const allGigs = (window.state && window.state.gigs && window.state.gigs.length) ? window.state.gigs : DEMO_GIGS;
+    window.state.gigs = allGigs;
+
+    const selectedCat = (window.state && window.state.gigsCategory) ? window.state.gigsCategory : 'all';
+
+    let filtered = allGigs.filter(g => {
+        if (selectedCat === 'all') return true;
+        const gCat = (g.category || '').toLowerCase();
+        const tCat = selectedCat.toLowerCase();
+        if (gCat === tCat) return true;
+        if (tCat === 'web' && (gCat === 'dev' || gCat === 'web' || gCat === 'mobile')) return true;
+        if (tCat === 'ecommerce' && (gCat === 'ecommerce' || gCat === 'shop' || gCat === 'dev')) return true;
+        return false;
+    });
 
     const total = filtered.length;
-    const perPage = window.state.gigsPerPage || 6;
-    const totalPages = Math.ceil(total / perPage) || 1;
+    const perPage = (window.state && window.state.gigsPerPage) ? window.state.gigsPerPage : 6;
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const current = Math.min(Math.max(1, (window.state && window.state.gigsPage) ? window.state.gigsPage : 1), totalPages);
+    if (window.state) window.state.gigsPage = current;
 
-    if (window.state.gigsPage > totalPages) window.state.gigsPage = totalPages;
-    const current = window.state.gigsPage;
+    grid.innerHTML = '';
+
+    if (total === 0) {
+        if (empty) empty.classList.remove('hidden');
+        renderPaginationBar('gigsPagination', 1, 0, 0, perPage, null, null);
+        return;
+    }
+
+    if (empty) empty.classList.add('hidden');
 
     const start = (current - 1) * perPage;
     const pageItems = filtered.slice(start, start + perPage);
 
-    if (pageItems.length === 0) {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #94a3b8;">Brak zleceń w wybranej kategorii.</div>';
-    } else {
-        grid.innerHTML = pageItems.map(gig => `
-            <div class="gig-card">
-                <div>
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 10px;">
-                        <span style="font-size: 11px; font-weight: 700; color: #c084fc; background: rgba(168, 85, 247, 0.15); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(168, 85, 247, 0.3);">
-                            ${gig.duration}
-                        </span>
-                        <span style="font-size: 11px; color: #94a3b8; font-weight: 600;">
-                            👥 ${gig.proposals} ofert
-                        </span>
-                    </div>
-                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #f8fafc; margin: 0 0 8px 0; line-height: 1.35;">
-                        ${gig.title}
-                    </h3>
-                    <p style="font-size: 13px; color: #64748b; margin: 0 0 12px 0;">
-                        🏢 ${gig.client}
-                    </p>
-                    <p style="font-size: 13px; color: #cbd5e1; line-height: 1.5; margin: 0 0 14px 0;">
-                        ${gig.desc}
-                    </p>
-                    <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">
-                        ${(gig.tags || []).map(t => `<span style="font-size: 11px; padding: 2px 8px; border-radius: 4px; background: #1e293b; color: #93c5fd; border: 1px solid #334155;">${t}</span>`).join('')}
-                    </div>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #1e293b; padding-top: 14px; margin-top: auto;">
-                    <div>
-                        <span style="display: block; font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Budżet</span>
-                        <span style="font-size: 14px; font-weight: 800; color: #34d399;">${gig.budget}</span>
-                    </div>
-                    <button class="btn btn-sm btn-apply-gig" data-gig-id="${gig.id}" data-title="${gig.title}" data-budget="${gig.budget}" style="background: linear-gradient(135deg, #a855f7, #6366f1); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);">
-                        Złóż ofertę →
-                    </button>
-                </div>
-            </div>
-        `).join('');
-    }
+    pageItems.forEach(gig => {
+        const card = document.createElement('div');
+        card.className = 'job-card';
+        card.style.background = 'linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95))';
+        card.style.border = '1px solid rgba(168, 85, 247, 0.25)';
 
-    // Render Pagination Bar
+        const tagsHtml = (gig.tags || []).map(t => `<span class="job-tag" style="background: rgba(168, 85, 247, 0.12); color: #c084fc;">${escapeHtml(t)}</span>`).join('');
+
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                <span style="font-size: 0.75rem; font-weight: 700; color: #c084fc; background: rgba(168, 85, 247, 0.15); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(168, 85, 247, 0.3);">
+                    ${escapeHtml(gig.duration || '⏱️ Do ustalenia')}
+                </span>
+                <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 600;">
+                    👥 ${gig.proposals || 0} ofert wykonawców
+                </span>
+            </div>
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: #ffffff; margin-bottom: 0.35rem; line-height: 1.35;">
+                ${escapeHtml(gig.title || 'Zlecenie projektowe')}
+            </h3>
+            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem;">
+                🏢 Zleceniodawca: <strong style="color: #cbd5e1;">${escapeHtml(gig.client || 'Firma zweryfikowana')}</strong>
+            </p>
+            <p style="font-size: 0.85rem; color: #94a3b8; line-height: 1.5; margin-bottom: 1rem;">
+                ${escapeHtml(gig.desc || '')}
+            </p>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1.25rem;">
+                ${tagsHtml}
+            </div>
+            <div class="job-footer" style="padding-top: 0.85rem; border-top: 1px solid rgba(255, 255, 255, 0.06); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span style="font-size: 0.75rem; color: #94a3b8; display: block;">Budżet zlecenia</span>
+                    <span class="job-salary" style="color: #38bdf8; font-size: 1.05rem;">${escapeHtml(gig.budget || 'Do negocjacji')}</span>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" onclick="window.openProposalModal('${escapeHtml(gig.id)}', '${escapeHtml(gig.title)}')">
+                    Złóż ofertę
+                </button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    // Render Pagination for Gigs
     renderPaginationBar('gigsPagination', current, totalPages, total, perPage, (newPage) => {
         window.state.gigsPage = newPage;
         renderGigs();
-        document.getElementById('zlecenia')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const zleceniaSec = document.getElementById('zlecenia');
+        if (zleceniaSec) {
+            zleceniaSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     }, (newPerPage) => {
         window.state.gigsPerPage = newPerPage;
         window.state.gigsPage = 1;
         renderGigs();
     });
-
-    // Wire apply buttons
-    grid.querySelectorAll('.btn-apply-gig').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const title = btn.dataset.title;
-            const budget = btn.dataset.budget;
-            const modal = document.getElementById('gigProposalModal');
-            const titleEl = document.getElementById('gigModalTitle');
-            const budgetEl = document.getElementById('gigModalBudget');
-            if (titleEl) titleEl.textContent = title;
-            if (budgetEl) budgetEl.textContent = `Budżet klienta: ${budget}`;
-            if (modal) modal.classList.remove('hidden');
-        });
-    });
 }
 
 function initGigs() {
-    // Filter buttons
+    // Render gigs immediately on initialization
+    renderGigs();
+
+    // Gigs category filter buttons
     document.querySelectorAll('.gig-filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.gig-filter-btn').forEach(b => {
                 b.classList.remove('active');
-                b.style.background = '#1e293b';
-                b.style.color = '#94a3b8';
             });
             btn.classList.add('active');
-            btn.style.background = '#3b82f6';
-            btn.style.color = 'white';
 
-            window.state.gigsCategory = btn.dataset.cat;
+            if (!window.state) window.state = {};
+            window.state.gigsCategory = btn.dataset.category || btn.dataset.cat || 'all';
             window.state.gigsPage = 1;
             renderGigs();
         });
     });
 
-    // Post Gig button
-    document.getElementById('postGigBtn')?.addEventListener('click', () => {
-        const u = AuthService.getUser();
-        if (u && u.role === 'recruiter') {
-            window.openDashboard?.();
-            window.switchRecruiterTab?.('add_job');
-        } else {
-            showToast('Zaloguj się jako Pracodawca / Rekruter, aby dodać zlecenie.', 'info');
-            window.openAuth?.(true);
+    // Modal close triggers
+    document.getElementById('gigModalClose')?.addEventListener('click', window.closeGigModal);
+    document.getElementById('gigModal')?.addEventListener('click', (e) => {
+        if (e.target === document.getElementById('gigModal')) window.closeGigModal();
+    });
+
+    // Gig Form Submit
+    document.getElementById('gigForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('gigTitle')?.value.trim();
+        const client = document.getElementById('gigClient')?.value.trim() || 'Mój Profil';
+        const category = document.getElementById('gigCategory')?.value || 'web';
+        const budget = document.getElementById('gigBudget')?.value.trim() || 'Do negocjacji';
+        const duration = document.getElementById('gigDuration')?.value.trim() || '⏱️ 14 dni';
+        const tags = (document.getElementById('gigTags')?.value || '').split(',').map(t => t.trim()).filter(Boolean);
+        const desc = document.getElementById('gigDesc')?.value.trim();
+
+        if (!title || !desc) {
+            showToast('Wypełnij wymagane pola zlecenia!', 'error');
+            return;
         }
+
+        const newGig = {
+            id: `gig-user-${Date.now()}`,
+            title,
+            client,
+            category,
+            budget,
+            duration,
+            proposals: 0,
+            tags: tags.length ? tags : ['Freelance', 'Projekt'],
+            desc
+        };
+
+        if (!window.state.gigs) window.state.gigs = [...DEMO_GIGS];
+        window.state.gigs.unshift(newGig);
+        window.closeGigModal();
+        renderGigs();
+        showToast('🚀 Twoje zlecenie zostało opublikowane pomyślnie!', 'success');
     });
 
-    // Modal close
-    document.getElementById('gigModalClose')?.addEventListener('click', () => {
+    // Proposal Modal
+    window.openProposalModal = function(gigId, gigTitle) {
+        const propModal = document.getElementById('gigProposalModal');
+        const titleEl = document.getElementById('propGigTitle');
+        if (titleEl) titleEl.textContent = gigTitle || 'Zlecenie projektowe';
+        if (propModal) {
+            propModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+    };
+
+    document.getElementById('gigProposalClose')?.addEventListener('click', () => {
         document.getElementById('gigProposalModal')?.classList.add('hidden');
+        document.body.style.overflow = '';
     });
 
-    // Proposal Form Submit
     document.getElementById('gigProposalForm')?.addEventListener('submit', (e) => {
         e.preventDefault();
-        const rate = document.getElementById('proposalRate')?.value;
-        const time = document.getElementById('proposalTime')?.value;
         document.getElementById('gigProposalModal')?.classList.add('hidden');
-        showToast(`🎉 Twoja oferta (${rate}, ${time}) została przesłana do klienta!`, 'success');
-        e.target.reset();
+        document.body.style.overflow = '';
+        showToast('🎉 Twoja propozycja wykonania została przesłana do zleceniodawcy!', 'success');
     });
-
-    renderGigs();
 }
-
-
 // ============================================
 // SALARY FILTER, JOB ALERTS & CHECKOUT
 // ============================================

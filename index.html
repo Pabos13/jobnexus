@@ -91,19 +91,27 @@
         </section>
 
         <!-- SECTION 1: OFERTY PRACY -->
+                <!-- SECTION 1: OFERTY PRACY -->
         <section class="section" id="oferty">
-            <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
-                <div>
-                    <h2 class="section-title">💼 Oferty Pracy (Live Jooble + Zweryfikowane)</h2>
-                    <p class="section-subtitle">Aktualne oferty zsynchronizowane z Jooble API oraz bazą zweryfikowanych pracodawców</p>
-                </div>
-                <button type="button" class="btn btn-primary" onclick="openAddModal('standard')">
-                    ➕ Dodaj Ogłoszenie
-                </button>
+            <div class="section-header">
+                <h2 class="section-title">💼 Oferty Pracy (Live Jooble + Zweryfikowane)</h2>
+                <p class="section-subtitle">Aktualne oferty zsynchronizowane z Jooble API oraz bazą sprawdzonych pracodawców</p>
             </div>
 
-            <!-- Category Filter Chips -->
-            <div class="filter-chips">
+            <!-- ACTION BANNER: DODAJ OGŁOSZENIE PRACY -->
+            <div class="action-banner-card">
+                <div class="action-banner-left">
+                    <div class="action-banner-icon">🏢</div>
+                    <div>
+                        <h3 class="action-banner-title">Rekrutujesz do swojej firmy?</h3>
+                        <p class="action-banner-subtitle">Opublikuj szczegółową ofertę pracy i dotrzyj do zweryfikowanych specjalistów w całej Polsce.</p>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary action-banner-btn" onclick="openAddModal('standard')">
+                    ➕ Otwórz Formularz Ogłoszenia
+                </button>
+            </div>
+<div class="filter-chips">
                 <button class="chip active" data-filter="all">Wszystkie</button>
                 <button class="chip" data-filter="remote">Zdalna</button>
                 <button class="chip" data-filter="intern">Staż</button>
@@ -147,19 +155,27 @@
         </section>
 
         <!-- SECTION 2: OFERTY ZLECEŃ / FREELANCE -->
+                <!-- SECTION 2: OFERTY ZLECEŃ / FREELANCE -->
         <section class="section" id="zlecenia" style="background: rgba(15, 23, 42, 0.4); border-radius: 1.5rem; padding: 3rem 2rem; margin: 3rem 0; border: 1px solid rgba(255, 255, 255, 0.05);">
-            <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
-                <div>
-                    <h2 class="section-title">🚀 Oferty Zleceń (Gigs & Freelance)</h2>
-                    <p class="section-subtitle">Zlecenia projektowe, zadania dorywcze i kontrakty dla freelancerów</p>
-                </div>
-                <button type="button" class="btn btn-primary" id="postGigBtn">
-                    ➕ Dodaj Zlecenie
-                </button>
+            <div class="section-header">
+                <h2 class="section-title">🚀 Oferty Zleceń (Gigs & Freelance)</h2>
+                <p class="section-subtitle">Zlecenia projektowe, zadania dorywcze i kontrakty dla freelancerów</p>
             </div>
 
-            <!-- Gigs Category Filter Chips -->
-            <div class="gigs-filter-bar" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem;">
+            <!-- ACTION BANNER: DODAJ ZLECENIE -->
+            <div class="action-banner-card action-banner-gig">
+                <div class="action-banner-left">
+                    <div class="action-banner-icon">🚀</div>
+                    <div>
+                        <h3 class="action-banner-title">Masz projekt lub zadanie do zlecenia?</h3>
+                        <p class="action-banner-subtitle">Zleć wykonanie zadania sprawdzonym programistom, grafikom i specjalistom AI.</p>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary action-banner-btn" onclick="window.openGigModal()">
+                    ➕ Otwórz Formularz Zlecenia
+                </button>
+            </div>
+<div class="gigs-filter-bar" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem;">
                 <button class="chip active gig-filter-btn" data-category="all">Wszystkie zlecenia</button>
                 <button class="chip gig-filter-btn" data-category="ai">AI & Automatyzacja</button>
                 <button class="chip gig-filter-btn" data-category="web">Web & Mobile</button>
@@ -684,101 +700,155 @@
         </div>
     </div>
 
-    <!-- 4. ADD JOB ANNOUNCEMENT MODAL -->
+    
+    <!-- 4. EXPANDED ADD JOB ANNOUNCEMENT MODAL -->
     <div class="modal hidden" id="addModal">
-        <div class="modal-content" style="max-width: 560px;">
+        <div class="modal-content" style="max-width: 680px; width: 95%;">
             <button class="modal-close" id="modalClose">&times;</button>
             <div class="modal-header">
-                <h2>Dodaj ogłoszenie pracy</h2>
-                <p>Opublikuj ofertę i dotrzyj do tysięcy wykwalifikowanych kandydatów</p>
+                <div class="modal-icon" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; margin-bottom: 0.5rem;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px;"><path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                </div>
+                <h2>Rozszerzony Formularz Ogłoszenia Pracy</h2>
+                <p>Opublikuj szczegółową ofertę rekrutacyjną i dotrzyj do zweryfikowanych kandydatów</p>
             </div>
-            <form id="addForm" class="auth-form" style="margin-top: 1.25rem;">
+
+            <form id="addForm" class="auth-form" style="margin-top: 1.5rem;">
                 <div class="form-group">
-                    <label>Stanowisko</label>
-                    <input type="text" id="annTitle" required placeholder="np. Senior React Developer" class="form-input">
+                    <label>Stanowisko / Tytuł oferty *</label>
+                    <input type="text" id="annTitle" required placeholder="np. Senior Full Stack Developer (React & Node.js)" class="form-input">
                 </div>
-                <div class="form-group">
-                    <label>Nazwa Firmy</label>
-                    <input type="text" id="annCompany" required placeholder="np. Nexus Solutions Sp. z o.o." class="form-input">
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <div class="form-group">
-                        <label>Kategoria</label>
+                        <label>Nazwa Firmy / Pracodawcy *</label>
+                        <input type="text" id="annCompany" required placeholder="np. Nexus Tech Sp. z o.o." class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Lokalizacja *</label>
+                        <input type="text" id="annLocation" placeholder="np. Warszawa / Zdalnie" value="Warszawa / Zdalnie" class="form-input">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Kategoria branżowa *</label>
                         <select id="annCategory" class="form-input" style="background:#0f172a;color:#fff;">
-                            <option value="it">IT & Tech</option>
-                            <option value="ai">AI & Data</option>
-                            <option value="inzynieria">Inżynieria</option>
-                            <option value="finanse">Finanse</option>
-                            <option value="marketing">Marketing</option>
+                            <option value="it" selected>IT & Software</option>
+                            <option value="ai">AI & Data Science</option>
+                            <option value="inzynieria">Inżynieria & Produkcja</option>
+                            <option value="finanse">Finanse & Księgowość</option>
+                            <option value="marketing">Marketing & Sprzedaż</option>
+                            <option value="logistyka">Logistyka & Transport</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Lokalizacja</label>
-                        <input type="text" id="annLocation" placeholder="np. Warszawa / Zdalnie" class="form-input">
+                        <label>Typ umowy / Tryb pracy *</label>
+                        <select id="annType" class="form-input" style="background:#0f172a;color:#fff;">
+                            <option value="Zdalna" selected>Zdalna (B2B / UoP)</option>
+                            <option value="Pełny etat">Pełny etat (Stacjonarnie / Hybrydowo)</option>
+                            <option value="Kontrakt">Kontrakt B2B</option>
+                            <option value="Staż">Staż / Praktyki</option>
+                        </select>
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <label>Wynagrodzenie (Widełki)</label>
-                    <input type="text" id="annBudget" placeholder="np. 15 000 - 22 000 PLN" class="form-input">
+                    <label>Widełki wynagrodzenia (PLN) *</label>
+                    <input type="text" id="annBudget" required placeholder="np. 18 000 - 24 000 PLN netto B2B" class="form-input">
                 </div>
+
                 <div class="form-group">
-                    <label>Opis i Wymagania</label>
-                    <textarea id="annDesc" required class="form-input" style="min-height: 90px; resize: vertical;" placeholder="Opisz zakres obowiązków, technologie i benefity..."></textarea>
+                    <label>Wymagane technologie & umiejętności (oddzielone przecinkami)</label>
+                    <input type="text" id="annSkills" placeholder="np. React, TypeScript, Node.js, AWS, Docker" class="form-input">
                 </div>
+
                 <div class="form-group">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                        <input type="checkbox" id="annFeatured">
-                        <span style="color:#fff; font-weight:600;">Wyróżnij to ogłoszenie (+20,00 zł)</span>
+                    <label>Szczegółowy opis stanowiska, wymagań i benefitów *</label>
+                    <textarea id="annDesc" required class="form-input" style="min-height: 110px; resize: vertical;" placeholder="Opisz zakres projektów, technologie, wymagania doświadczenia oraz benefity (Medicover, Multisport, budżet szkoleniowy)..."></textarea>
+                </div>
+
+                <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 0.75rem; padding: 1rem; margin-bottom: 1.25rem;">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" id="annFeatured" style="width: 18px; height: 18px; accent-color: #3b82f6;">
+                        <div>
+                            <span style="color:#fff; font-weight:700; display:block;">Wyróżnij ogłoszenie na górze listy (+20,00 zł)</span>
+                            <span style="color:#94a3b8; font-size:0.8rem;">Otrzymaj złotą odznakę i do 5x więcej zgłoszeń kandydatów.</span>
+                        </div>
                     </label>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
-                    Opublikuj ogłoszenie (<span id="submitPrice">9,99 zł</span>)
+
+                <button type="submit" class="btn btn-primary btn-block" style="padding: 0.9rem; font-size: 1rem; font-weight: 700;">
+                    Opublikuj ogłoszenie pracy (<span id="submitPrice">9,99 zł</span>)
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- 5. ADD GIG MODAL -->
+    <!-- 5. EXPANDED ADD GIG MODAL -->
     <div class="modal hidden" id="gigModal">
-        <div class="modal-content" style="max-width: 560px;">
+        <div class="modal-content" style="max-width: 680px; width: 95%;">
             <button class="modal-close" id="gigModalClose">&times;</button>
             <div class="modal-header">
-                <h2>Dodaj Zlecenie Freelance</h2>
-                <p>Znajdź freelancera lub wykonawcę do swojego projektu</p>
-            </div>
-            <form id="gigForm" class="auth-form" style="margin-top: 1.25rem;">
-                <div class="form-group">
-                    <label>Tytuł zlecenia</label>
-                    <input type="text" id="gigTitle" required placeholder="np. Wdrożenie integracji Stripe w aplikacji Vue" class="form-input">
+                <div class="modal-icon" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; margin-bottom: 0.5rem;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <h2>Rozszerzony Formularz Zlecenia Freelance</h2>
+                <p>Opublikuj projekt lub zadanie i otrzymaj oferty od najlepszych wykonawców</p>
+            </div>
+
+            <form id="gigForm" class="auth-form" style="margin-top: 1.5rem;">
+                <div class="form-group">
+                    <label>Tytuł zlecenia / projektu *</label>
+                    <input type="text" id="gigTitle" required placeholder="np. Wdrożenie asystenta AI / RAG dla platformy e-commerce" class="form-input">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <div class="form-group">
-                        <label>Kategoria</label>
+                        <label>Zleceniodawca / Firma *</label>
+                        <input type="text" id="gigClient" required placeholder="np. RetailTech Sp. z o.o." class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Kategoria projektu *</label>
                         <select id="gigCategory" class="form-input" style="background:#0f172a;color:#fff;">
-                            <option value="web">Web & Mobile</option>
-                            <option value="ai">AI & Automatyzacja</option>
+                            <option value="ai" selected>AI & Automatyzacja</option>
+                            <option value="web">Web & Mobile Development</option>
                             <option value="design">Design & UI/UX</option>
                             <option value="ecommerce">E-commerce</option>
-                            <option value="marketing">Marketing</option>
+                            <option value="marketing">Marketing & SEO</option>
                         </select>
                     </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <div class="form-group">
-                        <label>Budżet</label>
-                        <input type="text" id="gigBudget" placeholder="np. 3 000 - 5 000 PLN" class="form-input">
+                        <label>Budżet zlecenia (PLN) *</label>
+                        <input type="text" id="gigBudget" required placeholder="np. 6 000 - 9 500 PLN" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Szacowany czas realizacji *</label>
+                        <input type="text" id="gigDuration" placeholder="np. ⏱️ 14 dni" value="⏱️ 14 dni" class="form-input">
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <label>Opis zlecenia</label>
-                    <textarea id="gigDesc" required class="form-input" style="min-height: 90px; resize: vertical;" placeholder="Szczegóły zadania, wymagane technologie, termin..."></textarea>
+                    <label>Wymagany stos technologiczny / tagi</label>
+                    <input type="text" id="gigTags" placeholder="np. Python, LangChain, OpenAI, FastAPI" class="form-input">
                 </div>
-                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
-                    Opublikuj Zlecenie
+
+                <div class="form-group">
+                    <label>Szczegółowy opis zadania i oczekiwane rezultaty *</label>
+                    <textarea id="gigDesc" required class="form-input" style="min-height: 110px; resize: vertical;" placeholder="Opisz dokładnie cel projektu, wymagane integracje API, stan obecnego kodu oraz kryteria akceptacji..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" style="padding: 0.9rem; font-size: 1rem; font-weight: 700; background: linear-gradient(135deg, #7c3aed, #2563eb);">
+                    🚀 Opublikuj Zlecenie Projektowe
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- 6. GIG PROPOSAL MODAL -->
+<!-- 6. GIG PROPOSAL MODAL -->
     <div class="modal hidden" id="gigProposalModal">
         <div class="modal-content" style="max-width: 480px;">
             <button class="modal-close" id="gigProposalClose">&times;</button>
