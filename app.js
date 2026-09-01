@@ -281,6 +281,31 @@ async function initAuth() {
         }
     };
 
+    
+    document.getElementById('heroRegisterCandidate')?.addEventListener('click', () => {
+        const u = AuthService.getUser();
+        if (u) {
+            window.openDashboard?.();
+        } else {
+            open(true);
+            const input = roleLabelCandidate?.querySelector('input');
+            if (input) input.checked = true;
+            updateRoleUI('candidate');
+        }
+    });
+
+    document.getElementById('heroRegisterRecruiter')?.addEventListener('click', () => {
+        const u = AuthService.getUser();
+        if (u) {
+            window.openDashboard?.();
+        } else {
+            open(true);
+            const input = roleLabelRecruiter?.querySelector('input');
+            if (input) input.checked = true;
+            updateRoleUI('recruiter');
+        }
+    });
+
     navDashBtn?.addEventListener('click', () => {
         if (typeof window.openDashboard === 'function') {
             window.openDashboard();
