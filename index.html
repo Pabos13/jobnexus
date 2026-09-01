@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
+    <!-- HARD RESET & PURGE OF ALL FAKE SESSIONS ON START -->
+    <script>
+        (function forcePurgeFakeSessions() {
+            try {
+                localStorage.removeItem('jobnexus_user');
+                localStorage.removeItem('jobnexus_token');
+                localStorage.removeItem('jobnexus_refresh_token');
+                localStorage.removeItem('jobnexus_token_expiry');
+                sessionStorage.clear();
+            } catch(e) {}
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JobNexus — Inteligentna Platforma Pracy i Zleceń AI</title>
